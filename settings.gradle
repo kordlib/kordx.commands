@@ -1,0 +1,2 @@
+rootProject.name = 'kordx.commands'
+include 'kordx-commands-runtime'
