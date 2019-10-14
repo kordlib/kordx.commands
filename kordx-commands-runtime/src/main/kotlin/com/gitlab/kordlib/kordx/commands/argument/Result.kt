@@ -1,11 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.argument
 
 sealed class Result<T> {
-    class Success<T>(val item: T, val wordsTaken: Int) : Result<T>(){
+    data class Success<T>(val item: T, val wordsTaken: Int) : Result<T>(){
         companion object
     }
 
-    class Failure<T>(val reason: String, val atWord: Int) : Result<T>() {
+    data class Failure<T>(val reason: String, val atWord: Int) : Result<T>() {
         companion object
     }
 
@@ -46,6 +46,12 @@ inline fun <T, R> Result<T>.map(mapper: (T) -> R): Result<R> = when (this) {
 }
 
 @Suppress("UNCHECKED_CAST")
+inline fun <T> Result<T>.switchOnFail(generator: () -> Result<T>): Result<T> = when (this) {
+    is Result.Success -> this
+    is Result.Failure -> generator()
+}
+
+@Suppress("UNCHECKED_CAST")
 inline fun <T, R : Any> Result<T>.tryMap(mapper: (T) -> MapResult<R>): Result<R> = when (this) {
     is Result.Success -> when (val result = mapper(item)) {
         is MapResult.Pass -> Result.Success(result.item, wordsTaken)
@@ -82,9 +88,15 @@ fun <T : Any> Result<T?>.orDefault(fallBack: T): Result.Success<T> = when (this)
 }
 
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Result<T>.orElse(fallBack: T): Result.Success<T> = when (this) {
+fun <T> Result<T>.orElse(fallBack: T): Result.Success<T> = when (this) {
     is Result.Success -> Result.Success(item, wordsTaken)
     is Result.Failure -> Result.Success(fallBack, 0)
+}
+
+@Suppress("UNCHECKED_CAST")
+inline fun <T> Result<T>.orElse(fallBack: () -> T): Result.Success<T> = when (this) {
+    is Result.Success -> Result.Success(item, wordsTaken)
+    is Result.Failure -> Result.Success(fallBack(), 0)
 }
 
 @Suppress("UNCHECKED_CAST")

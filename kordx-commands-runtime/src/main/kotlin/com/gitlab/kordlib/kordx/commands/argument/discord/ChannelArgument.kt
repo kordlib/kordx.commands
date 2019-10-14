@@ -2,18 +2,18 @@ package com.gitlab.kordlib.kordx.commands.argument.discord
 
 import com.gitlab.kordlib.core.entity.Snowflake
 import com.gitlab.kordlib.core.entity.channel.Channel
-import com.gitlab.kordlib.kordx.commands.argument.ParsingContext
+import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
 private val mentionRegex = Regex("""^<#\d+>$""")
 
-open class ChannelSnowflakeArgument(override val name: String = "Channel") : SingleWordArgument<Snowflake>() {
+open class ChannelSnowflakeArgument(override val name: String = "Channel") : SingleWordArgument<Snowflake, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
 
-    final override suspend fun parse(word: String, context: ParsingContext): Result<Snowflake> {
+    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Snowflake> {
         if (!word.matches(mentionRegex)) return failure("Expected discord mention.")
 
         val snowflake = word.removeSuffix(">").dropWhile { !it.isDigit() }
@@ -24,12 +24,12 @@ open class ChannelSnowflakeArgument(override val name: String = "Channel") : Sin
 
 }
 
-open class ChannelArgument(override val name: String = "Channel")  : SingleWordArgument<Channel>() {
+open class ChannelArgument(override val name: String = "Channel")  : SingleWordArgument<Channel, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
 
-    final override suspend fun parse(word: String, context: ParsingContext): Result<Channel> {
+    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Channel> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
