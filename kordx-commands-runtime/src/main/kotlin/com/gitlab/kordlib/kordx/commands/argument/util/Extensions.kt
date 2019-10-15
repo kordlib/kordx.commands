@@ -1,9 +1,6 @@
 package com.gitlab.kordlib.kordx.commands.argument.util
 
 import com.gitlab.kordlib.kordx.commands.argument.*
-import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
-import com.gitlab.kordlib.kordx.commands.argument.primitives.inRange
-import me.aberrantfox.kjdautils.internal.arguments.IntegerArg
 
 
 @Suppress("UNCHECKED_CAST")

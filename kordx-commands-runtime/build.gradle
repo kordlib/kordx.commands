@@ -1,7 +1,3 @@
-dependencies {
-    implementation "com.gitlab.aberrantfox:KUtils:0.12.0"
-}
-
 compileKotlin {
     kotlinOptions {
         freeCompilerArgs = ["-XXLanguage:+InlineClasses", "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi", "-Xuse-experimental=kotlin.Experimental"]
