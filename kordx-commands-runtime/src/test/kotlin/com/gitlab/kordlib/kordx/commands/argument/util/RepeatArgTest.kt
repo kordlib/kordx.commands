@@ -1,7 +1,6 @@
-package com.gitlab.kordlib.kordx.commands.argument.text
+package com.gitlab.kordlib.kordx.commands.argument.util
 
 import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
-import com.gitlab.kordlib.kordx.commands.argument.primitives.inRange
 import com.gitlab.kordlib.kordx.commands.argument.requireFailure
 import com.gitlab.kordlib.kordx.commands.argument.requireItem
 import kotlinx.coroutines.test.runBlockingTest
@@ -9,28 +8,32 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
-class WhiteListTest {
+@Suppress("unused")
+class RepeatArgTest {
 
-    val argument = WordArgument.whitelist("whitelist")
+    val argument = IntArgument.repeated(1..10)
 
     @ParameterizedTest
     @MethodSource("passingSources")
-    fun `correctly accepts arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireItem(text)
+    fun `correctly accepts arguments`(text: String, expected: List<Int>) = runBlockingTest {
+        argument.parse(text.split(" "), 0, Unit).requireItem(expected)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireFailure()
+        argument.parse(text.split(" "), 0, Unit).requireFailure()
     }
-
 
     companion object {
         @JvmStatic
-        fun passingSources() = listOf(Arguments.of("whitelist"))
+        fun passingSources() = listOf(
+                Arguments.of("1 2 3 4 5 6 7 8 9 10", listOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+        )
 
         @JvmStatic
-        fun failingSources() = listOf(Arguments.of("false"))
+        fun failingSources() = listOf(
+                Arguments.of("")
+        )
     }
 }

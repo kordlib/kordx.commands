@@ -4,25 +4,20 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.FixedLengthArgument
 import com.gitlab.kordlib.kordx.commands.argument.Result
 
-
-sealed class RepeatAmount {
-    abstract val times: Int
-
-    object Infinite : RepeatAmount() {
-        override val times = Int.MAX_VALUE
-    }
-    class Fixed(override val times: Int) : RepeatAmount()
-}
+fun<T, CONTEXT> Argument<T, CONTEXT>.repeated(
+        range: IntRange = 0..Int.MAX_VALUE,
+        name: String = "${this.name} repeated"
+) = RepeatArg(this, range.first, range.last, name)
 
 class RepeatArg<T, CONTEXT>(
-        val argument: FixedLengthArgument<T, CONTEXT>,
+        val argument: Argument<T, CONTEXT>,
         private val minRepeats: Int = 0,
         private val maxRepeats: Int = Int.MAX_VALUE,
         override val name: String = "${argument.name} repeated"
 ) : Argument<List<T>, CONTEXT> {
 
     init {
-        require(minRepeats > 0) { "minimum repeats needs to be at least 0 but was $minRepeats" }
+        require(minRepeats >= 0) { "minimum repeats needs to be at least 0 but was $minRepeats" }
         require(maxRepeats > 1) { "need to repeat at least 1 times but was $maxRepeats" }
         require(minRepeats < maxRepeats) { "minRepeats ($minRepeats) needs to be less than maxRepeats ($maxRepeats)" }
     }
@@ -46,7 +41,7 @@ class RepeatArg<T, CONTEXT>(
         }
 
         return when {
-            results.size < minRepeats -> Result.Failure("expected at least $minRepeats repeats of ${argument.name}, but got ${results.size}", index)
+            results.size < minRepeats -> Result.Failure("expected at least $minRepeats repeats of ${argument.name}, but only got ${results.size}", index)
             else -> Result.Success(results, index - fromIndex)
         }
     }

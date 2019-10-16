@@ -62,6 +62,15 @@ object DefaultHandler : EventHandler {
             }
         }
 
+        //reject invocation, too many arguments
+        if (wordIndex != withoutCommand.size - 1) with(converter) {
+            return argumentContext.rejectArgument(
+                    command,
+                    withoutCommand,
+                    Result.Failure<Unit>("${arguments.last().name} does not take that many arguments.", wordIndex + 1)
+            )
+        }
+
         val eventContext = converter.convert(argumentContext, command, null, arguments)
 
         val preconditions = preconditions[context].orEmpty() as List<Precondition<EVENTCONTEXT>>
