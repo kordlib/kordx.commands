@@ -1,6 +1,4 @@
-package com.gitlab.kordlib.kordx.commands.command.dsl
-
-import com.gitlab.kordlib.kordx.commands.command.*
+package com.gitlab.kordlib.kordx.commands.command
 
 inline fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> module(
         name: String,

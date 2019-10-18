@@ -28,14 +28,16 @@ class Module(
 fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.command(
         name: String,
         builder: CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.() -> Unit
-): CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T> {
-    return CommandBuilder(name, this.name, context).apply(builder).also { add(it) }
+) {
+    val command = CommandBuilder(name, this.name, context).apply(builder)
+    add(command)
 }
 
 fun <NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT : EventContext> ModuleBuilder<*, *, *>.command(
         name: String,
         context: CommandContext<NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT>,
         builder: CommandBuilder<NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT>.() -> Unit
-): CommandBuilder<NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT> {
-    return CommandBuilder(name, this.name, context).apply(builder).also { add(it) }
+) {
+    val command = CommandBuilder(name, this.name, context).apply(builder)
+    add(command)
 }

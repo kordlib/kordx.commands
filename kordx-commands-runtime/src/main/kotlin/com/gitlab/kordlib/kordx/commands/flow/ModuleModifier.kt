@@ -1,8 +1,8 @@
 package com.gitlab.kordlib.kordx.commands.flow
 
 import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
-import com.gitlab.kordlib.kordx.commands.command.dsl.CommandSet
-import com.gitlab.kordlib.kordx.commands.command.dsl.EachCommand
+import com.gitlab.kordlib.kordx.commands.command.CommandSet
+import com.gitlab.kordlib.kordx.commands.command.EachCommand
 
 interface ModuleModifier {
 

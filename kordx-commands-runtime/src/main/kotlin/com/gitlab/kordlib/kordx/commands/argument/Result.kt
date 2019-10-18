@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument
 
 sealed class Result<T> {
-    data class Success<T>(val item: T, val wordsTaken: Int) : Result<T>(){
+    data class Success<T>(val item: T, val wordsTaken: Int) : Result<T>() {
         companion object
     }
 
@@ -10,7 +10,7 @@ sealed class Result<T> {
     }
 
     companion object {
-        fun<T: Any> notNull(item: T?, wordsTaken: Int, failure: () -> Result.Failure<T>): Result<T> = when(item) {
+        fun <T : Any> notNull(item: T?, wordsTaken: Int, failure: () -> Result.Failure<T>): Result<T> = when (item) {
             null -> failure()
             else -> Success(item, wordsTaken)
         }
@@ -80,7 +80,7 @@ fun <T : Any> Result<T?>.filterNotNull(failMessage: String): Result<T> = when (t
 
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> Result<T?>.orDefault(fallBack: T): Result.Success<T> = when (this) {
-    is Result.Success -> when(item) {
+    is Result.Success -> when (item) {
         null -> Result.Success(fallBack, wordsTaken)
         else -> this as Result.Success<T>
     }

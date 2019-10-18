@@ -1,4 +1,4 @@
-package com.gitlab.kordlib.kordx.commands.argument.primitives;
+package com.gitlab.kordlib.kordx.commands.argument.primitives
 
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument

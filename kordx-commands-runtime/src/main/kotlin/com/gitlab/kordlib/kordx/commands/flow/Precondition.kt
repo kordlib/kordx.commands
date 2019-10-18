@@ -9,7 +9,7 @@ interface Precondition<EVENTCONTEXT : EventContext> {
     suspend operator fun invoke(event: EVENTCONTEXT): PreconditionResult
 }
 
-fun <EVENTCONTEXT : EventContext, T : CommandContext<*, *, EVENTCONTEXT>> precondition(
+fun <EVENTCONTEXT : EventContext> precondition(
         context: CommandContext<*, *, EVENTCONTEXT>,
         priority: Long = 0,
         precondition: suspend EVENTCONTEXT.(PreconditionResult.Companion) -> PreconditionResult

@@ -1,8 +1,4 @@
-package com.gitlab.kordlib.kordx.commands.command.dsl
-
-import com.gitlab.kordlib.kordx.commands.command.CommandContext
-import com.gitlab.kordlib.kordx.commands.command.EventContext
-import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
+package com.gitlab.kordlib.kordx.commands.command
 
 fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
         context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
@@ -16,3 +12,5 @@ fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
 interface CommandSet {
     fun ModuleBuilder<*, *, *>.apply()
 }
+
+

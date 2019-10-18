@@ -2,6 +2,7 @@ package com.gitlab.kordlib.kordx.commands.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
+import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
 import com.gitlab.kordlib.kordx.commands.command.*
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
@@ -63,8 +64,13 @@ object DefaultHandler : EventHandler {
         }
 
         //reject invocation, too many arguments
-        if (wordIndex != withoutCommand.size - 1) with(converter) {
-            return argumentContext.rejectArgument(
+        if (wordIndex != withoutCommand.size) with(converter) {
+            return if (arguments.isEmpty()) argumentContext.rejectArgument(
+                    command,
+                    withoutCommand,
+                    Result.Failure<Unit>("${command.name} does not take that many arguments.", wordIndex + 1)
+            )
+            else argumentContext.rejectArgument(
                     command,
                     withoutCommand,
                     Result.Failure<Unit>("${arguments.last().name} does not take that many arguments.", wordIndex + 1)
@@ -73,7 +79,8 @@ object DefaultHandler : EventHandler {
 
         val eventContext = converter.convert(argumentContext, command, null, arguments)
 
-        val preconditions = preconditions[context].orEmpty() as List<Precondition<EVENTCONTEXT>>
+        val preconditions =
+                (preconditions[context].orEmpty() + command.preconditions) as List<Precondition<EVENTCONTEXT>>
         for (condition in preconditions.sortedBy { it.priority }) {
             val result = condition(eventContext)
             if (result is PreconditionResult.Fail) with(converter) {

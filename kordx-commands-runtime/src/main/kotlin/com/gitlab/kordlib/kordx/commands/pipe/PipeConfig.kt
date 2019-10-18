@@ -1,8 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.pipe
 
-import com.gitlab.kordlib.kordx.commands.command.*
+import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.Module
+import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 import com.gitlab.kordlib.kordx.commands.flow.*
-import com.gitlab.kordlib.kordx.commands.internal.cast
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.toList
@@ -17,6 +20,7 @@ class PipeConfig {
     val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(
             EachCommandModifier
     )
+    var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     suspend fun build(): Pipe {
         val builders: List<ModuleBuilder<*, *, *>> = flow<ModuleBuilder<*, *, *>> {
@@ -26,17 +30,19 @@ class PipeConfig {
         }.toList()
 
         val modules: MutableMap<String, Module> = mutableMapOf()
-        builders.forEach { it.build(modules.cast()) }
+        builders.forEach { it.build(modules) }
 
         val map = mutableMapOf<CommandContext<*, *, *>, MutableList<EventFilter<*>>>()
         eventFilters.forEach { map.getOrDefault(it.context, mutableListOf()).add(it) }
 
         val pipe = Pipe(
                 filters = map,
-                commands = modules.values.map { it.commands }.fold(emptyMap()) { acc, map -> acc + map },
+                commands = modules.values.map { it.commands }.fold(mutableMapOf()) { acc, map -> acc += map; acc },
                 handler = eventHandler,
                 preconditions = preconditions.map { it.context to it }.toMap() as Map<CommandContext<*, *, *>, List<Precondition<*>>>,
-                prefixes = prefixes.map { it.context to it }.toMap()
+                prefixes = prefixes.map { it.context to it }.toMap(),
+                modifiers = moduleModifiers,
+                dispatcher = dispatcher
         )
 
         this.eventSources.map { pipe.add(it) }
