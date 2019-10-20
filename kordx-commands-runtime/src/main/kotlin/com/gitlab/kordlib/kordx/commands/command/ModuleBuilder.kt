@@ -7,15 +7,16 @@ data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>
         val name: String,
         val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
         val metaData: MutableMetaData = MutableMetaData(),
-        val commands: MutableList<CommandBuilder<*, *, *>> = mutableListOf()
+        val commands: MutableMap<String, CommandBuilder<*, *, *>> = mutableMapOf()
 ) {
     fun add(command: CommandBuilder<*, *, *>) {
-        commands.add(command)
+        require(!commands.containsKey(command.name)) { "a command with name ${command.name} is already present" }
+        commands[command.name] = command
     }
 
     fun build(modules: MutableMap<String, Module>) {
-        val commands = commands.map { it.name to it.build(modules) }.toMap()
-        modules[name] = Module(name, commands, metaData)
+        require(!modules.containsKey(name)) { "a module with name $name is already present" }
+        modules[name] = Module(name, commands.mapValues { it.value.build(modules) }, metaData)
     }
 }
 

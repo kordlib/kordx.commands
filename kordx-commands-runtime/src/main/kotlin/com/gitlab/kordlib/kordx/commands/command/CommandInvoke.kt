@@ -6,15 +6,15 @@ import com.gitlab.kordlib.kordx.commands.internal.cast
 operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(execute: suspend
 EVENTCONTEXT.() -> Unit) {
-    metaData[Arguments] = emptyList()
-    metaData[Execution] = { context, arguments -> execute(context.cast()) }
+    arguments = emptyList()
+    execution = { context, arguments -> execute(context.cast()) }
 }
 
 operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(first: Argument<A,
         ARGUMENTCONTEXT>, execute: suspend EVENTCONTEXT.(first: A) -> Unit) {
-    metaData[Arguments] = listOf(first)
-    metaData[Execution] = { context, arguments -> execute(context.cast(), arguments[0].cast()) }
+    arguments = listOf(first)
+    execution = { context, arguments -> execute(context.cast(), arguments[0].cast()) }
 }
 
 operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B>
@@ -23,8 +23,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B>
         second: Argument<B, ARGUMENTCONTEXT>,
         execute: suspend EVENTCONTEXT.(first: A, second: B) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast()) }
 }
 
@@ -39,8 +39,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 third: C
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast()) }
 }
 
@@ -57,8 +57,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fourth: D
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast()) }
 }
 
@@ -77,8 +77,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fifth: E
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast())
     }
 }
@@ -100,8 +100,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 sixth: F
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth,sixth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth,sixth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast())
     }
 }
@@ -125,8 +125,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 seventh: G
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth,sixth,seventh)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast())
     }
 }
@@ -152,8 +152,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 eighth: H
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast())
     }
 }
@@ -181,8 +181,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 ninth: I
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast())
     }
 }
@@ -212,8 +212,8 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 tenth: J
         ) -> Unit
 ) {
-    metaData[Arguments] = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth)
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast())
     }
 }
@@ -245,9 +245,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 eleventh: K
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast())
     }
 }
@@ -281,9 +281,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 twelfth: L
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast())
     }
 }
@@ -319,9 +319,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 thirteenth: M
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast())
     }
 }
@@ -359,9 +359,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fourteenth: N
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast())
     }
 }
@@ -401,9 +401,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fifteenth: O
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast())
     }
 }
@@ -445,9 +445,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 sixteenth: P
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast())
     }
 }
@@ -491,9 +491,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 seventeenth: Q
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast())
     }
 }
@@ -540,9 +540,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 eighteenth: R
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast())
     }
 }
@@ -591,9 +591,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 nineteenth: S
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth,nineteenth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast(),arguments[18].cast())
     }
 }
@@ -644,9 +644,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 twentieth: T
         ) -> Unit
 ) {
-    metaData[Arguments] =
+    arguments =
             listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth,nineteenth,twentieth)
-    metaData[Execution] = { context, arguments -> execute(context.cast(),
+    execution = { context, arguments -> execute(context.cast(),
             arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast(),arguments[18].cast(),arguments[19].cast())
     }
 }

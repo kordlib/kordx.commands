@@ -1,16 +1,14 @@
 package com.gitlab.kordlib.kordx.commands.command
 
-import com.gitlab.kordlib.kordx.commands.argument.Argument
-
 interface MetaData {
-    interface Key<T: Any>
+    interface Key<T : Any>
 
-    operator fun<T: Any> get(key: Key<T>): T?
+    operator fun <T : Any> get(key: Key<T>): T?
 
 }
 
-interface MutableMetaData: MetaData {
-    operator fun<T: Any> set(key: MetaData.Key<T>, value: T)
+interface MutableMetaData : MetaData {
+    operator fun <T : Any> set(key: MetaData.Key<T>, value: T)
 
     fun remove(key: MetaData.Key<*>)
 
@@ -33,8 +31,3 @@ interface MutableMetaData: MetaData {
         }
     }
 }
-
-typealias CommandExecution<T> = suspend (T, List<*>) -> Unit
-object Execution: MetaData.Key<CommandExecution<*>>
-object Arguments: MetaData.Key<List<Argument<*,*>>>
-

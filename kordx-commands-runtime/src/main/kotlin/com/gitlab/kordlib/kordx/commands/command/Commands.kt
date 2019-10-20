@@ -12,5 +12,3 @@ fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
 interface CommandSet {
     fun ModuleBuilder<*, *, *>.apply()
 }
-
-

@@ -25,6 +25,6 @@ fun CommandSet.toModifier(forModuleName: String) = ModuleModifier.from(forModule
 object EachCommandModifier : ModuleModifier {
     override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
         val function = builder.metaData[EachCommand] ?: return
-        builder.commands.forEach { it.apply(function) }
+        builder.commands.values.forEach { it.apply(function) }
     }
 }
