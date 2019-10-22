@@ -53,13 +53,17 @@ class KordProcessor : AbstractProcessor() {
         val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME].orEmpty()
         val configuration = with(FunSpec.builder("configure")) {
             receiver(PipeConfig::class)
-            listFromAnnotatedElements<ModuleGenerator>("moduleGenerators", CommandModule::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.ModuleModifier>("moduleModifiers", ModuleModifier::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.EventSource<*>>("eventSources", EventSource::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.EventFilter<*>>("eventFilters", EventFilter::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.Precondition<*>>("preconditions", Precondition::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.Prefix<*, *, *>>("prefixes", Prefix::class.java, roundEnvironment, processingEnv)
-            build()
+            try {
+                listFromAnnotatedElements<ModuleGenerator>("moduleGenerators", CommandModule::class.java, roundEnvironment, processingEnv)
+                listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.ModuleModifier>("moduleModifiers", ModuleModifier::class.java, roundEnvironment, processingEnv)
+                listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.EventSource<*>>("eventSources", EventSource::class.java, roundEnvironment, processingEnv)
+                listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.EventFilter<*>>("eventFilters", EventFilter::class.java, roundEnvironment, processingEnv)
+                listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.Precondition<*>>("preconditions", Precondition::class.java, roundEnvironment, processingEnv)
+                listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.Prefix<*, *, *>>("prefixes", Prefix::class.java, roundEnvironment, processingEnv)
+                build()
+            } catch (e: IllegalStateException) {
+                return false
+            }
         }
         FileSpec.builder("com.gitlab.kordlib.kordx.commands.generated", "Generated_Configuration")
                 .addFunction(configuration)
@@ -83,13 +87,16 @@ class KordProcessor : AbstractProcessor() {
 
 }
 
-inline fun <reified T> FunSpec.Builder.listFromAnnotatedElements(variable: String, annotation: Class<out Annotation>, roundEnvironment: RoundEnvironment, processingEnvironment: ProcessingEnvironment) {
+internal inline fun <reified T> FunSpec.Builder.listFromAnnotatedElements(variable: String, annotation: Class<out Annotation>, roundEnvironment: RoundEnvironment, processingEnvironment: ProcessingEnvironment) {
     val functions = roundEnvironment.getElementsAnnotatedWith(annotation)
     val ifAllReturnT = functions.all { (it as ExecutableElement).returnType is T }
     if (!ifAllReturnT) {
         processingEnvironment.messager.printMessage(Diagnostic.Kind.ERROR,
-                "A function anotated with ${annotation.name} must return ${T::class.java.name}")
+                "A function annotated with ${annotation.name} must return ${T::class.java.name}")
+
+        throw IllegalStateException("A function annotated with ${annotation.name} must return ${T::class.java.name}")
     }
+
     val absoluteNames = functions.joinToString(",") {
         val pack = processingEnvironment.elementUtils.getPackageOf(it).toString()
         val name = it.simpleName.toString()
