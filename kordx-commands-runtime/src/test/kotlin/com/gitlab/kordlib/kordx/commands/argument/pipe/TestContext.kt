@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class TestEventContext(val output: TestOutput, override val command: Command<*>, override val module: Module?) : EventContext {
+class TestEventContext(val output: TestOutput, override val command: Command<*>) : EventContext {
     override suspend fun respond(text: String): Any? {
         return output.push(EventType.Response(text))
     }
@@ -53,11 +53,11 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
 
         override suspend fun toText(context: String): String = context
 
-        override suspend fun convert(context: String, command: Command<EventContext>, module: Module?, arguments: List<Argument<*, String>>): TestEventContext {
-            return TestEventContext(output, command, module)
+        override suspend fun convert(context: String, command: Command<EventContext>, arguments: List<Argument<*, String>>): TestEventContext {
+            return TestEventContext(output, command)
         }
 
-        override suspend fun String.notFound(command: String) {
+        override suspend fun String.notFound(command: String, commands: Map<String, Command<*>>) {
             output.push(EventType.NotFound(command))
         }
 

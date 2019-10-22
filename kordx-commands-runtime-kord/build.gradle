@@ -1,0 +1,5 @@
+dependencies {
+    api project(':kordx-commands-runtime')
+    api 'com.gitlab.kordlib:kord:0.2.1'
+    api 'info.debatty:java-string-similarity:1.2.1'
+}

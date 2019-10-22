@@ -43,7 +43,7 @@ object DefaultHandler : EventHandler {
         }
 
         val command = commands[words.first()] as? Command<EventContext>
-                ?: return with(converter) { argumentContext.notFound(words.first()) }
+                ?: return with(converter) { argumentContext.notFound(words.first(), commands) }
         if (!converter.supports(command.context)) return
         val arguments = command.arguments as List<Argument<Any?, ARGUMENTCONTEXT>>
 
@@ -77,7 +77,7 @@ object DefaultHandler : EventHandler {
             )
         }
 
-        val eventContext = converter.convert(argumentContext, command, null, arguments)
+        val eventContext = converter.convert(argumentContext, command, arguments)
 
         val preconditions =
                 (preconditions[context].orEmpty() + command.preconditions) as List<Precondition<EVENTCONTEXT>>
