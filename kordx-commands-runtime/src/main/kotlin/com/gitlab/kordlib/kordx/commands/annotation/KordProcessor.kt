@@ -1,13 +1,15 @@
 package com.gitlab.kordlib.kordx.commands.annotation
 
-import com.gitlab.kordlib.kordx.commands.flow.ModuleGenerator
-import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
+import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
+import com.gitlab.kordlib.kordx.commands.flow.EventFilter
+import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
+import com.gitlab.kordlib.kordx.commands.flow.Precondition
+import com.gitlab.kordlib.kordx.commands.pipe.EventHandler
+import com.gitlab.kordlib.kordx.commands.pipe.EventSource
+import com.gitlab.kordlib.kordx.commands.pipe.Prefix
 import com.google.auto.service.AutoService
-import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import java.io.File
 import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
@@ -16,81 +18,90 @@ import javax.lang.model.element.TypeElement
 
 const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
 
-@Target(AnnotationTarget.FUNCTION)
-annotation class Command
-
 
 @Target(AnnotationTarget.FUNCTION)
-annotation class CommandModule
+annotation class SupplyCommandModule
 
 
 @Target(AnnotationTarget.FUNCTION)
-annotation class ModuleModifier
+annotation class SupplyModuleModifier
 
 @Target(AnnotationTarget.FUNCTION)
-annotation class EventFilter
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class EventHandler
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class EventSource
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class Precondition
+annotation class SupplyEventFilter
 
 
 @Target(AnnotationTarget.FUNCTION)
-annotation class Prefix
+annotation class SupplyEventHandler
+
+@Target(AnnotationTarget.FUNCTION)
+annotation class SupplyEventSource
+
+@Target(AnnotationTarget.FUNCTION)
+annotation class SupplyPrecondition
+
+
+@Target(AnnotationTarget.FUNCTION)
+annotation class SupplyPrefix
 
 @AutoService(Processor::class)
 class KordProcessor : AbstractProcessor() {
 
-    override fun process(p0: MutableSet<out TypeElement>?, roundEnvironment: RoundEnvironment): Boolean {
+    override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
+        FunSpec.builder("configure").apply {
+            val modules = getAnnotations<ModuleBuilder<*, *, *>>(SupplyCommandModule::class.java, env)
+            list("moduleGenerators", modules) { "${it.qualifiedName}().toGenerator()" }
 
-        val kaptKotlinGeneratedDir = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME].orEmpty()
-        val configuration = with(FunSpec.builder("configure")) {
-            receiver(PipeConfig::class)
-            listFromAnnotatedElements<ModuleGenerator>("moduleGenerators", CommandModule::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.ModuleModifier>("moduleModifiers", ModuleModifier::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.EventSource<*>>("eventSources", EventSource::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.EventFilter<*>>("eventFilters", EventFilter::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.flow.Precondition<*>>("preconditions", Precondition::class.java, roundEnvironment, processingEnv)
-            listFromAnnotatedElements<com.gitlab.kordlib.kordx.commands.pipe.Prefix<*, *, *>>("prefixes", Prefix::class.java, roundEnvironment, processingEnv)
-            build()
+            val moduleModifiers = getAnnotations<ModuleModifier>(SupplyModuleModifier::class.java, env)
+            list("moduleModifiers", moduleModifiers)
+
+            val eventFilters = getAnnotations<EventFilter<*>>(SupplyEventFilter::class.java, env)
+            list("eventFilters", eventFilters)
+
+            val eventSources = getAnnotations<EventSource<*>>(SupplyEventSource::class.java, env)
+            list("eventSources", eventSources)
+
+            val prefixes = getAnnotations<Prefix<*, *, *>>(SupplyPrefix::class.java, env)
+            list("prefixes", prefixes)
+
+            val preconditions = getAnnotations<Precondition<*>>(SupplyPrecondition::class.java, env)
+            list("preconditions", preconditions)
+
+            val eventHandler = getAnnotations<EventHandler>(SupplyEventHandler::class.java, env)
+            variable("eventHandler", eventHandler)
+
+
         }
-        FileSpec.builder("com.gitlab.kordlib.kordx.commands.generated", "Generated_Configuration")
-                .addFunction(configuration)
-                .build()
-                .writeTo(File(kaptKotlinGeneratedDir))
         return true
     }
 
     override fun getSupportedAnnotationTypes() = mutableSetOf(
-            Command::class.java.name,
-            CommandModule::class.java.name,
-            ModuleModifier::class.java.name,
-            EventSource::class.java.name,
-            EventFilter::class.java.name,
-            EventHandler::class.java.name,
-            Precondition::class.java.name
+            SupplyCommandModule::class.java.name,
+            SupplyModuleModifier::class.java.name,
+            SupplyEventSource::class.java.name,
+            SupplyEventFilter::class.java.name,
+            SupplyEventHandler::class.java.name,
+            SupplyPrecondition::class.java.name
     )
 
-    override fun getSupportedSourceVersion() = SourceVersion.latest()
+    override fun getSupportedSourceVersion() = SourceVersion.latest()!!
 
+    private inline fun <reified R> getAnnotations(annotation: Class<out Annotation>, env: RoundEnvironment): Set<ExecutableElement> {
+        val elements = env.getElementsAnnotatedWith(annotation) as Set<ExecutableElement>
+        check(elements.all { it.returnType is R }) { "functions annotated with ${annotation.name} must return ${R::class.java.canonicalName}" }
+        return elements
+    }
 
 }
 
-internal inline fun <reified T> FunSpec.Builder.listFromAnnotatedElements(variable: String, annotation: Class<out Annotation>, roundEnvironment: RoundEnvironment, processingEnvironment: ProcessingEnvironment) {
-    val functions = roundEnvironment.getElementsAnnotatedWith(annotation)
-    val ifAllReturnT = functions.all { (it as ExecutableElement).returnType is T }
-    check(ifAllReturnT) { "A function annotated with ${annotation.name} must return ${T::class.java.name}" }
+private fun FunSpec.Builder.list(name: String, values: Set<ExecutableElement>, join: (TypeElement) -> String = { "${it.qualifiedName}()" }) {
+    val functions = values.map { it as TypeElement }
+    val joint = functions.joinToString(",") { join(it) }
+    addStatement("$name += listOf($joint)")
 
-    val absoluteNames = functions.joinToString(",") {
-        val pack = processingEnvironment.elementUtils.getPackageOf(it).toString()
-        val name = it.simpleName.toString()
-        "$pack.$name"
-    }
-    addStatement("$variable += listOf($absoluteNames)")
+}
+
+
+fun FunSpec.Builder.variable(name: String, values: Set<ExecutableElement>, value: (TypeElement) -> String = { "${it.qualifiedName}()" }) {
+    val functions = values.map { it as TypeElement }
+    addStatement("$name = ${value(functions.last())}()")
 }
