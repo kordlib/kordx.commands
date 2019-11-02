@@ -68,6 +68,7 @@ class KordProcessor : AbstractProcessor() {
 
             val eventHandler = getAnnotations<EventHandler>(SupplyEventHandler::class.java, env)
             variable("eventHandler", eventHandler)
+
             build()
 
         }
@@ -86,7 +87,7 @@ class KordProcessor : AbstractProcessor() {
     override fun getSupportedSourceVersion() = SourceVersion.latest()!!
 
     private inline fun <reified R> getAnnotations(annotation: Class<out Annotation>, env: RoundEnvironment): Set<ExecutableElement> {
-        val elements = env.getElementsAnnotatedWith(annotation).map { it as TypeElement }
+        val elements = env.getElementsAnnotatedWith(annotation) as Set<ExecutableElement>
         check(elements.all { it.returnType is R }) { "functions annotated with ${annotation.name} must return ${R::class.java.canonicalName}" }
         return elements
     }
