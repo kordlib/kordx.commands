@@ -4,10 +4,11 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.internal.cast
 
 operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(execute: suspend
-EVENTCONTEXT.() -> Unit) {
+        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
+        execute: suspend EVENTCONTEXT.() -> Unit
+) {
     arguments = emptyList()
-    execution = { context, arguments -> execute(context.cast()) }
+    execution = { context, _ -> execute(context.cast()) }
 }
 
 operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A>

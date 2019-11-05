@@ -11,10 +11,10 @@ import kotlinx.coroutines.flow.filterIsInstance
 
 class KordEventSource(
         val kord: Kord,
-        override val converter: ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEvent> = KordConverter(CommandSuggester)
+        override val converter: ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> = KordConverter(CommandSuggester)
 ) : EventSource<MessageCreateEvent> {
     override val context: CommandContext<MessageCreateEvent, *, *>
-        get() = KordContext
+        get() = KordCommandContext
 
     override val events: Flow<MessageCreateEvent>
         get() = kord.events.filterIsInstance()
