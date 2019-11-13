@@ -64,9 +64,6 @@ subprojects {
         implementation "com.google.auto.service:auto-service:1.0-rc6"
         implementation "com.squareup:kotlinpoet:1.4.1"
     }
-    kapt {
-        generateStubs = true
-    }
 
     compileKotlin {
         kotlinOptions.jvmTarget = "1.8"

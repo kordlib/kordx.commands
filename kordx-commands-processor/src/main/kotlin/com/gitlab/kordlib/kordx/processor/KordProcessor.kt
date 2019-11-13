@@ -1,14 +1,17 @@
-package com.gitlab.kordlib.kordx.commands.annotation
+package com.gitlab.kordlib.kordx.processor
 
 import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
+import com.gitlab.kordlib.kordx.commands.flow.ModuleGenerator
 import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
 import com.gitlab.kordlib.kordx.commands.pipe.EventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.EventSource
 import com.gitlab.kordlib.kordx.commands.pipe.Prefix
 import com.google.auto.service.AutoService
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import java.io.File
 import javax.annotation.processing.AbstractProcessor
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
@@ -18,36 +21,13 @@ import javax.lang.model.element.TypeElement
 
 const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
 
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyCommandModule
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyModuleModifier
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventFilter
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventHandler
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventSource
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyPrecondition
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyPrefix
-
 @AutoService(Processor::class)
 class KordProcessor : AbstractProcessor() {
 
     override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
-        FunSpec.builder("configure").apply {
+        println("KordProcessor is here to save the day")
+        val path = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME].orEmpty()
+        val function = FunSpec.builder("configure").apply {
             val modules = getAnnotations<ModuleBuilder<*, *, *>>(SupplyCommandModule::class.java, env)
             list("moduleGenerators", modules) { "${it.qualifiedName}().toGenerator()" }
 
@@ -69,9 +49,21 @@ class KordProcessor : AbstractProcessor() {
             val eventHandler = getAnnotations<EventHandler>(SupplyEventHandler::class.java, env)
             variable("eventHandler", eventHandler)
 
-            build()
 
-        }
+        }.build()
+        val file = File(path)
+        file.mkdir()
+        FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration.kt")
+                .addImport(Prefix::class)
+                .addImport(Precondition::class)
+                .addImport(EventFilter::class)
+                .addImport(ModuleModifier::class)
+                .addImport(ModuleBuilder::class)
+                .addImport(ModuleGenerator::class)
+                .addImport(EventSource::class)
+                .addFunction(function)
+                .build()
+                .writeTo(file)
         return true
     }
 

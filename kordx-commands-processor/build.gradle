@@ -1,0 +1,5 @@
+dependencies {
+    implementation project(':kordx-commands-runtime')
+    kaptTest project(':kordx-commands-processor')
+
+}
