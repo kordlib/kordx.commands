@@ -26,8 +26,10 @@ const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
 class CommandProcessor : AbstractProcessor() {
 
     override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
-        println("KordProcessor is here to save the day")
         val path = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME].orEmpty()
+        val file = File(path)
+        file.delete()
+        println("KordProcessor is here to save the day")
         val function = FunSpec.builder("configure").apply {
             receiver(PipeConfig::class)
             val modules = getFunctionsAnnotatedWith(SupplyCommandModule::class.java, env)
@@ -55,8 +57,6 @@ class CommandProcessor : AbstractProcessor() {
 
 
         }.build()
-        val file = File(path)
-        file.delete()
         file.mkdir()
         FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")
                 .addImport("com.gitlab.kordlib.kordx.commands.flow", "toGenerator")
@@ -102,8 +102,7 @@ inline fun <reified R> checkType(c: Collection<ExecutableElement>, env: Processi
     val qualified = R::class.java.canonicalName
     val expected = env.elementUtils.getTypeElement(qualified).asType()
     for (f in c) {
-        if (env.typeUtils.isSameType(f.returnType, expected))
-            throw IllegalStateException("${f.qualifiedName(env)} must return $qualified")
+        check(env.typeUtils.isSameType(f.returnType, expected)) { "${f.qualifiedName(env)} must return $qualified" }
     }
 
 }
