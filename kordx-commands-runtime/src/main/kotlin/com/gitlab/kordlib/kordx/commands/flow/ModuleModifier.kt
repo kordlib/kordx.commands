@@ -1,8 +1,8 @@
 package com.gitlab.kordlib.kordx.commands.flow
 
-import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 import com.gitlab.kordlib.kordx.commands.command.CommandSet
 import com.gitlab.kordlib.kordx.commands.command.EachCommand
+import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 
 interface ModuleModifier {
 
@@ -17,6 +17,18 @@ interface ModuleModifier {
                 }
             }
         }
+    }
+}
+
+fun moduleModifier(block: ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
+    override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
+        builder.block()
+    }
+}
+
+fun moduleModifier(name: String, block: ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
+    override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
+        if (builder.name == name) builder.block()
     }
 }
 
