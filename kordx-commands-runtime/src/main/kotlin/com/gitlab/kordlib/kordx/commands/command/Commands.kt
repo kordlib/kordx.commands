@@ -9,6 +9,12 @@ fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
     }
 }
 
+fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> command(
+        context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
+        name: String,
+        builder: CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.() -> Unit
+): CommandSet = commands(context) { command(name, builder) }
+
 interface CommandSet {
     fun ModuleBuilder<*, *, *>.apply()
 }
