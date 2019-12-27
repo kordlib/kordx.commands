@@ -22,6 +22,18 @@ class PipeConfig {
     )
     var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
+    operator fun EventFilter<*>.unaryPlus() {
+        eventFilters.add(this)
+    }
+
+    operator fun ModuleBuilder<*, *, *>.unaryPlus() {
+        moduleGenerators.add(ModuleGenerator.from(this))
+    }
+
+    operator fun ModuleModifier.unaryPlus() {
+        moduleModifiers.add(this)
+    }
+
     suspend fun build(): Pipe {
         val builders: List<ModuleBuilder<*, *, *>> = flow<ModuleBuilder<*, *, *>> {
             moduleGenerators.forEach { with(it) { generate() } }
