@@ -9,6 +9,16 @@ class BotBuilder(token: String) {
     val kordBuilder: KordBuilder = KordBuilder(token)
     val pipeConfig: PipeConfig = PipeConfig()
 
+    val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
+    val ignoreBots = eventFilter { message.author?.isBot != true }
+
+    init {
+        pipe {
+            +ignoreBots
+            +ignoreSelf
+        }
+    }
+
     inline fun kord(builder: KordBuilder.() -> Unit) {
         kordBuilder.apply(builder)
     }
