@@ -4,7 +4,9 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.command.*
 import com.gitlab.kordlib.kordx.commands.flow.PreconditionResult
+import com.gitlab.kordlib.kordx.commands.pipe.ArgumentsResult
 import com.gitlab.kordlib.kordx.commands.pipe.EventSource
+import com.gitlab.kordlib.kordx.commands.pipe.Pipe
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,7 @@ sealed class EventType {
     class Response(val text: String) : EventType()
     class NotFound(val command: String) : EventType()
     object EmptyInvocation : EventType()
+    class TooLittleArguments(val command: Command<*>) : EventType()
     class RejectArgument(val command: Command<*>, words: List<String>, failure: Result.Failure<*>) : EventType()
     class RejectPrecondition(val command: Command<*>, val preconditionResult: PreconditionResult.Fail) : EventType()
 }
@@ -49,29 +52,80 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
 
         override fun supports(context: CommandContext<*, *, *>): Boolean = true
 
-        override suspend fun convert(context: String): String = context
+        override suspend fun convert(context: String): ArgumentContextHandler<String, String, TestEventContext> = object : ArgumentContextHandler<String, String, TestEventContext> {
+            override val argumentContext: String
+                get() = context
 
-        override suspend fun toText(context: String): String = context
+            override val text: String
+                get() = context
 
-        override suspend fun convert(context: String, command: Command<EventContext>, arguments: List<Argument<*, String>>): TestEventContext {
+            override suspend fun Pipe.emptyInvocation(pipe: Pipe) {
+                output.push(EventType.EmptyInvocation)
+            }
+
+            override suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
+
+            override suspend fun Pipe.notFound(command: String) {
+                output.push(EventType.NotFound(command))
+            }
+
+            override suspend fun Pipe.rejectArgument(command: Command<TestEventContext>, words: List<String>, argument: Argument<*, String>, failure: Result.Failure<*>) {
+                output.push(EventType.RejectArgument(command, words, failure))
+            }
+
+            override suspend fun Pipe.tooManyArguments(command: Command<TestEventContext>, result: ArgumentsResult.TooManyArguments<String>) {
+                output.push(EventType.TooLittleArguments(command))
+            }
+
+            override suspend fun Pipe.tooManyWords(command: Command<TestEventContext>, result: ArgumentsResult.TooManyWords<String>) {
+                output.push(TODO())
+
+            }
+        }
+
+
+        override suspend fun convert(context: TestEventContext): EventContextHandler<String, String, TestEventContext> = object : EventContextHandler<String, String, TestEventContext> {
+            override val eventContext: TestEventContext
+                get() = context
+
+            override suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
+
+            override suspend fun Pipe.rejectPrecondition(command: Command<TestEventContext>, failure: PreconditionResult.Fail) {
+                output.push(EventType.RejectPrecondition(command, failure))
+            }
+        }
+
+        override suspend fun convert(context: String, command: Command<TestEventContext>, arguments: List<Argument<*, String>>): TestEventContext {
             return TestEventContext(output, command)
         }
 
-        override suspend fun String.notFound(command: String, commands: Map<String, Command<*>>) {
-            output.push(EventType.NotFound(command))
-        }
-
-        override suspend fun String.emptyInvocation() {
-            output.push(EventType.EmptyInvocation)
-        }
-
-        override suspend fun String.rejectArgument(command: Command<*>, words: List<String>, failure: Result.Failure<*>) {
-            output.push(EventType.RejectArgument(command, words, failure))
-        }
-
-        override suspend fun TestEventContext.rejectPrecondition(command: Command<*>, failure: PreconditionResult.Fail) {
-            output.push(EventType.RejectPrecondition(command, failure))
-        }
-
     }
+//
+//        override fun supports(context: CommandContext<*, *, *>): Boolean = true
+//
+//        override suspend fun convert(context: String): String = context
+//
+//        override suspend fun toText(context: String): String = context
+//
+//        override suspend fun convert(context: String, command: Command<EventContext>, arguments: List<Argument<*, String>>): TestEventContext {
+//            return TestEventContext(output, command)
+//        }
+//
+//        override suspend fun String.notFound(command: String, commands: Map<String, Command<*>>) {
+//            output.push(EventType.NotFound(command))
+//        }
+//
+//        override suspend fun String.emptyInvocation() {
+//            output.push(EventType.EmptyInvocation)
+//        }
+//
+//        override suspend fun String.rejectArgument(command: Command<*>, words: List<String>, failure: Result.Failure<*>) {
+//            output.push(EventType.RejectArgument(command, words, failure))
+//        }
+//
+//        override suspend fun TestEventContext.rejectPrecondition(command: Command<*>, failure: PreconditionResult.Fail) {
+//            output.push(EventType.RejectPrecondition(command, failure))
+//        }
+//
+//    }
 }

@@ -92,7 +92,7 @@ class CommandsTest {
 
         input.channel.send("test 4")
         Assertions.assertEquals(1, output.events.size)
-        Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
+        Assertions.assertTrue(output.events[0] is EventType.TooLittleArguments)
     }
 
     @Test
