@@ -14,7 +14,7 @@ open class RoleSnowflakeArgument(override val name: String = "Role") : SingleWor
         get() = "@Role"
 
     final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Snowflake> {
-        if (!word.matches(mentionRegex)) return failure("Expected discord mention.")
+        if (!word.matches(mentionRegex)) return failure("Expected mention.")
 
         val snowflake = word.removeSuffix(">").dropWhile { !it.isDigit() }
         return success(Snowflake(snowflake))
@@ -35,7 +35,7 @@ open class RoleArgument(override val name: String = "Role") : SingleWordArgument
         val snowflake = when {
             number != null -> Snowflake(number)
             word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected discord mention.")
+            else -> return failure("Expected mention.")
         }
 
         return when (val role = context.kord.getRole(guildId, snowflake)) {

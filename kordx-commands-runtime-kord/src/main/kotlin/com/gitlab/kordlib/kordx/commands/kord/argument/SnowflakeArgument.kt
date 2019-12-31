@@ -12,7 +12,7 @@ open class SnowflakeArgument(override val name: String = "discord mention") : Si
         get() = listOf("#channel", "@user", ":customEmoji:").random()
 
     final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Snowflake> {
-        if (!word.matches(mentionRegex)) return failure("Expected discord mention.")
+        if (!word.matches(mentionRegex)) return failure("Expected mention.")
 
         val snowflake = word.removeSuffix(">").dropWhile { !it.isDigit() }
         return success(Snowflake(snowflake))

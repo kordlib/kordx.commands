@@ -37,7 +37,7 @@ open class MemberArgument(override val name: String = "User") : SingleWordArgume
         val snowflake = when {
             number != null -> Snowflake(number)
             word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected discord mention.")
+            else -> return failure("Expected mention.")
         }
 
         return when (val member = context.kord.getMember(guildId, snowflake)) {

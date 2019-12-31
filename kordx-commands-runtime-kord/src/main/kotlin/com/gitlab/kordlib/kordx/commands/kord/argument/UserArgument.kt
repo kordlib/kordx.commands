@@ -13,7 +13,7 @@ open class UserSnowflakeArgument(override val name: String = "User") : SingleWor
         get() = "@User"
 
     final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Snowflake> {
-        if (!word.matches(mentionRegex)) return failure("Expected Discord Mention.")
+        if (!word.matches(mentionRegex)) return failure("Expected mention.")
 
         val snowflake = word.removeSuffix(">").dropWhile { !it.isDigit() }
         return success(Snowflake(snowflake))
@@ -32,11 +32,11 @@ open class UserArgument(override val name: String = "User") : SingleWordArgument
         val snowflake = when {
             number != null -> Snowflake(number)
             word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected Discord Mention.")
+            else -> return failure("Expected mention.")
         }
 
         return when (val user = context.kord.getUser(snowflake)) {
-            null -> failure("User Not Found.")
+            null -> failure("User not found.")
             else -> success(user)
         }
     }
