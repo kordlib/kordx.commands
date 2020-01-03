@@ -2,13 +2,9 @@ package com.gitlab.kordlib.kordx.commands.pipe
 
 import com.gitlab.kordlib.kordx.commands.command.CommandContext
 import com.gitlab.kordlib.kordx.commands.command.Module
-import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 import com.gitlab.kordlib.kordx.commands.flow.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.toList
 
 class PipeConfig {
     val eventFilters: MutableList<EventFilter<*>> = mutableListOf()
@@ -16,39 +12,42 @@ class PipeConfig {
     val eventSources: MutableList<EventSource<*>> = mutableListOf()
     val preconditions: MutableList<Precondition<*>> = mutableListOf()
     val prefixes: MutableList<Prefix<*, *, *>> = mutableListOf()
-    val moduleGenerators: MutableList<ModuleGenerator> = mutableListOf()
-    val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(
-            EachCommandModifier
-    )
+    val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(EachCommandModifier)
     var dispatcher: CoroutineDispatcher = Dispatchers.IO
+
+    operator fun Prefix<*,*,*>.unaryPlus() {
+        prefixes += this
+    }
 
     operator fun EventFilter<*>.unaryPlus() {
         eventFilters.add(this)
-    }
-
-    operator fun ModuleBuilder<*, *, *>.unaryPlus() {
-        moduleGenerators.add(ModuleGenerator.from(this))
     }
 
     operator fun ModuleModifier.unaryPlus() {
         moduleModifiers.add(this)
     }
 
+    operator fun EventFilter<*>.unaryMinus() {
+        eventFilters.remove(this)
+    }
+
+    operator fun ModuleModifier.unaryMinus() {
+        moduleModifiers.add(this)
+    }
+
     suspend fun build(): Pipe {
-        val builders: List<ModuleBuilder<*, *, *>> = flow<ModuleBuilder<*, *, *>> {
-            moduleGenerators.forEach { with(it) { generate() } }
-        }.onEach { builder ->
-            moduleModifiers.forEach { it.modify(builder) }
-        }.toList()
+        val container = ModuleContainer()
+        moduleModifiers.forEach { it.apply(container) }
+        container.applyForEach()
 
         val modules: MutableMap<String, Module> = mutableMapOf()
-        builders.forEach { it.build(modules) }
+        container.modules.values.forEach { it.build(modules) }
 
-        val map = mutableMapOf<CommandContext<*, *, *>, MutableList<EventFilter<*>>>()
-        eventFilters.forEach { map.getOrDefault(it.context, mutableListOf()).add(it) }
+        val filters = mutableMapOf<CommandContext<*, *, *>, MutableList<EventFilter<*>>>()
+        eventFilters.forEach { filters.getOrDefault(it.context, mutableListOf()).add(it) }
 
         val pipe = Pipe(
-                filters = map,
+                filters = filters,
                 commands = modules.values.map { it.commands }.fold(mutableMapOf()) { acc, map -> acc += map; acc },
                 handler = eventHandler,
                 preconditions = preconditions.map { it.context to it }.toMap() as Map<CommandContext<*, *, *>, List<Precondition<*>>>,

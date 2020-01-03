@@ -1,5 +1,6 @@
 package com.gitlab.kordlib.kordx.commands.command
 
+import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
@@ -12,6 +13,12 @@ data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>
     fun add(command: CommandBuilder<*, *, *>) {
         require(!commands.containsKey(command.name)) { "a command with name ${command.name} is already present" }
         commands[command.name] = command
+    }
+
+    operator fun CommandSet.unaryPlus() = apply()
+
+    inline fun<S,A,C: EventContext> withContext(context: CommandContext<S,A,C>, builder: ModuleBuilder<S,A,C>.() -> Unit) {
+        ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
     fun build(modules: MutableMap<String, Module>) {

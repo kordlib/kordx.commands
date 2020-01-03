@@ -1,11 +1,14 @@
 package com.gitlab.kordlib.kordx.commands.command
 
+import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
+import com.gitlab.kordlib.kordx.commands.flow.moduleModifier
+
 inline fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> module(
         name: String,
         context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, T>,
-        builder: ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.() -> Unit
-): ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T> {
-    return ModuleBuilder(name, context).apply(builder)
+        crossinline builder: suspend ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.() -> Unit
+): ModuleModifier = moduleModifier(name) {
+    withContext(context) { builder() }
 }
 
 object EachCommand : MetaData.Key<CommandBuilder<*, *, *>.() -> Unit>

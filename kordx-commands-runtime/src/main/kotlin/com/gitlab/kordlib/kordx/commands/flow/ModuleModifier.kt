@@ -6,37 +6,33 @@ import com.gitlab.kordlib.kordx.commands.command.ModuleBuilder
 
 interface ModuleModifier {
 
-    suspend fun modify(builder: ModuleBuilder<*, *, *>)
+    suspend fun apply(container: ModuleContainer)
 
     companion object {
         fun from(moduleName: String, set: CommandSet) = object : ModuleModifier {
 
-            override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
-                if (builder.name == moduleName) {
-                    with(set) { builder.apply() }
+            override suspend fun apply(container: ModuleContainer) {
+                container.apply(moduleName) {
+                    with(set) { it.apply() }
                 }
             }
         }
     }
 }
 
-fun moduleModifier(block: ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
-    override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
-        builder.block()
-    }
+inline fun moduleModifier(crossinline block: suspend ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
+    override suspend fun apply(container: ModuleContainer) = container.forEach { it.block() }
 }
 
-fun moduleModifier(name: String, block: ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
-    override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
-        if (builder.name == name) builder.block()
-    }
+inline fun moduleModifier(name: String, crossinline block: suspend ModuleBuilder<*, *, *>.() -> Unit): ModuleModifier = object : ModuleModifier {
+    override suspend fun apply(container: ModuleContainer) = container.apply(name) { it.block() }
 }
 
 fun CommandSet.toModifier(forModuleName: String) = ModuleModifier.from(forModuleName, this)
 
 object EachCommandModifier : ModuleModifier {
-    override suspend fun modify(builder: ModuleBuilder<*, *, *>) {
-        val function = builder.metaData[EachCommand] ?: return
-        builder.commands.values.forEach { it.apply(function) }
+    override suspend fun apply(container: ModuleContainer) = container.forEach {
+        val function = it.metaData[EachCommand] ?: return@forEach
+        it.commands.values.forEach { it.apply(function) }
     }
 }
