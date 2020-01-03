@@ -5,14 +5,14 @@ import com.gitlab.kordlib.kordx.commands.command.CommandContext
 
 
 @Suppress("UNCHECKED_CAST")
-fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(): Argument<T?, CONTEXT> =
-        object : Argument<T?, CONTEXT> by this as Argument<T?, CONTEXT> {
+fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(): Argument<T?, CONTEXT> = object :
+        Argument<T?, CONTEXT> by this as Argument<T?, CONTEXT> {
 
-            override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T?> {
-                return this@optional.parse(words, fromIndex, context).optional()
-            }
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T?> {
+        return this@optional.parse(words, fromIndex, context).optional()
+    }
 
-        }
+}
 
 
 fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(default: suspend CONTEXT.() -> T): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
