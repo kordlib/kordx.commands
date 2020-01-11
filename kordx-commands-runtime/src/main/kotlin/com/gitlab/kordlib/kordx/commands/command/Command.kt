@@ -7,7 +7,7 @@ class Command<T : EventContext>(
         val name: String,
         val moduleName: String,
         val context: CommandContext<*, *, *>,
-        val metaData: MetaData,
+        val metadata: Metadata,
         val arguments: List<Argument<*, *>>,
         val modules: Map<String, Module>,
         val preconditions: List<Precondition<T>>,

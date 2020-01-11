@@ -10,7 +10,7 @@ class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
         val name: String,
         val moduleName: String,
         val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
-        val metaData: MutableMetaData = MutableMetaData(),
+        val metaData: MutableMetadata = MutableMetadata(),
         val preconditions: MutableList<Precondition<CONTEXT>> = mutableListOf()
 ) {
     lateinit var execution: suspend (CONTEXT, List<*>) -> Unit

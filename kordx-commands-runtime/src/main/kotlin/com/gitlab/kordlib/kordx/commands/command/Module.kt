@@ -11,7 +11,7 @@ inline fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> module(
     withContext(context) { builder() }
 }
 
-object EachCommand : MetaData.Key<CommandBuilder<*, *, *>.() -> Unit>
+object EachCommand : Metadata.Key<CommandBuilder<*, *, *>.() -> Unit>
 
 fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.eachCommand(
         builder: CommandBuilder<*, *, *>.() -> Unit

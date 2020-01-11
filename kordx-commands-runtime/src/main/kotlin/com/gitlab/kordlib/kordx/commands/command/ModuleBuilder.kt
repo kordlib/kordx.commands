@@ -1,13 +1,12 @@
 package com.gitlab.kordlib.kordx.commands.command
 
-import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
 data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
         val name: String,
         val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
-        val metaData: MutableMetaData = MutableMetaData(),
+        val metaData: MutableMetadata = MutableMetadata(),
         val commands: MutableMap<String, CommandBuilder<*, *, *>> = mutableMapOf()
 ) {
     fun add(command: CommandBuilder<*, *, *>) {
@@ -30,7 +29,7 @@ data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>
 class Module(
         val name: String,
         val commands: Map<String, Command<out EventContext>>,
-        val metaData: MetaData
+        val metadata: Metadata
 )
 
 fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.command(
