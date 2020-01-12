@@ -6,12 +6,13 @@ import com.gitlab.kordlib.kordx.commands.command.invoke
 import com.gitlab.kordlib.kordx.commands.command.module
 import com.gitlab.kordlib.kordx.commands.pipe.Pipe
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions
-import java.util.concurrent.CountDownLatch
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -92,7 +93,7 @@ class CommandsTest {
 
         input.channel.send("test 4")
         Assertions.assertEquals(1, output.events.size)
-        Assertions.assertTrue(output.events[0] is EventType.TooLittleArguments)
+        Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
     }
 
     @Test

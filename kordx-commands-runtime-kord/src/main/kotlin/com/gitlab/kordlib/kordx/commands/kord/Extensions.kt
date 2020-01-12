@@ -16,7 +16,7 @@ inline fun module(name: String, crossinline builder: suspend ModuleBuilder<Messa
 
 fun precondition(
         priority: Long = 0,
-        precondition: suspend KordEventContext.(PreconditionResult.Companion) -> PreconditionResult
+        precondition: suspend KordEventContext.() -> Boolean
 ) = precondition(KordCommandContext, priority, precondition)
 
 fun eventFilter(

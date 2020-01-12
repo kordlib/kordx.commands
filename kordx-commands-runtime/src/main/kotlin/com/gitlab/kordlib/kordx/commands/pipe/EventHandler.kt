@@ -57,6 +57,7 @@ object DefaultHandler : EventHandler {
             }
         }
 
+        if (wordIndex != words.size) return ArgumentsResult.TooManyWords(context, arguments, words, wordIndex)
         return ArgumentsResult.Success(items)
     }
 
@@ -64,13 +65,13 @@ object DefaultHandler : EventHandler {
         return preconditions[context].orEmpty() as List<Precondition<A>> + command.preconditions
     }
 
-    private suspend fun <A : EventContext> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): PreconditionResult.Fail? {
+    private suspend fun <A : EventContext> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): PreconditionResult {
         for (precondition in preconditions.sortedByDescending { it.priority }) {
             when (val result = precondition.invoke(context)) {
                 is PreconditionResult.Fail -> return result
             }
         }
-        return null
+        return PreconditionResult.pass()
     }
 
     override suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> Pipe.onEvent(
@@ -104,11 +105,10 @@ object DefaultHandler : EventHandler {
         val eventContext = converter.convert(argumentHandler.argumentContext, command, arguments)
 
         val preconditions = getPreconditions(context, command)
-        calculatePreconditions(preconditions, eventContext)?.run {
-            return with(converter.convert(eventContext)) { rejectPrecondition(command, this@run) }
+
+        when(calculatePreconditions(preconditions, eventContext)) {
+            PreconditionResult.Fail -> return
+            PreconditionResult.Pass -> command.invoke(eventContext, items)
         }
-
-        command.invoke(eventContext, items)
     }
-
 }

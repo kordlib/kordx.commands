@@ -53,10 +53,6 @@ interface EventContextHandler<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : Eve
 
     val eventContext: EVENTCONTEXT
 
-    suspend fun Pipe.rejectPrecondition(command: Command<EVENTCONTEXT>, failure: PreconditionResult.Fail) {
-        respond(failure.message)
-    }
-
 }
 
 interface EventContext {
