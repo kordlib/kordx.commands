@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.kord.argument
 
+import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.Role
-import com.gitlab.kordlib.core.entity.Snowflake
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument

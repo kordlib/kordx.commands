@@ -5,7 +5,6 @@ import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.command.*
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
-import com.gitlab.kordlib.kordx.commands.flow.PreconditionResult
 
 interface EventHandler {
 
@@ -65,13 +64,8 @@ object DefaultHandler : EventHandler {
         return preconditions[context].orEmpty() as List<Precondition<A>> + command.preconditions
     }
 
-    private suspend fun <A : EventContext> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): PreconditionResult {
-        for (precondition in preconditions.sortedByDescending { it.priority }) {
-            when (val result = precondition.invoke(context)) {
-                is PreconditionResult.Fail -> return result
-            }
-        }
-        return PreconditionResult.pass()
+    private suspend fun <A : EventContext> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): Boolean {
+        return preconditions.sortedByDescending { it.priority }.all { it(context) }
     }
 
     override suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> Pipe.onEvent(
@@ -106,9 +100,8 @@ object DefaultHandler : EventHandler {
 
         val preconditions = getPreconditions(context, command)
 
-        when(calculatePreconditions(preconditions, eventContext)) {
-            PreconditionResult.Fail -> return
-            PreconditionResult.Pass -> command.invoke(eventContext, items)
-        }
+        if (calculatePreconditions(preconditions, eventContext)) {
+            command.invoke(eventContext, items)
+        } else return
     }
 }

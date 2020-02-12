@@ -1,15 +1,13 @@
 package com.gitlab.kordlib.kordx.commands.kord.argument
 
-import com.gitlab.kordlib.core.entity.Snowflake
+import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.channel.Channel
 import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import com.gitlab.kordlib.core.entity.channel.TextChannel
 import com.gitlab.kordlib.core.entity.channel.VoiceChannel
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
-import com.gitlab.kordlib.kordx.commands.argument.MapResult
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
-import com.gitlab.kordlib.kordx.commands.argument.util.tryMap
 
 private val mentionRegex = Regex("""^<#\d+>$""")
 
@@ -29,7 +27,7 @@ open class ChannelSnowflakeArgument(override val name: String = "Channel") : Sin
 
 }
 
-open class ChannelArgument(override val name: String = "Channel")  : SingleWordArgument<Channel, MessageCreateEvent>() {
+open class ChannelArgument(override val name: String = "Channel") : SingleWordArgument<Channel, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
@@ -52,7 +50,7 @@ open class ChannelArgument(override val name: String = "Channel")  : SingleWordA
 
 }
 
-open class TextChannelArgument(override val name: String = "Guild text channel")  : SingleWordArgument<TextChannel, MessageCreateEvent>() {
+open class TextChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<TextChannel, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
@@ -67,7 +65,7 @@ open class TextChannelArgument(override val name: String = "Guild text channel")
 
         return when (val channel = context.kord.getChannel(snowflake)) {
             null -> failure("Channel not found.")
-            is TextChannel ->  success(channel)
+            is TextChannel -> success(channel)
             else -> failure("Expected guild text channel.")
         }
     }
@@ -76,7 +74,7 @@ open class TextChannelArgument(override val name: String = "Guild text channel")
 
 }
 
-open class MessageChannelArgument(override val name: String = "Guild text channel")  : SingleWordArgument<MessageChannel, MessageCreateEvent>() {
+open class MessageChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<MessageChannel, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
@@ -91,7 +89,7 @@ open class MessageChannelArgument(override val name: String = "Guild text channe
 
         return when (val channel = context.kord.getChannel(snowflake)) {
             null -> failure("Channel not found.")
-            is MessageChannel ->  success(channel)
+            is MessageChannel -> success(channel)
             else -> failure("Expected guild text channel.")
         }
     }
@@ -100,7 +98,7 @@ open class MessageChannelArgument(override val name: String = "Guild text channe
 
 }
 
-open class VoiceChannelArgument(override val name: String = "Guild text channel")  : SingleWordArgument<VoiceChannel, MessageCreateEvent>() {
+open class VoiceChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<VoiceChannel, MessageCreateEvent>() {
 
     final override val example: String
         get() = "#Channel"
@@ -115,7 +113,7 @@ open class VoiceChannelArgument(override val name: String = "Guild text channel"
 
         return when (val channel = context.kord.getChannel(snowflake)) {
             null -> failure("Channel not found.")
-            is VoiceChannel ->  success(channel)
+            is VoiceChannel -> success(channel)
             else -> failure("Expected guild text channel.")
         }
     }

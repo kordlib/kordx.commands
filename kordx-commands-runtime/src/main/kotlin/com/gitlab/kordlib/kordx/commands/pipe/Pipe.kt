@@ -19,7 +19,7 @@ private val logger = KotlinLogging.logger { }
 
 class Pipe(
         val filters: Map<CommandContext<*, *, *>, List<EventFilter<*>>>,
-        val preconditions: Map<CommandContext<*, *, *>, List<Precondition<*>>>,
+        val preconditions: Map<CommandContext<*, *, *>, List<Precondition<out EventContext>>>,
         commands: Map<String, Command<out EventContext>>,
         val prefixes: Map<CommandContext<*, *, *>, Prefix<*, *, *>>,
         private val handler: EventHandler = DefaultHandler,

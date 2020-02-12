@@ -83,7 +83,7 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(default: T): Argument<T,
 
 fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(default: suspend CONTEXT.() -> T): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
     override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
-        return this@withDefault.parse(words, fromIndex, context).orElse<T> { default(context) }
+        return this@withDefault.parse(words, fromIndex, context).orElseSupply { default(context) }
     }
 }
 
@@ -97,9 +97,9 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(default: T): Argument<T
 
 @Suppress("UNCHECKED_CAST")
 @JvmName("withDefaultNullable")
-fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(fallback: suspend CONTEXT.() -> T): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
+fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefaultSupply(fallback: suspend CONTEXT.() -> T): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
     override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
-        return this@withDefault.parse(words, fromIndex, context).orSupplyDefault { fallback(context) }
+        return this@withDefaultSupply.parse(words, fromIndex, context).orSupplyDefault { fallback(context) }
     }
 }
 

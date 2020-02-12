@@ -15,7 +15,7 @@ class PipeConfig {
     val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(EachCommandModifier)
     var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
-    operator fun Prefix<*,*,*>.unaryPlus() {
+    operator fun Prefix<*, *, *>.unaryPlus() {
         prefixes += this
     }
 
@@ -50,7 +50,7 @@ class PipeConfig {
                 filters = filters,
                 commands = modules.values.map { it.commands }.fold(mutableMapOf()) { acc, map -> acc += map; acc },
                 handler = eventHandler,
-                preconditions = preconditions.map { it.context to it }.toMap() as Map<CommandContext<*, *, *>, List<Precondition<*>>>,
+                preconditions = preconditions.groupBy { it.context },
                 prefixes = prefixes.map { it.context to it }.toMap(),
                 modifiers = moduleModifiers,
                 dispatcher = dispatcher

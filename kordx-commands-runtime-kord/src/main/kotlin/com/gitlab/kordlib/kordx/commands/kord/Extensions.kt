@@ -3,7 +3,6 @@ package com.gitlab.kordlib.kordx.commands.kord
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.command.*
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
-import com.gitlab.kordlib.kordx.commands.flow.PreconditionResult
 import com.gitlab.kordlib.kordx.commands.flow.eventFilter
 import com.gitlab.kordlib.kordx.commands.flow.precondition
 import com.gitlab.kordlib.kordx.commands.kord.context.KordCommandContext

@@ -2,7 +2,6 @@ package com.gitlab.kordlib.kordx.commands.command
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
-import com.gitlab.kordlib.kordx.commands.flow.PreconditionResult
 import com.gitlab.kordlib.kordx.commands.pipe.ArgumentsResult
 import com.gitlab.kordlib.kordx.commands.pipe.Pipe
 

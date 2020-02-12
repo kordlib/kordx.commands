@@ -2,7 +2,6 @@ package com.gitlab.kordlib.kordx.commands.command
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
-import com.gitlab.kordlib.kordx.commands.flow.PreconditionResult
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
@@ -25,7 +24,7 @@ class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
 
 fun <SCONTEXT, ACOUNTEXT, ECONTEXT : EventContext> CommandBuilder<SCONTEXT, ACOUNTEXT, ECONTEXT>.precondition(
         priority: Long = 0,
-        precondition: suspend ECONTEXT.(PreconditionResult.Companion) -> PreconditionResult
+        precondition: suspend ECONTEXT.() -> Boolean
 ) {
     preconditions += com.gitlab.kordlib.kordx.commands.flow.precondition(context, priority, precondition)
 }

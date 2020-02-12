@@ -1,5 +1,19 @@
 dependencies {
     api project(':kordx-commands-runtime')
-    implementation 'com.gitlab.kordlib:kord:0.3.1'
+
+    api("com.gitlab.kordlib.kord:kord-core") {
+        version {
+            strictly("[0.4.0,0.5.0[")
+            prefer("latest.release")
+        }
+    }
+
+    api("com.gitlab.kordlib:kordx.emoji") {
+        version {
+            strictly("[0.1.0,0.2.0[")
+            prefer("latest.release")
+        }
+    }
+
     api 'info.debatty:java-string-similarity:1.2.1'
 }

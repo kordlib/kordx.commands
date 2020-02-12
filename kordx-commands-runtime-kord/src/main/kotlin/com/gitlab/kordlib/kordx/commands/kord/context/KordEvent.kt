@@ -2,12 +2,12 @@ package com.gitlab.kordlib.kordx.commands.kord.context
 
 import com.gitlab.kordlib.core.behavior.channel.createEmbed
 import com.gitlab.kordlib.core.behavior.channel.createMessage
-import com.gitlab.kordlib.core.builder.message.EmbedBuilder
-import com.gitlab.kordlib.core.builder.message.MessageCreateBuilder
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
+import com.gitlab.kordlib.rest.builder.message.EmbedBuilder
+import com.gitlab.kordlib.rest.builder.message.MessageCreateBuilder
 import kotlinx.coroutines.flow.*
 
 

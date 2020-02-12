@@ -237,7 +237,7 @@ fun <T> Result<T>.orElse(fallBack: T): Result.Success<T> = when (this) {
  * Returns this if this is a [Result.Success], or a [Result.Success] with the [fallBack] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T> Result<T>.orElse(fallBack: () -> T): Result.Success<T> = when (this) {
+inline fun <T> Result<T>.orElseSupply(fallBack: () -> T): Result.Success<T> = when (this) {
     is Success -> Success(item, wordsTaken)
     is Failure -> Success(fallBack(), 0)
 }
