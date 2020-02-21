@@ -1,15 +1,20 @@
 package com.gitlab.kordlib.kordx.commands.kord
 
+import com.gitlab.kordlib.core.Kord
 import com.gitlab.kordlib.core.builder.kord.KordBuilder
 import com.gitlab.kordlib.core.event.Event
 import com.gitlab.kordlib.core.kordLogger
-import com.gitlab.kordlib.core.on
+import com.gitlab.kordlib.kordx.commands.command.CommonContext
+import com.gitlab.kordlib.kordx.commands.flow.toModifier
+import com.gitlab.kordlib.kordx.commands.kord.context.KordContext
 import com.gitlab.kordlib.kordx.commands.kord.context.KordEventSource
 import com.gitlab.kordlib.kordx.commands.kord.listeners.EventListener
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
-import com.gitlab.kordlib.kordx.commands.pipe.Prefix
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger("[kordx.commands]:[kord]:[BotBuilder]")
 
 class BotBuilder(token: String) {
     val kordBuilder: KordBuilder = KordBuilder(token)
@@ -26,7 +31,7 @@ class BotBuilder(token: String) {
         }
     }
 
-    operator fun<T: Event> EventListener<T>.unaryPlus() {
+    operator fun <T : Event> EventListener<T>.unaryPlus() {
         eventListeners.add(this as EventListener<Event>)
     }
 
@@ -42,7 +47,7 @@ class BotBuilder(token: String) {
     suspend fun build() {
         val kord = kordBuilder.build()
 
-        eventListeners.forEach {listener ->
+        eventListeners.forEach { listener ->
             kord.events.buffer(Channel.UNLIMITED).filter { listener.matches(it) }.onEach {
                 runCatching { listener.consume(it) }.onFailure { kordLogger.catching(it) }
             }.catch { kordLogger.catching(it) }.launchIn(kord)
@@ -50,8 +55,13 @@ class BotBuilder(token: String) {
 
         pipeConfig.apply {
             eventSources += KordEventSource(kord)
-            if (prefixes.isEmpty()) {
-                prefixes += Prefix.literal("+")
+            if (prefixBuilder.suppliers[KordContext] == null && prefixBuilder.suppliers[CommonContext] == null) {
+                logger.warn {
+                    """
+                    You currently don't have a prefix registered for Kord, allowing users to accidentally invoke a command when they don't intend to.
+                    Consider setting a prefix for the KordContext or CommonContext.
+                """.trimIndent()
+                }
             }
         }.build()
 

@@ -2,30 +2,27 @@ package com.gitlab.kordlib.kordx.commands.pipe
 
 import com.gitlab.kordlib.kordx.commands.command.CommandContext
 import com.gitlab.kordlib.kordx.commands.command.CommonContext
-import com.gitlab.kordlib.kordx.commands.command.EventContext
 
+typealias PrefixSupplier<S> = suspend (S) -> String
 
-interface Prefix<in SOURCECONTEXT, in ARGUMENTCONTEXT, in EVENTCONTEXT : EventContext> {
-    val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
+class Prefix(private val suppliers: Map<CommandContext<*, *, *>, PrefixSupplier<*>> = mapOf()) {
 
-    suspend fun get(context: SOURCECONTEXT): String
+    fun contains(context: CommandContext<*, *, *>): Boolean = context in suppliers
 
-    companion object {
-        fun literal(prefix: String): Prefix<Any?, Any?, *> = object : Prefix<Any?, Any?, EventContext> {
-            override val context: CommandContext<Any?, Any?, EventContext>
-                get() = CommonContext
-
-            override suspend fun get(context: Any?): String = prefix
-        }
-
-        fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> literal(
-                prefix: String,
-                context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-        ): Prefix<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> = object : Prefix<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> {
-            override val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-                get() = context
-
-            override suspend fun get(context: SOURCECONTEXT): String = prefix
-        }
+    @Suppress("UNCHECKED_CAST")
+    suspend fun <S, A, E> getPrefix(context: CommandContext<S, A, E>, event: S): String {
+        val supplier = (suppliers[context] ?: suppliers[CommonContext] ?: return "") as PrefixSupplier<S>
+        return supplier(event)
     }
+
+}
+
+class PrefixBuilder(val suppliers: MutableMap<CommandContext<*, *, *>, PrefixSupplier<*>> = mutableMapOf()) {
+
+    fun <S, A, E> add(context: CommandContext<S, A, E>, supplier: suspend (S) -> String) {
+        suppliers[context] = supplier
+    }
+
+    fun build(): Prefix = Prefix(suppliers.toMap())
+
 }

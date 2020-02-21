@@ -2,13 +2,15 @@ package com.gitlab.kordlib.kordx.commands.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
-import com.gitlab.kordlib.kordx.commands.command.*
+import com.gitlab.kordlib.kordx.commands.command.Command
+import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.ContextConverter
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
 
 interface EventHandler {
 
-    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> Pipe.onEvent(
+    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> Pipe.onEvent(
             event: SOURCECONTEXT,
             context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
             converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
@@ -25,20 +27,13 @@ sealed class ArgumentsResult<A> {
 @Suppress("UNCHECKED_CAST")
 object DefaultHandler : EventHandler {
 
-    private fun <A, B, C : EventContext> Pipe.getPrefix(context: CommandContext<A, B, C>): Prefix<A, B, C>? {
-        return (prefixes[context] ?: prefixes[CommonContext]) as? Prefix<A, B, C>
+    private suspend fun <A, B, C> Prefix.words(context: CommandContext<A, B, C>, text: String, event: A): List<String>? {
+        val prefixText = getPrefix(context, event)
+        return if (!text.startsWith(prefixText)) null
+        else text.removePrefix(prefixText).split(" ")
     }
 
-    private suspend fun <A, B, C : EventContext> Prefix<A, B, C>?.words(text: String, event: A): List<String>? {
-        return if (this == null) text.split(" ")
-        else {
-            val prefixText = get(event)
-            if (!text.startsWith(prefixText)) null
-            else text.removePrefix(prefixText).split(" ")
-        }
-    }
-
-    private fun <A : EventContext> Pipe.getCommand(words: List<String>): Command<A>? {
+    private fun <A> Pipe.getCommand(words: List<String>): Command<A>? {
         val command = commands[words.first()] ?: return null
         return command as Command<A>
     }
@@ -60,15 +55,15 @@ object DefaultHandler : EventHandler {
         return ArgumentsResult.Success(items)
     }
 
-    private fun <A : EventContext> Pipe.getPreconditions(context: CommandContext<*, *, A>, command: Command<A>): List<Precondition<A>> {
+    private fun <A> Pipe.getPreconditions(context: CommandContext<*, *, A>, command: Command<A>): List<Precondition<A>> {
         return preconditions[context].orEmpty() as List<Precondition<A>> + command.preconditions
     }
 
-    private suspend fun <A : EventContext> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): Boolean {
+    private suspend fun <A> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): Boolean {
         return preconditions.sortedByDescending { it.priority }.all { it(context) }
     }
 
-    override suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> Pipe.onEvent(
+    override suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> Pipe.onEvent(
             event: SOURCECONTEXT,
             context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
             converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
@@ -76,10 +71,8 @@ object DefaultHandler : EventHandler {
         val filters = filters[context].orEmpty() as List<EventFilter<SOURCECONTEXT>>
         if (!filters.all { it(event) }) return
 
-        val argumentHandler = converter.convert(event)
-        val prefix = getPrefix(context)
-
-        val words = prefix.words(argumentHandler.text, event) ?: return
+        val argumentHandler = converter.convertToArgument(event)
+        val words = prefix.words(context, argumentHandler.text, event) ?: return
 
         val command = getCommand<EVENTCONTEXT>(words) ?: return with(argumentHandler) { notFound(words.first()) }
 

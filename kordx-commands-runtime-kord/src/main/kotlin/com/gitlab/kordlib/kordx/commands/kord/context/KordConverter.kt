@@ -19,10 +19,10 @@ class KordConverter(
         private val argumentHandlerSupplier: (KordConverter, MessageCreateEvent) -> ArgumentHandler = { converter, message -> DefaultArgumentHandler(converter, message) }
 ) : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> {
     override fun supports(context: CommandContext<*, *, *>): Boolean {
-        return context is KordCommandContext || context is CommonContext
+        return context is KordContext || context is CommonContext
     }
 
-    override suspend fun convert(context: KordEventContext): EventHandler {
+    override suspend fun convertToEvent(context: KordEventContext): EventHandler {
         return eventHandlerSupplier(this, context)
     }
 
@@ -30,13 +30,12 @@ class KordConverter(
         return KordEventContext(context, command)
     }
 
-    override suspend fun convert(context: MessageCreateEvent): ArgumentHandler {
+    override suspend fun convertToArgument(context: MessageCreateEvent): ArgumentHandler {
         return argumentHandlerSupplier(this, context)
     }
 
     class DefaultEventHandler(val context: KordEventContext) : EventHandler {
         override val eventContext: KordEventContext = context
-        override suspend fun respond(message: String): Message = eventContext.respond(message)
     }
 
     class DefaultArgumentHandler(
@@ -56,15 +55,13 @@ class KordConverter(
                 message: String
         ) {
             val spacers = command.name.length + 1 + words.take(wordPointerIndex).joinToString(" ").length
-            respond("""
+            event.message.channel.createMessage("""
                     ```
                     ${command.name} ${words.joinToString(" ")}
                     ${"-".repeat(spacers)}^ $message
                     ```
                 """.trimIndent())
         }
-
-        override suspend fun respond(message: String): Message = event.message.channel.createMessage(message)
 
         override suspend fun Pipe.emptyInvocation(pipe: Pipe) { /*ignore*/
         }
@@ -74,7 +71,7 @@ class KordConverter(
         }
 
         override suspend fun Pipe.notFound(command: String) {
-            val mostProbable = converter.suggester.suggest(command, commands) as? Command<EventContext>
+            val mostProbable = converter.suggester.suggest(command, commands)
             if (mostProbable == null) {
                 event.message.channel.createMessage("$command is not an existing command")
                 return
@@ -86,7 +83,7 @@ class KordConverter(
                 text.startsWith("yes", true)
             }
 
-                if (mostProbable.context != KordCommandContext && mostProbable.context != CommonContext) {
+                if (mostProbable.context != KordContext && mostProbable.context != CommonContext) {
                 event.message.channel.createMessage("${mostProbable.name} does not accept a Kord context")
                 return
             }
@@ -94,7 +91,7 @@ class KordConverter(
                 val correctedText = event.message.content.replaceFirst(command, mostProbable.name)
                 val data = event.message.data.copy(content = correctedText)
                 val event = MessageCreateEvent(Message(data, event.kord))
-                handle(event, KordCommandContext, converter)
+                handle(event, KordContext, converter)
             }
         }
 

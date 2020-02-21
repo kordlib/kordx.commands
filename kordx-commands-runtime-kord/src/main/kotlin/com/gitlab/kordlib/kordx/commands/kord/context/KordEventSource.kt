@@ -14,7 +14,7 @@ class KordEventSource(
         override val converter: ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> = KordConverter(CommandSuggester)
 ) : EventSource<MessageCreateEvent> {
     override val context: CommandContext<MessageCreateEvent, *, *>
-        get() = KordCommandContext
+        get() = KordContext
 
     override val events: Flow<MessageCreateEvent>
         get() = kord.events.filterIsInstance()

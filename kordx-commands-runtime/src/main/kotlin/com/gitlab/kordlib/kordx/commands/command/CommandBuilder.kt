@@ -5,7 +5,7 @@ import com.gitlab.kordlib.kordx.commands.flow.Precondition
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
-class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
+class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>(
         val name: String,
         val moduleName: String,
         val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
@@ -22,7 +22,7 @@ class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
     }
 }
 
-fun <SCONTEXT, ACOUNTEXT, ECONTEXT : EventContext> CommandBuilder<SCONTEXT, ACOUNTEXT, ECONTEXT>.precondition(
+fun <SCONTEXT, ACOUNTEXT, ECONTEXT> CommandBuilder<SCONTEXT, ACOUNTEXT, ECONTEXT>.precondition(
         priority: Long = 0,
         precondition: suspend ECONTEXT.() -> Boolean
 ) {

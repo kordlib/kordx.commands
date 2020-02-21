@@ -19,9 +19,9 @@ private val logger = KotlinLogging.logger { }
 
 class Pipe(
         val filters: Map<CommandContext<*, *, *>, List<EventFilter<*>>>,
-        val preconditions: Map<CommandContext<*, *, *>, List<Precondition<out EventContext>>>,
-        commands: Map<String, Command<out EventContext>>,
-        val prefixes: Map<CommandContext<*, *, *>, Prefix<*, *, *>>,
+        val preconditions: Map<CommandContext<*, *, *>, List<Precondition<out Any?>>>,
+        commands: Map<String, Command<out Any?>>,
+        val prefix: Prefix,
         private val handler: EventHandler = DefaultHandler,
         private var modifiers: List<ModuleModifier>,
         dispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -29,8 +29,8 @@ class Pipe(
     private val editMutex = Mutex()
     override val coroutineContext: CoroutineContext = dispatcher + Job()
 
-    private var _commands: Map<String, Command<out EventContext>> = commands
-    val commands: Map<String, Command<out EventContext>> get() = _commands
+    private var _commands: Map<String, Command<out Any?>> = commands
+    val commands: Map<String, Command<out Any?>> get() = _commands
 
     private suspend inline fun edit(modify: () -> Unit) {
         editMutex.withLock { modify() }
@@ -38,11 +38,11 @@ class Pipe(
 
     fun <SOURCECONTEXT> add(source: EventSource<SOURCECONTEXT>): Job {
         return source.events.onEach {
-            handle<SOURCECONTEXT, Any?, EventContext>(it, source.context.cast(), source.converter.cast())
+            handle<SOURCECONTEXT, Any?, Any?>(it, source.context.cast(), source.converter.cast())
         }.catch { logger.catching(it) }.launchIn(this)
     }
 
-    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> handle(
+    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> handle(
             event: SOURCECONTEXT,
             context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
             converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
@@ -61,7 +61,7 @@ class Pipe(
         val modules = _commands.values.firstOrNull()?.modules as? MutableMap<String, Module> ?: mutableMapOf()
         container.modules.values.forEach { it.build(modules) }
 
-        val map: Map<String, Command<*>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
+        val map: Map<String, Command<out Any?>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
             map.keys.forEach { require(it !in acc) { "command $it is already registered in ${acc[it]!!.module.name}" } }
             acc + map
         }

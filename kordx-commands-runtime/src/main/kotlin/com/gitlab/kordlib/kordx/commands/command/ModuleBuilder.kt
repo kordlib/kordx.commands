@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.command
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
-data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>(
+data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>(
         val name: String,
         val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
         val metaData: MutableMetadata = MutableMetadata(),
@@ -16,7 +16,7 @@ data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>
 
     operator fun CommandSet.unaryPlus() = apply()
 
-    inline fun<S,A,C: EventContext> withContext(context: CommandContext<S,A,C>, builder: ModuleBuilder<S,A,C>.() -> Unit) {
+    inline fun<S,A,C> withContext(context: CommandContext<S,A,C>, builder: ModuleBuilder<S,A,C>.() -> Unit) {
         ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
@@ -28,11 +28,11 @@ data class ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT : EventContext>
 
 class Module(
         val name: String,
-        val commands: Map<String, Command<out EventContext>>,
+        val commands: Map<String, Command<out Any?>>,
         val metadata: Metadata
 )
 
-fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.command(
+fun <SOURCECONTEXT, ARGUMENTCONTEXT, T> ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.command(
         name: String,
         builder: CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, T>.() -> Unit
 ) {
@@ -40,7 +40,7 @@ fun <SOURCECONTEXT, ARGUMENTCONTEXT, T : EventContext> ModuleBuilder<SOURCECONTE
     add(command)
 }
 
-fun <NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT : EventContext> ModuleBuilder<*, *, *>.command(
+fun <NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT> ModuleBuilder<*, *, *>.command(
         name: String,
         context: CommandContext<NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT>,
         builder: CommandBuilder<NEWSOURCECONTEXT, NEWARGUMENTCONTEXT, NEWEVENTCONTEXT>.() -> Unit

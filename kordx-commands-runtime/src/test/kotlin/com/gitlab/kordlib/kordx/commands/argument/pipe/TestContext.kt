@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class TestEventContext(val output: TestOutput, override val command: Command<*>) : EventContext {
-    override suspend fun respond(text: String): Any? {
+class TestEventContext(val output: TestOutput, val command: Command<*>) {
+    suspend fun respond(text: String): Any? {
         return output.push(EventType.Response(text))
     }
 }
@@ -50,7 +50,7 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
 
         override fun supports(context: CommandContext<*, *, *>): Boolean = true
 
-        override suspend fun convert(context: String): ArgumentContextHandler<String, String, TestEventContext> = object : ArgumentContextHandler<String, String, TestEventContext> {
+        override suspend fun convertToArgument(context: String): ArgumentContextHandler<String, String, TestEventContext> = object : ArgumentContextHandler<String, String, TestEventContext> {
             override val argumentContext: String
                 get() = context
 
@@ -61,7 +61,7 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
                 output.push(EventType.EmptyInvocation)
             }
 
-            override suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
+            suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
 
             override suspend fun Pipe.notFound(command: String) {
                 output.push(EventType.NotFound(command))
@@ -75,11 +75,11 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
         }
 
 
-        override suspend fun convert(context: TestEventContext): EventContextHandler<String, String, TestEventContext> = object : EventContextHandler<String, String, TestEventContext> {
+        override suspend fun convertToEvent(context: TestEventContext): EventContextHandler<String, String, TestEventContext> = object : EventContextHandler<String, String, TestEventContext> {
             override val eventContext: TestEventContext
                 get() = context
 
-            override suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
+            suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
         }
 
         override suspend fun convert(context: String, command: Command<TestEventContext>, arguments: List<Argument<*, String>>): TestEventContext {

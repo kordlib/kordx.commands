@@ -1,4 +1,6 @@
 dependencies {
+    implementation("io.github.microutils:kotlin-logging:1.7.8")
+
     api project(':kordx-commands-runtime')
 
     api("com.gitlab.kordlib.kord:kord-core") {
@@ -16,4 +18,10 @@ dependencies {
     }
 
     api 'info.debatty:java-string-similarity:1.2.1'
+}
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
+    }
 }

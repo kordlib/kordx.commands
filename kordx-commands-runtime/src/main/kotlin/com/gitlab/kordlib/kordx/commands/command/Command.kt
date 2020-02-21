@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.command
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
 
-class Command<T : EventContext>(
+class Command<T>(
         val name: String,
         val moduleName: String,
         val context: CommandContext<*, *, *>,

@@ -1,6 +1,6 @@
 package com.gitlab.kordlib.kordx.commands.command
 
-fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
+fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> commands(
         context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
         builder: ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.() -> Unit
 ): CommandSet = object : CommandSet {
@@ -9,7 +9,7 @@ fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> commands(
     }
 }
 
-fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext> command(
+fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> command(
         context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
         name: String,
         builder: CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.() -> Unit

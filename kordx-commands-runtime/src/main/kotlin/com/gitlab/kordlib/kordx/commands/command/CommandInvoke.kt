@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.command
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.internal.cast
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         execute: suspend EVENTCONTEXT.() -> Unit
 ) {
@@ -11,25 +11,27 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext>
     execution = { context, _ -> execute(context.cast()) }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(first: Argument<A,
         ARGUMENTCONTEXT>, execute: suspend EVENTCONTEXT.(first: A) -> Unit) {
     arguments = listOf(first)
     execution = { context, arguments -> execute(context.cast(), arguments[0].cast()) }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
         execute: suspend EVENTCONTEXT.(first: A, second: B) -> Unit
 ) {
-    arguments = listOf(first,second)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast()) }
+    arguments = listOf(first, second)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast())
+    }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -40,12 +42,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 third: C
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast()) }
+    arguments = listOf(first, second, third)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast())
+    }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -58,12 +62,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fourth: D
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast()) }
+    arguments = listOf(first, second, third, fourth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast())
+    }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -78,13 +84,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 fifth: E
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast())
+    arguments = listOf(first, second, third, fourth, fifth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -101,13 +108,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 sixth: F
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth,sixth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast())
+    arguments = listOf(first, second, third, fourth, fifth, sixth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -126,13 +134,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 seventh: G
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast())
+    arguments = listOf(first, second, third, fourth, fifth, sixth, seventh)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H>
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H>
         CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -153,13 +162,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 eighth: H
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast())
+    arguments = listOf(first, second, third, fourth, fifth, sixth, seventh, eighth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -182,13 +192,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 ninth: I
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast())
+    arguments = listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -213,13 +224,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
                 tenth: J
         ) -> Unit
 ) {
-    arguments = listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast())
+    arguments = listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -247,13 +259,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -283,13 +296,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -321,13 +335,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -361,13 +376,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -403,13 +419,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -447,13 +464,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth, sixteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast(), arguments[15].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
         second: Argument<B, ARGUMENTCONTEXT>,
@@ -493,13 +511,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth, sixteenth, seventeenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast(), arguments[15].cast(), arguments[16].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
         EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
@@ -542,13 +561,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth, sixteenth, seventeenth, eighteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast(), arguments[15].cast(), arguments[16].cast(), arguments[17].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R, S> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
         EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
@@ -593,13 +613,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth,nineteenth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast(),arguments[18].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth, sixteenth, seventeenth, eighteenth, nineteenth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast(), arguments[15].cast(), arguments[16].cast(), arguments[17].cast(), arguments[18].cast())
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B, C, D, E, F, G, H,
+operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R, S, T> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
         EVENTCONTEXT>.invoke(
         first: Argument<A, ARGUMENTCONTEXT>,
@@ -646,8 +667,9 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT : EventContext, A, B,
         ) -> Unit
 ) {
     arguments =
-            listOf(first,second,third,fourth,fifth,sixth,seventh,eighth,ninth,tenth,eleventh,twelfth,thirteenth,fourteenth,fifteenth,sixteenth,seventeenth,eighteenth,nineteenth,twentieth)
-    execution = { context, arguments -> execute(context.cast(),
-            arguments[0].cast(),arguments[1].cast(),arguments[2].cast(),arguments[3].cast(),arguments[4].cast(),arguments[5].cast(),arguments[6].cast(),arguments[7].cast(),arguments[8].cast(),arguments[9].cast(),arguments[10].cast(),arguments[11].cast(),arguments[12].cast(),arguments[13].cast(),arguments[14].cast(),arguments[15].cast(),arguments[16].cast(),arguments[17].cast(),arguments[18].cast(),arguments[19].cast())
+            listOf(first, second, third, fourth, fifth, sixth, seventh, eighth, ninth, tenth, eleventh, twelfth, thirteenth, fourteenth, fifteenth, sixteenth, seventeenth, eighteenth, nineteenth, twentieth)
+    execution = { context, arguments ->
+        execute(context.cast(),
+                arguments[0].cast(), arguments[1].cast(), arguments[2].cast(), arguments[3].cast(), arguments[4].cast(), arguments[5].cast(), arguments[6].cast(), arguments[7].cast(), arguments[8].cast(), arguments[9].cast(), arguments[10].cast(), arguments[11].cast(), arguments[12].cast(), arguments[13].cast(), arguments[14].cast(), arguments[15].cast(), arguments[16].cast(), arguments[17].cast(), arguments[18].cast(), arguments[19].cast())
     }
 }
