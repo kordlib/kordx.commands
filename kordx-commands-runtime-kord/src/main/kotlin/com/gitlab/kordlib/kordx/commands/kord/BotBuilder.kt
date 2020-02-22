@@ -1,14 +1,15 @@
 package com.gitlab.kordlib.kordx.commands.kord
 
-import com.gitlab.kordlib.core.Kord
 import com.gitlab.kordlib.core.builder.kord.KordBuilder
 import com.gitlab.kordlib.core.event.Event
 import com.gitlab.kordlib.core.kordLogger
 import com.gitlab.kordlib.kordx.commands.command.CommonContext
-import com.gitlab.kordlib.kordx.commands.flow.toModifier
 import com.gitlab.kordlib.kordx.commands.kord.context.KordContext
+import com.gitlab.kordlib.kordx.commands.kord.context.KordContextConverter
+import com.gitlab.kordlib.kordx.commands.kord.context.KordErrorHandler
 import com.gitlab.kordlib.kordx.commands.kord.context.KordEventSource
 import com.gitlab.kordlib.kordx.commands.kord.listeners.EventListener
+import com.gitlab.kordlib.kordx.commands.pipe.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
@@ -55,6 +56,11 @@ class BotBuilder(token: String) {
 
         pipeConfig.apply {
             eventSources += KordEventSource(kord)
+
+            if (eventHandlers[KordContext] == null && eventHandlers[CommonContext] == null) {
+                eventHandlers[KordContext] = BaseEventHandler(KordContext, KordContextConverter, KordErrorHandler())
+            }
+
             if (prefixBuilder.suppliers[KordContext] == null && prefixBuilder.suppliers[CommonContext] == null) {
                 logger.warn {
                     """
