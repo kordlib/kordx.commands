@@ -19,9 +19,6 @@ interface KordEvent {
     val channel get() = message.channel
     val guild get() = message.guild
 
-    fun <T> success(value: T, wordsTaken: Int = 0): Result<T> = Result.Success(value, wordsTaken)
-    fun <T> failure(reason: String): Result<T> = Result.Failure(reason, 0)
-
     suspend fun respond(text: String): Message {
         return message.channel.createMessage(text)
     }

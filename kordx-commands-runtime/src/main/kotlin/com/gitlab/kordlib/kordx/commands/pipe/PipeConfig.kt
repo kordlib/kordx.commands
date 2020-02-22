@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 @Suppress("MemberVisibilityCanBePrivate")
 class PipeConfig {
     val eventFilters: MutableList<EventFilter<*>> = mutableListOf()
-    var eventHandler: EventHandler = DefaultHandler
+    val eventHandlers: MutableMap<CommandContext<*,*,*>, EventHandler<*>> = mutableMapOf()
     val eventSources: MutableList<EventSource<*>> = mutableListOf()
     val preconditions: MutableList<Precondition<*>> = mutableListOf()
     val prefixBuilder: PrefixBuilder = PrefixBuilder()
@@ -47,7 +47,7 @@ class PipeConfig {
         val pipe = Pipe(
                 filters = eventFilters.groupBy { it.context },
                 commands = modules.values.map { it.commands }.fold(mutableMapOf()) { acc, map -> acc += map; acc },
-                handler = eventHandler,
+                handlers = eventHandlers.toMap(),
                 preconditions = preconditions.groupBy { it.context },
                 prefix = prefixBuilder.build(),
                 modifiers = moduleModifiers,

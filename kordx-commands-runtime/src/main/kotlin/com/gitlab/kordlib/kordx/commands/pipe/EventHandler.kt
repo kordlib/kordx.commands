@@ -4,18 +4,19 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.command.Command
 import com.gitlab.kordlib.kordx.commands.command.CommandContext
-import com.gitlab.kordlib.kordx.commands.command.ContextConverter
-import com.gitlab.kordlib.kordx.commands.flow.EventFilter
-import com.gitlab.kordlib.kordx.commands.flow.Precondition
 
-interface EventHandler {
+interface EventHandler<SOURCECONTEXT> {
 
-    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> Pipe.onEvent(
-            event: SOURCECONTEXT,
-            context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
-            converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-    )
+    suspend fun Pipe.onEvent(event: SOURCECONTEXT)
 
+}
+
+interface ContextConverter<S, A, E> {
+    val S.text: String
+
+    fun S.toArgumentContext(): A
+
+    fun A.toEventContext(command: Command<E>): E
 }
 
 sealed class ArgumentsResult<A> {
@@ -24,77 +25,88 @@ sealed class ArgumentsResult<A> {
     data class Failure<A>(val context: A, val failure: Result.Failure<*>, val argument: Argument<*, A>, val arguments: List<Argument<*, A>>, val argumentsTaken: Int, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
 }
 
-@Suppress("UNCHECKED_CAST")
-object DefaultHandler : EventHandler {
+interface ErrorHandler<S, A, E> {
+    suspend fun Pipe.notFound(event: S, command: String) {}
 
-    private suspend fun <A, B, C> Prefix.words(context: CommandContext<A, B, C>, text: String, event: A): List<String>? {
-        val prefixText = getPrefix(context, event)
-        return if (!text.startsWith(prefixText)) null
-        else text.removePrefix(prefixText).split(" ")
+    suspend fun Pipe.emptyInvocation(event: S) {}
+
+    suspend fun Pipe.rejectArgument(
+            event: S,
+            command: Command<E>,
+            words: List<String>,
+            argument: Argument<*, A>,
+            failure: Result.Failure<*>
+    ) {}
+
+    suspend fun Pipe.tooManyWords(event: S, command: Command<E>, result: ArgumentsResult.TooManyWords<A>) {}
+}
+
+open class BaseEventHandler<S, A, E>(
+        val context: CommandContext<S, A, E>,
+        protected val converter: ContextConverter<S, A, E>,
+        protected val handler: ErrorHandler<S, A, E>
+) : EventHandler<S> {
+
+    override suspend fun Pipe.onEvent(event: S) {
+        val filters = getFilters(context)
+        if (!filters.all { it(event) }) return
+
+        val prefix = prefix.getPrefix(context, event)
+        with(converter) {
+            if (!event.text.startsWith(prefix)) return
+        }
+
+        val words = with(converter) {
+            event.text.removePrefix(prefix).split(" ")
+        }
+
+        val commandName = words.firstOrNull() ?: return with(handler) { emptyInvocation(event) }
+        val command = getCommand(context, commandName) ?: return with(handler) { notFound(event, commandName) }
+
+        @Suppress("UNCHECKED_CAST")
+        val arguments = command.arguments as List<Argument<*, A>>
+
+        val argumentContext = with(converter) {
+            event.toArgumentContext()
+        }
+
+        val (items) = when (val result = parseArguments(words.drop(1), arguments, argumentContext)) {
+            is ArgumentsResult.Success -> result
+            is ArgumentsResult.TooManyWords -> return with(handler) { tooManyWords(event, command, result) }
+            is ArgumentsResult.Failure -> return with(handler) {
+                val newResult = result.failure.copy(atWord = result.failure.atWord + result.wordsTaken)
+                rejectArgument(event, command, words.drop(1), result.argument, newResult)
+            }
+        }
+
+        val eventContext = with(converter) {
+            argumentContext.toEventContext(command)
+        }
+
+        val preconditions = getPreconditions(context) + command.preconditions
+
+        val passed = preconditions.sortedByDescending { it.priority }.all { it(eventContext) }
+
+        if (passed) {
+            command.invoke(eventContext, items)
+        } else return
     }
 
-    private fun <A> Pipe.getCommand(words: List<String>): Command<A>? {
-        val command = commands[words.first()] ?: return null
-        return command as Command<A>
-    }
-
-    private suspend fun <A> Pipe.parseArguments(words: List<String>, arguments: List<Argument<*, A>>, context: A): ArgumentsResult<A> {
+    protected open suspend fun Pipe.parseArguments(words: List<String>, arguments: List<Argument<*, A>>, event: A): ArgumentsResult<A> {
         var wordIndex = 0
         val items = mutableListOf<Any?>()
         arguments.forEachIndexed { index, argument ->
-            when (val result = argument.parse(words, wordIndex, context)) {
+            when (val result = argument.parse(words, wordIndex, event)) {
                 is Result.Success -> {
                     wordIndex += result.wordsTaken
                     items += result.item
                 }
-                is Result.Failure -> return ArgumentsResult.Failure(context, result, argument, arguments, index, words, wordIndex)
+                is Result.Failure -> return ArgumentsResult.Failure(event, result, argument, arguments, index, words, wordIndex)
             }
         }
 
-        if (wordIndex != words.size) return ArgumentsResult.TooManyWords(context, arguments, words, wordIndex)
+        if (wordIndex != words.size) return ArgumentsResult.TooManyWords(event, arguments, words, wordIndex)
         return ArgumentsResult.Success(items)
     }
 
-    private fun <A> Pipe.getPreconditions(context: CommandContext<*, *, A>, command: Command<A>): List<Precondition<A>> {
-        return preconditions[context].orEmpty() as List<Precondition<A>> + command.preconditions
-    }
-
-    private suspend fun <A> calculatePreconditions(preconditions: List<Precondition<A>>, context: A): Boolean {
-        return preconditions.sortedByDescending { it.priority }.all { it(context) }
-    }
-
-    override suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> Pipe.onEvent(
-            event: SOURCECONTEXT,
-            context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
-            converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-    ) {
-        val filters = filters[context].orEmpty() as List<EventFilter<SOURCECONTEXT>>
-        if (!filters.all { it(event) }) return
-
-        val argumentHandler = converter.convertToArgument(event)
-        val words = prefix.words(context, argumentHandler.text, event) ?: return
-
-        val command = getCommand<EVENTCONTEXT>(words) ?: return with(argumentHandler) { notFound(words.first()) }
-
-        if (!converter.supports(command.context)) return
-
-        val arguments = command.arguments as List<Argument<Any?, ARGUMENTCONTEXT>>
-
-        val (items) = when (val result = parseArguments(words.drop(1), arguments, argumentHandler.argumentContext)) {
-            is ArgumentsResult.Success -> result
-            is ArgumentsResult.TooManyWords -> return with(argumentHandler) { tooManyWords(command, result) }
-            is ArgumentsResult.Failure -> return with(argumentHandler) {
-                val newResult = result.failure.copy(atWord = result.failure.atWord + result.wordsTaken)
-                rejectArgument(command, words.drop(1), result.argument, newResult)
-            }
-        }
-
-        val eventContext = converter.convert(argumentHandler.argumentContext, command, arguments)
-
-        val preconditions = getPreconditions(context, command)
-
-        if (calculatePreconditions(preconditions, eventContext)) {
-            command.invoke(eventContext, items)
-        } else return
-    }
 }

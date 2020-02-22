@@ -8,96 +8,72 @@ import com.gitlab.kordlib.kordx.commands.argument.text.TextArgument
 import com.gitlab.kordlib.kordx.commands.command.*
 import com.gitlab.kordlib.kordx.commands.kord.CommandSuggester
 import com.gitlab.kordlib.kordx.commands.pipe.ArgumentsResult
+import com.gitlab.kordlib.kordx.commands.pipe.ContextConverter
+import com.gitlab.kordlib.kordx.commands.pipe.ErrorHandler
 import com.gitlab.kordlib.kordx.commands.pipe.Pipe
 
-typealias ArgumentHandler = ArgumentContextHandler<MessageCreateEvent, MessageCreateEvent, KordEventContext>
-typealias EventHandler = EventContextHandler<MessageCreateEvent, MessageCreateEvent, KordEventContext>
+object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> {
+    override val MessageCreateEvent.text: String get() =  message.content
 
-class KordConverter(
-        val suggester: CommandSuggester,
-        private val eventHandlerSupplier: (KordConverter, KordEventContext) -> EventHandler = { _, context -> DefaultEventHandler(context) },
-        private val argumentHandlerSupplier: (KordConverter, MessageCreateEvent) -> ArgumentHandler = { converter, message -> DefaultArgumentHandler(converter, message) }
-) : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> {
-    override fun supports(context: CommandContext<*, *, *>): Boolean {
-        return context is KordContext || context is CommonContext
+    override fun MessageCreateEvent.toArgumentContext(): MessageCreateEvent = this
+
+    override fun MessageCreateEvent.toEventContext(command: Command<KordEventContext>): KordEventContext {
+        return KordEventContext(this, command)
     }
+}
 
-    override suspend fun convertToEvent(context: KordEventContext): EventHandler {
-        return eventHandlerSupplier(this, context)
-    }
+class KordErrorHandler(
+        private val suggester: CommandSuggester = CommandSuggester.Companion
+) : ErrorHandler<MessageCreateEvent, MessageCreateEvent, KordEventContext> {
 
-    override suspend fun convert(context: MessageCreateEvent, command: Command<KordEventContext>, arguments: List<Argument<*, MessageCreateEvent>>): KordEventContext {
-        return KordEventContext(context, command)
-    }
-
-    override suspend fun convertToArgument(context: MessageCreateEvent): ArgumentHandler {
-        return argumentHandlerSupplier(this, context)
-    }
-
-    class DefaultEventHandler(val context: KordEventContext) : EventHandler {
-        override val eventContext: KordEventContext = context
-    }
-
-    class DefaultArgumentHandler(
-            private val converter: KordConverter,
-            private val event: MessageCreateEvent
-    ) : ArgumentHandler {
-        override val text: String
-            get() = event.message.content
-
-        override val argumentContext: MessageCreateEvent
-            get() = event
-
-        private suspend inline fun respondError(
-                command: Command<KordEventContext>,
-                words: List<String>,
-                wordPointerIndex: Int,
-                message: String
-        ) {
-            val spacers = command.name.length + 1 + words.take(wordPointerIndex).joinToString(" ").length
-            event.message.channel.createMessage("""
+    private suspend inline fun respondError(
+            event: MessageCreateEvent,
+            command: Command<KordEventContext>,
+            words: List<String>,
+            wordPointerIndex: Int,
+            message: String
+    ) {
+        val spacers = command.name.length + 1 + words.take(wordPointerIndex).joinToString(" ").length
+        event.message.channel.createMessage("""
                     ```
                     ${command.name} ${words.joinToString(" ")}
                     ${"-".repeat(spacers)}^ $message
                     ```
                 """.trimIndent())
+    }
+
+    override suspend fun Pipe.emptyInvocation(event: MessageCreateEvent) { /*ignored*/ }
+
+    override suspend fun Pipe.notFound(event: MessageCreateEvent, command: String) {
+        val mostProbable = suggester.suggest(command, commands)
+        if (mostProbable == null) {
+            event.message.channel.createMessage("$command is not an existing command")
+            return
         }
 
-        override suspend fun Pipe.emptyInvocation(pipe: Pipe) { /*ignore*/
+        event.message.channel.createMessage("$command not found, did you mean ${mostProbable.name}?")
+        val confirmed = with(KordEvent(event)) {
+            val text = read(TextArgument)
+            text.startsWith("yes", true)
         }
 
-        override suspend fun Pipe.tooManyWords(command: Command<KordEventContext>, result: ArgumentsResult.TooManyWords<MessageCreateEvent>) {
-            respondError(command, result.words, result.wordsTaken, "Too many arguments, reached end of command parsing.")
+        if (mostProbable.context != KordContext && mostProbable.context != CommonContext) {
+            event.message.channel.createMessage("${mostProbable.name} does not accept a Kord context")
+            return
         }
-
-        override suspend fun Pipe.notFound(command: String) {
-            val mostProbable = converter.suggester.suggest(command, commands)
-            if (mostProbable == null) {
-                event.message.channel.createMessage("$command is not an existing command")
-                return
-            }
-
-            event.message.channel.createMessage("$command not found, did you mean ${mostProbable.name}?")
-            val confirmed = with(KordEvent(event)) {
-                val text = read(TextArgument)
-                text.startsWith("yes", true)
-            }
-
-                if (mostProbable.context != KordContext && mostProbable.context != CommonContext) {
-                event.message.channel.createMessage("${mostProbable.name} does not accept a Kord context")
-                return
-            }
-            if (confirmed) {
-                val correctedText = event.message.content.replaceFirst(command, mostProbable.name)
-                val data = event.message.data.copy(content = correctedText)
-                val event = MessageCreateEvent(Message(data, event.kord))
-                handle(event, KordContext, converter)
-            }
+        if (confirmed) {
+            val correctedText = event.message.content.replaceFirst(command, mostProbable.name)
+            val data = event.message.data.copy(content = correctedText)
+            val event = MessageCreateEvent(Message(data, event.kord))
+            handle(event, KordContext)
         }
+    }
 
-        override suspend fun Pipe.rejectArgument(command: Command<KordEventContext>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: Result.Failure<*>) {
-            respondError(command, words, failure.atWord, failure.reason)
-        }
+    override suspend fun Pipe.rejectArgument(event: MessageCreateEvent, command: Command<KordEventContext>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: Result.Failure<*>) {
+        respondError(event, command, words, failure.atWord, failure.reason)
+    }
 
+    override suspend fun Pipe.tooManyWords(event: MessageCreateEvent, command: Command<KordEventContext>, result: ArgumentsResult.TooManyWords<MessageCreateEvent>) {
+        respondError(event, command, result.words, result.wordsTaken, "Too many arguments, reached end of command parsing.")
     }
 }

@@ -22,7 +22,7 @@ class Pipe(
         val preconditions: Map<CommandContext<*, *, *>, List<Precondition<out Any?>>>,
         commands: Map<String, Command<out Any?>>,
         val prefix: Prefix,
-        private val handler: EventHandler = DefaultHandler,
+        private val handlers: Map<CommandContext<*, *, *>, EventHandler<*>>,
         private var modifiers: List<ModuleModifier>,
         dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : CoroutineScope {
@@ -32,21 +32,46 @@ class Pipe(
     private var _commands: Map<String, Command<out Any?>> = commands
     val commands: Map<String, Command<out Any?>> get() = _commands
 
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getPreconditions(context: CommandContext<*,*, T>) : List<Precondition<T>> {
+        return preconditions[context].orEmpty() as List<Precondition<T>>
+    }
+
+    fun<T> getCommand(context: CommandContext<*,*, T>, name: String) : Command<T>? {
+        val command = commands[name] ?: return null
+        if (command.context != context) return null
+
+        @Suppress("UNCHECKED_CAST")
+        return command as Command<T>
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getFilters(context: CommandContext<T,*,*>) : List<EventFilter<T>> {
+        return when(context) {
+            is CommonContext -> (filters[CommonContext].orEmpty()) as List<EventFilter<T>>
+            else -> (filters[context].orEmpty() + getFilters(CommonContext)) as List<EventFilter<T>>
+        }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    fun <T> getEventHandler(context: CommandContext<T,*,*>) : EventHandler<T> {
+        return handlers[context] as EventHandler<T>
+    }
+
     private suspend inline fun edit(modify: () -> Unit) {
         editMutex.withLock { modify() }
     }
 
     fun <SOURCECONTEXT> add(source: EventSource<SOURCECONTEXT>): Job {
         return source.events.onEach {
-            handle<SOURCECONTEXT, Any?, Any?>(it, source.context.cast(), source.converter.cast())
+            handle<SOURCECONTEXT, Any?, Any?>(it, source.context.cast())
         }.catch { logger.catching(it) }.launchIn(this)
     }
 
     suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> handle(
             event: SOURCECONTEXT,
-            context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
-            converter: ContextConverter<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-    ) = with(handler) { onEvent(event, context, converter) }
+            context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
+    ) = with(getEventHandler(context)) { onEvent(event) }
 
     suspend operator fun plusAssign(modifier: ModuleModifier) = edit {
         modifiers += modifier

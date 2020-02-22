@@ -4,6 +4,7 @@ import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
 import com.gitlab.kordlib.kordx.commands.command.command
 import com.gitlab.kordlib.kordx.commands.command.invoke
 import com.gitlab.kordlib.kordx.commands.command.module
+import com.gitlab.kordlib.kordx.commands.pipe.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.Pipe
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,6 +18,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
+@Suppress("EXPERIMENTAL_API_USAGE")
 class CommandsTest {
 
     lateinit var pipe: Pipe
@@ -29,6 +31,7 @@ class CommandsTest {
         input = TestEventSource(output)
         pipe = PipeConfig {
             eventSources += input
+            eventHandlers[TestContext] = BaseEventHandler(TestContext, TestConverter(output), TestErrorHandler(output))
             dispatcher = object : CoroutineDispatcher() {
                 override fun dispatch(context: CoroutineContext, block: Runnable) {
                     block.run()

@@ -3,9 +3,7 @@ package com.gitlab.kordlib.kordx.commands.argument.pipe
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.command.*
-import com.gitlab.kordlib.kordx.commands.pipe.ArgumentsResult
-import com.gitlab.kordlib.kordx.commands.pipe.EventSource
-import com.gitlab.kordlib.kordx.commands.pipe.Pipe
+import com.gitlab.kordlib.kordx.commands.pipe.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +17,7 @@ class TestEventContext(val output: TestOutput, val command: Command<*>) {
     }
 }
 
-object TestContext : CommandContext<Any?, Any?, TestEventContext>
+object TestContext : CommandContext<String, String, TestEventContext>
 
 sealed class EventType {
     class Response(val text: String) : EventType()
@@ -38,6 +36,39 @@ class TestOutput {
     }
 }
 
+class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, String, TestEventContext> {
+    override suspend fun Pipe.emptyInvocation(event: String) {
+        output.push(EventType.EmptyInvocation)
+    }
+
+    override suspend fun Pipe.notFound(event: String, command: String) {
+        output.push(EventType.NotFound(command))
+    }
+
+    override suspend fun Pipe.rejectArgument(
+            event: String,
+            command: Command<TestEventContext>,
+            words: List<String>,
+            argument: Argument<*, String>,
+            failure: Result.Failure<*>
+    ) {
+        output.push(EventType.RejectArgument(command, words, failure))
+    }
+}
+
+class TestConverter(private val output: TestOutput): ContextConverter<String, String, TestEventContext> {
+
+    override val String.text: String get() = this
+
+    override fun String.toArgumentContext(): String = this
+
+    override fun String.toEventContext(command: Command<TestEventContext>): TestEventContext {
+        return TestEventContext(output, command)
+    }
+
+}
+
+@Suppress("EXPERIMENTAL_API_USAGE")
 class TestEventSource(val output: TestOutput) : EventSource<String> {
     override val context: CommandContext<String, *, *>
         get() = TestContext
@@ -45,47 +76,5 @@ class TestEventSource(val output: TestOutput) : EventSource<String> {
     val channel = BroadcastChannel<String>(Channel.CONFLATED)
 
     override val events: Flow<String> = channel.asFlow()
-
-    override val converter: ContextConverter<String, *, *> = object : ContextConverter<String, String, TestEventContext> {
-
-        override fun supports(context: CommandContext<*, *, *>): Boolean = true
-
-        override suspend fun convertToArgument(context: String): ArgumentContextHandler<String, String, TestEventContext> = object : ArgumentContextHandler<String, String, TestEventContext> {
-            override val argumentContext: String
-                get() = context
-
-            override val text: String
-                get() = context
-
-            override suspend fun Pipe.emptyInvocation(pipe: Pipe) {
-                output.push(EventType.EmptyInvocation)
-            }
-
-            suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
-
-            override suspend fun Pipe.notFound(command: String) {
-                output.push(EventType.NotFound(command))
-            }
-
-            override suspend fun Pipe.rejectArgument(command: Command<TestEventContext>, words: List<String>, argument: Argument<*, String>, failure: Result.Failure<*>) {
-                output.push(EventType.RejectArgument(command, words, failure))
-            }
-
-
-        }
-
-
-        override suspend fun convertToEvent(context: TestEventContext): EventContextHandler<String, String, TestEventContext> = object : EventContextHandler<String, String, TestEventContext> {
-            override val eventContext: TestEventContext
-                get() = context
-
-            suspend fun respond(message: String): Any? = output.push(EventType.Response(message))
-        }
-
-        override suspend fun convert(context: String, command: Command<TestEventContext>, arguments: List<Argument<*, String>>): TestEventContext {
-            return TestEventContext(output, command)
-        }
-
-    }
 
 }
