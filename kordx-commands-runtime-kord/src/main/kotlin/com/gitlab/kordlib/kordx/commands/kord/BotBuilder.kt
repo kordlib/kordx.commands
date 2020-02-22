@@ -1,8 +1,6 @@
 package com.gitlab.kordlib.kordx.commands.kord
 
-import com.gitlab.kordlib.core.builder.kord.KordBuilder
-import com.gitlab.kordlib.core.event.Event
-import com.gitlab.kordlib.core.kordLogger
+import com.gitlab.kordlib.core.Kord
 import com.gitlab.kordlib.kordx.commands.command.CommonContext
 import com.gitlab.kordlib.kordx.commands.kord.context.KordContext
 import com.gitlab.kordlib.kordx.commands.kord.context.KordContextConverter
@@ -11,16 +9,19 @@ import com.gitlab.kordlib.kordx.commands.kord.context.KordEventSource
 import com.gitlab.kordlib.kordx.commands.kord.listeners.EventListener
 import com.gitlab.kordlib.kordx.commands.pipe.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
+import org.koin.core.get
 
 private val logger = KotlinLogging.logger("[kordx.commands]:[kord]:[BotBuilder]")
 
-class BotBuilder(token: String) {
-    val kordBuilder: KordBuilder = KordBuilder(token)
+fun PipeConfig.addListener(vararg listeners: EventListener<*>) {
+    listeners.forEach { listener ->
+        with(listener) { get<Kord>().apply() }
+    }
+}
+
+class BotBuilder(val kord: Kord) {
     val pipeConfig: PipeConfig = PipeConfig()
-    private val eventListeners = mutableListOf<EventListener<Event>>()
 
     val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
     val ignoreBots = eventFilter { message.author?.isBot != true }
@@ -32,27 +33,12 @@ class BotBuilder(token: String) {
         }
     }
 
-    operator fun <T : Event> EventListener<T>.unaryPlus() {
-        eventListeners.add(this as EventListener<Event>)
-    }
-
-    inline fun kord(builder: KordBuilder.() -> Unit) {
-        kordBuilder.apply(builder)
-    }
-
     inline fun pipe(builder: PipeConfig.() -> Unit) {
         pipeConfig.apply(builder)
     }
 
     @Suppress("EXPERIMENTAL_API_USAGE")
     suspend fun build() {
-        val kord = kordBuilder.build()
-
-        eventListeners.forEach { listener ->
-            kord.events.buffer(Channel.UNLIMITED).filter { listener.matches(it) }.onEach {
-                runCatching { listener.consume(it) }.onFailure { kordLogger.catching(it) }
-            }.catch { kordLogger.catching(it) }.launchIn(kord)
-        }
 
         pipeConfig.apply {
             eventSources += KordEventSource(kord)
@@ -76,6 +62,15 @@ class BotBuilder(token: String) {
 
 }
 
-suspend inline fun bot(token: String, builder: BotBuilder.() -> Unit) {
-    BotBuilder(token).apply(builder).build()
+suspend inline fun bot(token: String, configure: PipeConfig.() -> Unit) = bot(Kord(token), configure)
+
+suspend inline fun bot(kord: Kord, configure: PipeConfig.() -> Unit) {
+    val builder = BotBuilder(kord)
+    builder.pipe {
+        koin {
+            modules(org.koin.dsl.module { single { kord } })
+        }
+    }
+    builder.pipeConfig.configure()
+    builder.build()
 }

@@ -28,3 +28,4 @@ fun <SCONTEXT, ACOUNTEXT, ECONTEXT> CommandBuilder<SCONTEXT, ACOUNTEXT, ECONTEXT
 ) {
     preconditions += com.gitlab.kordlib.kordx.commands.flow.precondition(context, priority, precondition)
 }
+

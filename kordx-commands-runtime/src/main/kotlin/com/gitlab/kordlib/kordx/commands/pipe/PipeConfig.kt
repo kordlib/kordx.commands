@@ -5,9 +5,18 @@ import com.gitlab.kordlib.kordx.commands.command.Module
 import com.gitlab.kordlib.kordx.commands.flow.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import org.koin.core.Koin
+import org.koin.core.KoinApplication
+import org.koin.core.KoinComponent
+import org.koin.core.context.GlobalContext
+import org.koin.core.context.startKoin
+import org.koin.dsl.koinApplication
 
 @Suppress("MemberVisibilityCanBePrivate")
-class PipeConfig {
+class PipeConfig: KoinComponent {
+    override fun getKoin(): Koin = koinApplication.koin
+
+    val koinApplication: KoinApplication = GlobalContext.getOrNull() ?: koinApplication {  }
     val eventFilters: MutableList<EventFilter<*>> = mutableListOf()
     val eventHandlers: MutableMap<CommandContext<*,*,*>, EventHandler<*>> = mutableMapOf()
     val eventSources: MutableList<EventSource<*>> = mutableListOf()
@@ -16,8 +25,16 @@ class PipeConfig {
     val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(EachCommandModifier)
     var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
+    inline fun koin(builder: KoinApplication.() -> Unit) {
+        koinApplication.builder()
+    }
+
     inline fun prefix(builder: PrefixBuilder.() -> Unit) {
         prefixBuilder.builder()
+    }
+
+    operator fun Precondition<*>.unaryPlus() {
+        preconditions.add(this)
     }
 
     operator fun EventFilter<*>.unaryPlus() {
@@ -46,7 +63,7 @@ class PipeConfig {
 
         val pipe = Pipe(
                 filters = eventFilters.groupBy { it.context },
-                commands = modules.values.map { it.commands }.fold(mutableMapOf()) { acc, map -> acc += map; acc },
+                commands = modules.values.map { it.commands }.fold(emptyMap()) { acc, map -> acc + map },
                 handlers = eventHandlers.toMap(),
                 preconditions = preconditions.groupBy { it.context },
                 prefix = prefixBuilder.build(),

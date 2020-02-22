@@ -28,6 +28,7 @@ ext {
     kotlin_logging_version = '1.6.26'
     log4j_version = '1.7.26'
     kord_version = '0.2.1'
+    koin_version = '2.0.1'
 }
 
 group lib_group
