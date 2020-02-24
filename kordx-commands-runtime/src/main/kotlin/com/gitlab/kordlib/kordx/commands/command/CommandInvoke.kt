@@ -3,26 +3,26 @@ package com.gitlab.kordlib.kordx.commands.command
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.internal.cast
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        execute: suspend EVENTCONTEXT.() -> Unit
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        execute: suspend CCONTEXT.() -> Unit
 ) {
     arguments = emptyList()
     execution = { context, _ -> execute(context.cast()) }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(first: Argument<A,
-        ARGUMENTCONTEXT>, execute: suspend EVENTCONTEXT.(first: A) -> Unit) {
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(first: Argument<A,
+        ACONTEXT>, execute: suspend CCONTEXT.(first: A) -> Unit) {
     arguments = listOf(first)
     execution = { context, arguments -> execute(context.cast(), arguments[0].cast()) }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(first: A, second: B) -> Unit
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        execute: suspend CCONTEXT.(first: A, second: B) -> Unit
 ) {
     arguments = listOf(first, second)
     execution = { context, arguments ->
@@ -31,12 +31,12 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C
@@ -49,13 +49,13 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -69,14 +69,14 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -91,15 +91,15 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -115,16 +115,16 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -141,17 +141,17 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G>
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H>
-        CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H>
+        CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -169,18 +169,18 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -199,19 +199,19 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -231,20 +231,20 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -266,21 +266,21 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -303,22 +303,22 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -342,23 +342,23 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -383,24 +383,24 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -426,25 +426,25 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O, P> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        sixteenth: Argument<P, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O, P> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        sixteenth: Argument<P, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -471,26 +471,26 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O, P, Q> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        sixteenth: Argument<P, ARGUMENTCONTEXT>,
-        seventeenth: Argument<Q, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O, P, Q> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        sixteenth: Argument<P, ACONTEXT>,
+        seventeenth: Argument<Q, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -518,28 +518,28 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O, P, Q, R> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
-        EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        sixteenth: Argument<P, ARGUMENTCONTEXT>,
-        seventeenth: Argument<Q, ARGUMENTCONTEXT>,
-        eighteenth: Argument<R, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O, P, Q, R> CommandBuilder<SCONTEXT, ACONTEXT,
+        CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        sixteenth: Argument<P, ACONTEXT>,
+        seventeenth: Argument<Q, ACONTEXT>,
+        eighteenth: Argument<R, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -568,29 +568,29 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O, P, Q, R, S> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
-        EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        sixteenth: Argument<P, ARGUMENTCONTEXT>,
-        seventeenth: Argument<Q, ARGUMENTCONTEXT>,
-        eighteenth: Argument<R, ARGUMENTCONTEXT>,
-        nineteenth: Argument<S, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O, P, Q, R, S> CommandBuilder<SCONTEXT, ACONTEXT,
+        CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        sixteenth: Argument<P, ACONTEXT>,
+        seventeenth: Argument<Q, ACONTEXT>,
+        eighteenth: Argument<R, ACONTEXT>,
+        nineteenth: Argument<S, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,
@@ -620,30 +620,30 @@ operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT, A, B, C, D, E, F, G, H,
-        I, J, K, L, M, N, O, P, Q, R, S, T> CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT,
-        EVENTCONTEXT>.invoke(
-        first: Argument<A, ARGUMENTCONTEXT>,
-        second: Argument<B, ARGUMENTCONTEXT>,
-        third: Argument<C, ARGUMENTCONTEXT>,
-        fourth: Argument<D, ARGUMENTCONTEXT>,
-        fifth: Argument<E, ARGUMENTCONTEXT>,
-        sixth: Argument<F, ARGUMENTCONTEXT>,
-        seventh: Argument<G, ARGUMENTCONTEXT>,
-        eighth: Argument<H, ARGUMENTCONTEXT>,
-        ninth: Argument<I, ARGUMENTCONTEXT>,
-        tenth: Argument<J, ARGUMENTCONTEXT>,
-        eleventh: Argument<K, ARGUMENTCONTEXT>,
-        twelfth: Argument<L, ARGUMENTCONTEXT>,
-        thirteenth: Argument<M, ARGUMENTCONTEXT>,
-        fourteenth: Argument<N, ARGUMENTCONTEXT>,
-        fifteenth: Argument<O, ARGUMENTCONTEXT>,
-        sixteenth: Argument<P, ARGUMENTCONTEXT>,
-        seventeenth: Argument<Q, ARGUMENTCONTEXT>,
-        eighteenth: Argument<R, ARGUMENTCONTEXT>,
-        nineteenth: Argument<S, ARGUMENTCONTEXT>,
-        twentieth: Argument<T, ARGUMENTCONTEXT>,
-        execute: suspend EVENTCONTEXT.(
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+        I, J, K, L, M, N, O, P, Q, R, S, T> CommandBuilder<SCONTEXT, ACONTEXT,
+        CCONTEXT>.invoke(
+        first: Argument<A, ACONTEXT>,
+        second: Argument<B, ACONTEXT>,
+        third: Argument<C, ACONTEXT>,
+        fourth: Argument<D, ACONTEXT>,
+        fifth: Argument<E, ACONTEXT>,
+        sixth: Argument<F, ACONTEXT>,
+        seventh: Argument<G, ACONTEXT>,
+        eighth: Argument<H, ACONTEXT>,
+        ninth: Argument<I, ACONTEXT>,
+        tenth: Argument<J, ACONTEXT>,
+        eleventh: Argument<K, ACONTEXT>,
+        twelfth: Argument<L, ACONTEXT>,
+        thirteenth: Argument<M, ACONTEXT>,
+        fourteenth: Argument<N, ACONTEXT>,
+        fifteenth: Argument<O, ACONTEXT>,
+        sixteenth: Argument<P, ACONTEXT>,
+        seventeenth: Argument<Q, ACONTEXT>,
+        eighteenth: Argument<R, ACONTEXT>,
+        nineteenth: Argument<S, ACONTEXT>,
+        twentieth: Argument<T, ACONTEXT>,
+        execute: suspend CCONTEXT.(
                 first: A,
                 second: B,
                 third: C,

@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.util
 
 import com.gitlab.kordlib.kordx.commands.argument.*
-import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.PipeContext
 
 
 @Suppress("UNCHECKED_CAST")
@@ -103,4 +103,4 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefaultSupply(fallback: suspend
     }
 }
 
-fun <T, CONTEXT, NEWCONTEXT : CONTEXT> Argument<T, CONTEXT>.withContext(newContext: CommandContext<*, NEWCONTEXT, *>): Argument<T, NEWCONTEXT> = this
+fun <T, CONTEXT, NEWCONTEXT : CONTEXT> Argument<T, CONTEXT>.withContext(newContext: PipeContext<*, NEWCONTEXT, *>): Argument<T, NEWCONTEXT> = this

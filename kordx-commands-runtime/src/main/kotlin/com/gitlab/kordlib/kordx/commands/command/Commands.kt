@@ -1,18 +1,18 @@
 package com.gitlab.kordlib.kordx.commands.command
 
-fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> commands(
-        context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
-        builder: ModuleBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.() -> Unit
+fun <S, A, C: CommandContext> commands(
+        context: PipeContext<S, A, C>,
+        builder: ModuleBuilder<S, A, C>.() -> Unit
 ): CommandSet = object : CommandSet {
     override fun ModuleBuilder<*, *, *>.apply() {
         commands += ModuleBuilder(name, context, metaData, commands).apply(builder).commands
     }
 }
 
-fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> command(
-        context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>,
+fun <S, A, C: CommandContext> command(
+        context: PipeContext<S, A, C>,
         name: String,
-        builder: CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>.() -> Unit
+        builder: CommandBuilder<S, A, C>.() -> Unit
 ): CommandSet = commands(context) { command(name, builder) }
 
 interface CommandSet {

@@ -13,31 +13,33 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import org.koin.core.Koin
 import kotlin.coroutines.CoroutineContext
 
 private val logger = KotlinLogging.logger { }
 
 class Pipe(
-        val filters: Map<CommandContext<*, *, *>, List<EventFilter<*>>>,
-        val preconditions: Map<CommandContext<*, *, *>, List<Precondition<out Any?>>>,
-        commands: Map<String, Command<out Any?>>,
+        val filters: Map<PipeContext<*, *, *>, List<EventFilter<*>>>,
+        val preconditions: Map<PipeContext<*, *, *>, List<Precondition<out CommandContext>>>,
+        commands: Map<String, Command<out CommandContext>>,
         val prefix: Prefix,
-        private val handlers: Map<CommandContext<*, *, *>, EventHandler<*>>,
+        private val handlers: Map<PipeContext<*, *, *>, EventHandler<*>>,
         private var modifiers: List<ModuleModifier>,
+        val koin: Koin,
         dispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : CoroutineScope {
     private val editMutex = Mutex()
     override val coroutineContext: CoroutineContext = dispatcher + Job()
 
-    private var _commands: Map<String, Command<out Any?>> = commands
-    val commands: Map<String, Command<out Any?>> get() = _commands
+    private var _commands: Map<String, Command<out CommandContext>> = commands
+    val commands: Map<String, Command<out CommandContext>> get() = _commands
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getPreconditions(context: CommandContext<*,*, T>) : List<Precondition<T>> {
+    fun <T : CommandContext> getPreconditions(context: PipeContext<*, *, T>): List<Precondition<T>> {
         return preconditions[context].orEmpty() as List<Precondition<T>>
     }
 
-    fun<T> getCommand(context: CommandContext<*,*, T>, name: String) : Command<T>? {
+    fun <T : CommandContext> getCommand(context: PipeContext<*, *, T>, name: String): Command<T>? {
         val command = commands[name] ?: return null
         if (command.context != context) return null
 
@@ -46,15 +48,15 @@ class Pipe(
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getFilters(context: CommandContext<T,*,*>) : List<EventFilter<T>> {
-        return when(context) {
+    fun <T> getFilters(context: PipeContext<T, *, *>): List<EventFilter<T>> {
+        return when (context) {
             is CommonContext -> (filters[CommonContext].orEmpty()) as List<EventFilter<T>>
             else -> (filters[context].orEmpty() + getFilters(CommonContext)) as List<EventFilter<T>>
         }
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun <T> getEventHandler(context: CommandContext<T,*,*>) : EventHandler<T> {
+    fun <T> getEventHandler(context: PipeContext<T, *, *>): EventHandler<T> {
         return handlers[context] as EventHandler<T>
     }
 
@@ -62,15 +64,15 @@ class Pipe(
         editMutex.withLock { modify() }
     }
 
-    fun <SOURCECONTEXT> add(source: EventSource<SOURCECONTEXT>): Job {
+    fun <S> add(source: EventSource<S>): Job {
         return source.events.onEach {
-            handle<SOURCECONTEXT, Any?, Any?>(it, source.context.cast())
+            handle(it, source.context.cast())
         }.catch { logger.catching(it) }.launchIn(this)
     }
 
-    suspend fun <SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT> handle(
-            event: SOURCECONTEXT,
-            context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, EVENTCONTEXT>
+    suspend fun <S> handle(
+            event: S,
+            context: PipeContext<S, *, *>
     ) = with(getEventHandler(context)) { onEvent(event) }
 
     suspend operator fun plusAssign(modifier: ModuleModifier) = edit {
@@ -86,7 +88,7 @@ class Pipe(
         val modules = _commands.values.firstOrNull()?.modules as? MutableMap<String, Module> ?: mutableMapOf()
         container.modules.values.forEach { it.build(modules) }
 
-        val map: Map<String, Command<out Any?>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
+        val map: Map<String, Command<out CommandContext>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
             map.keys.forEach { require(it !in acc) { "command $it is already registered in ${acc[it]!!.module.name}" } }
             acc + map
         }

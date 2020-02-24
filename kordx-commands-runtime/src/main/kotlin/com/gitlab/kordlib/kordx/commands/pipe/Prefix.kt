@@ -1,25 +1,26 @@
 package com.gitlab.kordlib.kordx.commands.pipe
 
 import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.PipeContext
 import com.gitlab.kordlib.kordx.commands.command.CommonContext
 
 typealias PrefixSupplier<S> = suspend (S) -> String
 
-class Prefix(private val suppliers: Map<CommandContext<*, *, *>, PrefixSupplier<*>> = mapOf()) {
+class Prefix(private val suppliers: Map<PipeContext<*, *, *>, PrefixSupplier<*>> = mapOf()) {
 
-    fun contains(context: CommandContext<*, *, *>): Boolean = context in suppliers
+    fun contains(context: PipeContext<*, *, *>): Boolean = context in suppliers
 
     @Suppress("UNCHECKED_CAST")
-    suspend fun <S, A, E> getPrefix(context: CommandContext<S, A, E>, event: S): String {
+    suspend fun <S, A, E: CommandContext> getPrefix(context: PipeContext<S, A, E>, event: S): String {
         val supplier = (suppliers[context] ?: suppliers[CommonContext] ?: return "") as PrefixSupplier<S>
         return supplier(event)
     }
 
 }
 
-class PrefixBuilder(val suppliers: MutableMap<CommandContext<*, *, *>, PrefixSupplier<*>> = mutableMapOf()) {
+class PrefixBuilder(val suppliers: MutableMap<PipeContext<*, *, *>, PrefixSupplier<*>> = mutableMapOf()) {
 
-    fun <S, A, E> add(context: CommandContext<S, A, E>, supplier: suspend (S) -> String) {
+    fun <S, A, E: CommandContext> add(context: PipeContext<S, A, E>, supplier: suspend (S) -> String) {
         suppliers[context] = supplier
     }
 

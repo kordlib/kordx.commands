@@ -11,15 +11,22 @@ import com.gitlab.kordlib.kordx.commands.pipe.ArgumentsResult
 import com.gitlab.kordlib.kordx.commands.pipe.ContextConverter
 import com.gitlab.kordlib.kordx.commands.pipe.ErrorHandler
 import com.gitlab.kordlib.kordx.commands.pipe.Pipe
+import org.koin.core.Koin
 
 object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordEventContext> {
     override val MessageCreateEvent.text: String get() =  message.content
 
     override fun MessageCreateEvent.toArgumentContext(): MessageCreateEvent = this
 
-    override fun MessageCreateEvent.toEventContext(command: Command<KordEventContext>): KordEventContext {
-        return KordEventContext(this, command)
+    override fun MessageCreateEvent.toEventContext(
+            command: Command<KordEventContext>,
+            modules: Map<String, Module>,
+            commands: Map<String, Command<*>>,
+            koin: Koin
+    ): KordEventContext {
+        return KordEventContext(this, command, commands, koin)
     }
+
 }
 
 class KordErrorHandler(

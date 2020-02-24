@@ -1,14 +1,14 @@
 package com.gitlab.kordlib.kordx.commands.flow
 
-import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.PipeContext
 
-interface EventFilter<SOURCECONTEXT> {
-    val context: CommandContext<SOURCECONTEXT, *, *>
-    suspend operator fun invoke(event: SOURCECONTEXT): Boolean
+interface EventFilter<S> {
+    val context: PipeContext<S, *, *>
+    suspend operator fun invoke(event: S): Boolean
 }
 
-fun <SOURCECONTEXT> eventFilter(context: CommandContext<SOURCECONTEXT, *, *>, filter: suspend SOURCECONTEXT.() -> Boolean) = object : EventFilter<SOURCECONTEXT> {
-    override val context: CommandContext<SOURCECONTEXT, *, *> = context
+fun <S> eventFilter(context: PipeContext<S, *, *>, filter: suspend S.() -> Boolean) = object : EventFilter<S> {
+    override val context: PipeContext<S, *, *> = context
 
-    override suspend fun invoke(event: SOURCECONTEXT): Boolean = filter(event)
+    override suspend fun invoke(event: S): Boolean = filter(event)
 }

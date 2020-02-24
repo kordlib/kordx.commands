@@ -1,3 +1,5 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
@@ -10,14 +12,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.koin.core.Koin
 
-class TestEventContext(val output: TestOutput, val command: Command<*>) {
+class TestEventContext(
+        val output: TestOutput,
+        override val command: Command<*>,
+        override val commands: Map<String, Command<*>>
+): CommandContext {
     suspend fun respond(text: String): Any? {
         return output.push(EventType.Response(text))
     }
 }
 
-object TestContext : CommandContext<String, String, TestEventContext>
+object TestContext : PipeContext<String, String, TestEventContext>
 
 sealed class EventType {
     class Response(val text: String) : EventType()
@@ -62,15 +69,15 @@ class TestConverter(private val output: TestOutput): ContextConverter<String, St
 
     override fun String.toArgumentContext(): String = this
 
-    override fun String.toEventContext(command: Command<TestEventContext>): TestEventContext {
-        return TestEventContext(output, command)
+    override fun String.toEventContext(command: Command<TestEventContext>, modules: Map<String, Module>, commands: Map<String, Command<*>>, koin: Koin): TestEventContext {
+        return TestEventContext(output, command, commands)
     }
 
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
-class TestEventSource(val output: TestOutput) : EventSource<String> {
-    override val context: CommandContext<String, *, *>
+class TestEventSource : EventSource<String> {
+    override val context: PipeContext<String, *, *>
         get() = TestContext
 
     val channel = BroadcastChannel<String>(Channel.CONFLATED)

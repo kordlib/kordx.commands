@@ -19,7 +19,8 @@ inline fun module(name: String, crossinline builder: suspend KordModuleBuilder.(
         }
 
 @JvmName("kordModule")
-inline fun <reified T> module(name: String, crossinline builder: suspend KordModuleBuilder.() -> Unit) =
+@Suppress("FINAL_UPPER_BOUND")
+inline fun <reified T: Kord> module(name: String, crossinline builder: suspend KordModuleBuilder.() -> Unit) =
         module(name, KordContext) {
             builder()
         }
@@ -48,17 +49,20 @@ fun command(
 ): CommandSet = command(KordContext, name, builder)
 
 @JvmName("kordCommand")
+@Suppress("FINAL_UPPER_BOUND")
 inline fun <reified T : Kord> command(
         name: String,
         noinline builder: KordCommandBuilder.() -> Unit
 ): CommandSet = command(KordContext, name, builder)
 
 @JvmName("kordWithContext")
+@Suppress("FINAL_UPPER_BOUND")
 inline fun <reified T : Kord> ModuleBuilder<*, *, *>.withContext(builder: KordModuleBuilder.() -> Unit) = withContext(KordContext) {
     builder()
 }
 
 @JvmName("KordAdd")
+@Suppress("FINAL_UPPER_BOUND")
 inline fun <reified T : Kord> PrefixBuilder.add(noinline supplier: PrefixSupplier<MessageCreateEvent>) {
     add(KordContext, supplier)
 }

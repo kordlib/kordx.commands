@@ -4,19 +4,22 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.Result
 import com.gitlab.kordlib.kordx.commands.command.Command
 import com.gitlab.kordlib.kordx.commands.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.command.PipeContext
+import org.koin.core.Koin
+import com.gitlab.kordlib.kordx.commands.command.Module
 
-interface EventHandler<SOURCECONTEXT> {
+interface EventHandler<S> {
 
-    suspend fun Pipe.onEvent(event: SOURCECONTEXT)
+    suspend fun Pipe.onEvent(event: S)
 
 }
 
-interface ContextConverter<S, A, E> {
+interface ContextConverter<S, A, E: CommandContext> {
     val S.text: String
 
     fun S.toArgumentContext(): A
 
-    fun A.toEventContext(command: Command<E>): E
+    fun A.toEventContext(command: Command<E>, modules: Map<String, Module>, commands: Map<String, Command<*>>, koin: Koin): E
 }
 
 sealed class ArgumentsResult<A> {
@@ -25,7 +28,7 @@ sealed class ArgumentsResult<A> {
     data class Failure<A>(val context: A, val failure: Result.Failure<*>, val argument: Argument<*, A>, val arguments: List<Argument<*, A>>, val argumentsTaken: Int, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
 }
 
-interface ErrorHandler<S, A, E> {
+interface ErrorHandler<S, A, E: CommandContext> {
     suspend fun Pipe.notFound(event: S, command: String) {}
 
     suspend fun Pipe.emptyInvocation(event: S) {}
@@ -41,8 +44,8 @@ interface ErrorHandler<S, A, E> {
     suspend fun Pipe.tooManyWords(event: S, command: Command<E>, result: ArgumentsResult.TooManyWords<A>) {}
 }
 
-open class BaseEventHandler<S, A, E>(
-        val context: CommandContext<S, A, E>,
+open class BaseEventHandler<S, A, E: CommandContext>(
+        val context: PipeContext<S, A, E>,
         protected val converter: ContextConverter<S, A, E>,
         protected val handler: ErrorHandler<S, A, E>
 ) : EventHandler<S> {
@@ -80,7 +83,7 @@ open class BaseEventHandler<S, A, E>(
         }
 
         val eventContext = with(converter) {
-            argumentContext.toEventContext(command)
+            argumentContext.toEventContext(command, command.modules, commands, koin)
         }
 
         val preconditions = getPreconditions(context) + command.preconditions

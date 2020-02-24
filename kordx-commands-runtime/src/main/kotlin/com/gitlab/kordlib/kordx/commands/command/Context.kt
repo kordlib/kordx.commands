@@ -1,5 +1,5 @@
 package com.gitlab.kordlib.kordx.commands.command
 
-interface CommandContext<in SOURCECONTEXT, in ARGUMENTCONTEXT, in EVENTCONTEXT>
+interface PipeContext<in S, in A, in C: CommandContext>
 
-object CommonContext : CommandContext<Any?, Any?, Any?>
+object CommonContext : PipeContext<Any?, Any?, CommandContext>

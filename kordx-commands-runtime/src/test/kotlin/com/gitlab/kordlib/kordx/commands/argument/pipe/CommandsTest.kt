@@ -28,7 +28,7 @@ class CommandsTest {
     @BeforeTest
     fun setUp() = runBlockingTest {
         output = TestOutput()
-        input = TestEventSource(output)
+        input = TestEventSource()
         pipe = PipeConfig {
             eventSources += input
             eventHandlers[TestContext] = BaseEventHandler(TestContext, TestConverter(output), TestErrorHandler(output))

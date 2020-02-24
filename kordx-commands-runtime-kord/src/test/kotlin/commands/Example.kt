@@ -19,6 +19,9 @@ import kotlinx.coroutines.flow.first
 import org.koin.core.get
 import org.koin.dsl.module
 
+/**
+ * container that keeps track of which commands are enabled/disabled
+ */
 class CommandSwitch(private val map: MutableMap<Command<*>, Boolean> = mutableMapOf()) {
 
     operator fun get(command: Command<*>): Boolean = map.getOrDefault(command, true)
@@ -29,13 +32,22 @@ class CommandSwitch(private val map: MutableMap<Command<*>, Boolean> = mutableMa
 
 }
 
+/**
+ * Container that tracks if we've told the user that we're not responding to their DMs
+ */
 class UserResponses(val users: MutableMap<Snowflake, Boolean> = mutableMapOf())
 
+/**
+ * Dependency injection setup with Koin.
+ */
 val dependencyModule = module {
     single { CommandSwitch() }
     single { UserResponses() }
 }
 
+/**
+ * manually connect all the pieced for now
+ */
 suspend fun main() = bot(System.getenv("token")) {
     koin {
         modules(dependencyModule)
@@ -53,12 +65,18 @@ suspend fun main() = bot(System.getenv("token")) {
 
 }
 
+/**
+ * greet a user once they join the guild
+ */
 val greetNewUser = on<MemberJoinEvent> {
     val textChannel = getGuild().channels.filterIsInstance<TextChannel>().first()
 
     textChannel.createMessage("hello ${member.nicknameMention}!")
 }
 
+/**
+ * Ignore the messages from DMs, tell the user to flip off once.
+ */
 fun guildOnly(responses: UserResponses) = eventFilter {
     (message.guildId != null).also {
         if (!it && responses.users[message.author!!.id] != true) {
@@ -68,25 +86,25 @@ fun guildOnly(responses: UserResponses) = eventFilter {
     }
 }
 
+/**
+ * Cancel commands that we've disabled with the [switch].
+ */
 fun disableCommands(switch: CommandSwitch) = precondition {
     switch[command].also {
         if (!it) respond("command is currently disabled")
     }
 }
 
+/**
+ * commands to enable/disable commands
+ */
 fun toggleCommands(switch: CommandSwitch) = module("command-control") {
-
-
-    fun KordEventContext.getCommand(name: String): Command<*>? {
-        val commands = command.modules.values.flatMap { it.commands.values }.map { it.name to it }.toMap()
-
-        return commands[name]
-    }
 
     command("disable") {
 
-        invoke(WordArgument) {
-            val command = getCommand(it) ?: return@invoke run {
+        invoke(WordArgument("command")) {
+
+            val command = commands[it] ?: return@invoke run {
                 respond("no command with name $it found")
             }
 
@@ -102,8 +120,8 @@ fun toggleCommands(switch: CommandSwitch) = module("command-control") {
 
     command("enable") {
 
-        invoke(WordArgument) {
-            val command = getCommand(it) ?: return@invoke run {
+        invoke(WordArgument("command")) {
+            val command = commands[it] ?: return@invoke run {
                 respond("no command with name $it found")
             }
 
@@ -119,6 +137,9 @@ fun toggleCommands(switch: CommandSwitch) = module("command-control") {
 
 }
 
+/**
+ * example command that we can enable disable.
+ */
 fun simpleMath() = commands {
 
     command("add") {

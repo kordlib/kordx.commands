@@ -5,26 +5,26 @@ import com.gitlab.kordlib.kordx.commands.flow.Precondition
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 
 @CommandsBuilder
-class CommandBuilder<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>(
+class CommandBuilder<S, A, COMMANDCONTEXT : CommandContext>(
         val name: String,
         val moduleName: String,
-        val context: CommandContext<SOURCECONTEXT, ARGUMENTCONTEXT, CONTEXT>,
+        val context: PipeContext<S, A, COMMANDCONTEXT>,
         val metaData: MutableMetadata = MutableMetadata(),
-        val preconditions: MutableList<Precondition<CONTEXT>> = mutableListOf()
+        val preconditions: MutableList<Precondition<COMMANDCONTEXT>> = mutableListOf()
 ) {
-    lateinit var execution: suspend (CONTEXT, List<*>) -> Unit
-    var arguments: List<Argument<*, ARGUMENTCONTEXT>> = emptyList()
+    lateinit var execution: suspend (COMMANDCONTEXT, List<*>) -> Unit
+    var arguments: List<Argument<*, A>> = emptyList()
 
-    fun build(modules: Map<String, Module>): Command<CONTEXT> {
+    fun build(modules: Map<String, Module>): Command<COMMANDCONTEXT> {
         return Command(name, moduleName, context, metaData, arguments, modules, preconditions) { event, items ->
             execution.invoke(event, items)
         }
     }
 }
 
-fun <SCONTEXT, ACOUNTEXT, ECONTEXT> CommandBuilder<SCONTEXT, ACOUNTEXT, ECONTEXT>.precondition(
+fun <T : CommandContext> CommandBuilder<*, *, T>.precondition(
         priority: Long = 0,
-        precondition: suspend ECONTEXT.() -> Boolean
+        precondition: suspend T.() -> Boolean
 ) {
     preconditions += com.gitlab.kordlib.kordx.commands.flow.precondition(context, priority, precondition)
 }
