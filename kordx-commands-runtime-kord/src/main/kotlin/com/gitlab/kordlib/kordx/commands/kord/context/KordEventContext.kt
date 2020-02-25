@@ -12,9 +12,9 @@ data class KordEventContext(
         override val event: MessageCreateEvent,
         override val command: Command<*>,
         override val commands: Map<String, Command<*>>,
-        private val _koin: Koin
+        private val koin: Koin
 ) : CommandContext, KordEvent, KordObject {
-    override fun getKoin(): Koin = _koin
+    override fun getKoin(): Koin = koin
 
     override val module get() = command.module
     override val kord: Kord get() = super.kord
