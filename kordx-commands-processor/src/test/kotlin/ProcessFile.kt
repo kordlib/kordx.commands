@@ -5,15 +5,13 @@ import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
 import com.gitlab.kordlib.kordx.commands.command.CommonContext
 import com.gitlab.kordlib.kordx.commands.command.invoke
-import com.gitlab.kordlib.kordx.commands.kord.bot
-import com.gitlab.kordlib.kordx.commands.kord.command
-import com.gitlab.kordlib.kordx.commands.kord.commands
+import com.gitlab.kordlib.kordx.commands.kord.*
 import com.gitlab.kordlib.kordx.commands.kord.context.KordContext
 import com.gitlab.kordlib.kordx.commands.kord.context.KordContextConverter
 import com.gitlab.kordlib.kordx.commands.kord.context.KordErrorHandler
-import com.gitlab.kordlib.kordx.commands.kord.module
 import com.gitlab.kordlib.kordx.commands.pipe.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.EventSource
+import com.gitlab.kordlib.kordx.commands.pipe.prefix
 import kapt.kotlin.generated.configure
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -43,6 +41,10 @@ val myHandler = BaseEventHandler(KordContext, KordContextConverter, KordErrorHan
 @get:ModuleName("test-module")
 val propertyCommand
     get() = command<Kord>("swing") {}
+
+val kordPrefix get() = prefix {
+    add<Kord> { "+" }
+}
 
 suspend fun testReference() = bot("sample"){
     configure()

@@ -11,9 +11,11 @@ import com.gitlab.kordlib.kordx.commands.flow.Precondition
 import com.gitlab.kordlib.kordx.commands.pipe.EventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.EventSource
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
+import com.gitlab.kordlib.kordx.commands.pipe.PrefixConfiguration
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import org.koin.core.module.Module
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -41,15 +43,15 @@ class CommandProcessor : AbstractProcessor() {
         val function = FunSpec.builder("configure").apply {
             receiver(PipeConfig::class)
 
-            koin(items.koins.toSet())
+            koin(items.koins)
 
-            list("moduleModifiers", items.modules.toSet())
-            list("eventFilters", items.filters.toSet())
-            list("eventSources", items.sources.toSet())
-            //TODO prefixes
-            list("moduleModifiers", items.commandSets.toSet()) { ".toModifier(\"${it.moduleName()}\")" }
-            list("preconditions", items.preconditions.toSet())
-            eventHandlers(items.handlers.toSet())
+            list("moduleModifiers", items.modules)
+            list("eventFilters", items.filters)
+            list("eventSources", items.sources)
+            list("moduleModifiers", items.commandSets) { ".toModifier(\"${it.moduleName()}\")" }
+            list("preconditions", items.preconditions)
+            eventHandlers(items.handlers)
+            prefixes(items.prefixes)
         }.build()
 
         val path = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]!!
@@ -58,7 +60,7 @@ class CommandProcessor : AbstractProcessor() {
         with(FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")) {
             addImport("com.gitlab.kordlib.kordx.commands.flow", "toModifier")
             addImport("org.koin.core", "get")
-            fun List<ExecutableElement>.import() = forEach {
+            fun Iterable<ExecutableElement>.import() = forEach {
                 val packageName = processingEnv.elementUtils.getPackageOf(it).qualifiedName
                 addImport(packageName.toString(), it.simpleKotlinName)
             }
@@ -70,6 +72,7 @@ class CommandProcessor : AbstractProcessor() {
             items.modules.import()
             items.koins.import()
             items.commandSets.import()
+            items.prefixes.import()
             addFunction(function)
 
         }.build().writeTo(file)
@@ -84,13 +87,14 @@ class CommandProcessor : AbstractProcessor() {
     fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
 
     class PipeItems(
-            val koins: MutableList<ExecutableElement> = mutableListOf(),
-            val modules: MutableList<ExecutableElement> = mutableListOf(),
-            val sources: MutableList<ExecutableElement> = mutableListOf(),
-            val filters: MutableList<ExecutableElement> = mutableListOf(),
-            val handlers: MutableList<ExecutableElement> = mutableListOf(),
-            val commandSets: MutableList<ExecutableElement> = mutableListOf(),
-            val preconditions: MutableList<ExecutableElement> = mutableListOf()
+            val koins: MutableSet<ExecutableElement> = mutableSetOf(),
+            val modules: MutableSet<ExecutableElement> = mutableSetOf(),
+            val sources: MutableSet<ExecutableElement> = mutableSetOf(),
+            val filters: MutableSet<ExecutableElement> = mutableSetOf(),
+            val handlers: MutableSet<ExecutableElement> = mutableSetOf(),
+            val commandSets: MutableSet<ExecutableElement> = mutableSetOf(),
+            val preconditions: MutableSet<ExecutableElement> = mutableSetOf(),
+            val prefixes: MutableSet<ExecutableElement> = mutableSetOf()
     ) {
         fun isEmpty() = listOf(koins, modules, sources, filters, handlers, preconditions).all { it.isEmpty() }
     }
@@ -110,6 +114,7 @@ class CommandProcessor : AbstractProcessor() {
         val koinType = typeMirror<Module>()
         val preconditionType = typeMirror<Precondition<*>>()
         val commandSetType = typeMirror<CommandSet>()
+        val prefixesType = typeMirror<PrefixConfiguration>()
 
         val elements = env.getElementsAnnotatedWith(AutoWired::class.java)
         val functions = elements.flatMap {
@@ -130,6 +135,7 @@ class CommandProcessor : AbstractProcessor() {
                 returnType isAssignableTo filterType -> items.filters.add(item)
                 returnType isAssignableTo preconditionType -> items.preconditions.add(item)
                 returnType isAssignableTo koinType -> items.koins.add(item)
+                returnType isAssignableTo prefixesType -> items.prefixes.add(item)
                 else -> {
                     val message = "ignoring $item with unknown return type: $returnType"
                     processingEnv.messager.printMessage(Diagnostic.Kind.NOTE, message)
@@ -171,6 +177,18 @@ class CommandProcessor : AbstractProcessor() {
         handlers.forEach {
             addStatement("+${it.resolved}")
         }
+    }
+
+    fun FunSpec.Builder.prefixes(prefixes: Set<ExecutableElement>) {
+        val applying = prefixes.joinToString("\n") {
+            "${it.resolved}.apply(this)"
+        }
+        if (applying.isEmpty()) return
+        addStatement("""
+            prefix {
+                $applying
+            }
+        """.trimIndent())
     }
 
     fun FunSpec.Builder.koin(modules: Set<ExecutableElement>) {
