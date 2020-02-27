@@ -1,122 +1,196 @@
+@file:Suppress("MemberVisibilityCanBePrivate")
+
 package com.gitlab.kordlib.kordx.processor
 
+import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
+import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
+import com.gitlab.kordlib.kordx.commands.command.CommandSet
 import com.gitlab.kordlib.kordx.commands.flow.EventFilter
-import com.gitlab.kordlib.kordx.commands.flow.ModuleGenerator
 import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.flow.Precondition
 import com.gitlab.kordlib.kordx.commands.pipe.EventHandler
 import com.gitlab.kordlib.kordx.commands.pipe.EventSource
 import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
-import com.gitlab.kordlib.kordx.commands.pipe.Prefix
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import org.koin.core.module.Module
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
-import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
+import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
+import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
+import javax.lang.model.type.TypeMirror
+import javax.tools.Diagnostic
+import kotlin.reflect.typeOf
 
 const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
 
+@ExperimentalStdlibApi
 @AutoService(Processor::class)
 class CommandProcessor : AbstractProcessor() {
 
     override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
-        val path = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME].orEmpty()
-        val file = File(path)
-        file.delete()
-        println("KordProcessor is here to save the day")
+        val items = getAutoWired(env)
+        if (items.isEmpty()) return true
+
         val function = FunSpec.builder("configure").apply {
             receiver(PipeConfig::class)
-            val modules = getFunctionsAnnotatedWith(SupplyCommandModule::class.java, env)
-            val moduleModifiers = getFunctionsAnnotatedWith(SupplyModuleModifier::class.java, env)
-            val eventFilters = getFunctionsAnnotatedWith(SupplyEventFilter::class.java, env)
-            val prefixes = getFunctionsAnnotatedWith(SupplyPrefix::class.java, env)
-            val eventSources = getFunctionsAnnotatedWith(SupplyEventSource::class.java, env)
-            val preconditions = getFunctionsAnnotatedWith(SupplyPrecondition::class.java, env)
-            val eventHandler = getFunctionsAnnotatedWith(SupplyEventHandler::class.java, env)
-            if (modules.isEmpty()
-                    && moduleModifiers.isEmpty()
-                    && eventFilters.isEmpty()
-                    && prefixes.isEmpty()
-                    && eventSources.isEmpty()
-                    && preconditions.isEmpty()
-                    && eventFilters.isEmpty()
-                    && eventHandler.isEmpty()) return true
-            list<ModuleGenerator>(processingEnv, "moduleGenerators", modules) { ".toGenerator()" }
-            list<ModuleModifier>(processingEnv, "moduleModifiers", moduleModifiers)
-            list<EventFilter<*>>(processingEnv, "eventFilters", eventFilters)
-            list<EventSource<*>>(processingEnv, "eventSources", eventSources)
-            list<Prefix<*, *, *>>(processingEnv, "prefixes", prefixes)
-            list<Precondition<*>>(processingEnv, "preconditions", preconditions)
-            variable<EventHandler>(processingEnv, "eventHandler", eventHandler)
 
+            koin(items.koins.toSet())
 
+            list("moduleModifiers", items.modules.toSet())
+            list("eventFilters", items.filters.toSet())
+            list("eventSources", items.sources.toSet())
+            //TODO prefixes
+            list("moduleModifiers", items.commandSets.toSet()) { ".toModifier(\"${it.moduleName()}\")" }
+            list("preconditions", items.preconditions.toSet())
+            eventHandlers(items.handlers.toSet())
         }.build()
-        file.mkdir()
-        FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")
-                .addImport("com.gitlab.kordlib.kordx.commands.flow", "toGenerator")
-                .addFunction(function)
-                .build()
-                .writeTo(file)
+
+        val path = processingEnv.options[KAPT_KOTLIN_GENERATED_OPTION_NAME]!!
+        val file = File(path)
+
+        with(FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")) {
+            addImport("com.gitlab.kordlib.kordx.commands.flow", "toModifier")
+            addImport("org.koin.core", "get")
+            fun List<ExecutableElement>.import() = forEach {
+                val packageName = processingEnv.elementUtils.getPackageOf(it).qualifiedName
+                addImport(packageName.toString(), it.simpleKotlinName)
+            }
+
+            items.handlers.import()
+            items.preconditions.import()
+            items.filters.import()
+            items.sources.import()
+            items.modules.import()
+            items.koins.import()
+            items.commandSets.import()
+            addFunction(function)
+
+        }.build().writeTo(file)
         return true
     }
 
     override fun getSupportedAnnotationTypes() = mutableSetOf(
-            SupplyCommandModule::class.java.name,
-            SupplyModuleModifier::class.java.name,
-            SupplyEventSource::class.java.name,
-            SupplyEventFilter::class.java.name,
-            SupplyEventHandler::class.java.name,
-            SupplyPrecondition::class.java.name
+            AutoWired::class.java.name,
+            ModuleName::class.java.name
     )
+
+    fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
+
+    class PipeItems(
+            val koins: MutableList<ExecutableElement> = mutableListOf(),
+            val modules: MutableList<ExecutableElement> = mutableListOf(),
+            val sources: MutableList<ExecutableElement> = mutableListOf(),
+            val filters: MutableList<ExecutableElement> = mutableListOf(),
+            val handlers: MutableList<ExecutableElement> = mutableListOf(),
+            val commandSets: MutableList<ExecutableElement> = mutableListOf(),
+            val preconditions: MutableList<ExecutableElement> = mutableListOf()
+    ) {
+        fun isEmpty() = listOf(koins, modules, sources, filters, handlers, preconditions).all { it.isEmpty() }
+    }
+
+    /**
+     * returns the wildcard type mirror of [T]
+     */
+    private inline fun <reified T> typeMirror() = processingEnv.typeUtils.erasure(processingEnv.elementUtils.getTypeElement(T::class.java.canonicalName).asType())
+
+    infix fun TypeMirror.isAssignableTo(other: TypeMirror) = processingEnv.typeUtils.isAssignable(this, other)
+
+    fun getAutoWired(env: RoundEnvironment): PipeItems {
+        val moduleModifierType = typeMirror<ModuleModifier>()
+        val eventSourceType = typeMirror<EventSource<*>>()
+        val eventHandlerType = typeMirror<EventHandler<*>>()
+        val filterType = typeMirror<EventFilter<*>>()
+        val koinType = typeMirror<Module>()
+        val preconditionType = typeMirror<Precondition<*>>()
+        val commandSetType = typeMirror<CommandSet>()
+
+        val elements = env.getElementsAnnotatedWith(AutoWired::class.java)
+        val functions = elements.flatMap {
+            if (it.isClass) {
+                it.asClass.enclosedElements.filterIsInstance<ExecutableElement>().filter { Modifier.STATIC in it.modifiers }
+            } else listOf(it).filterIsInstance<ExecutableElement>()
+        }
+
+        val items = PipeItems()
+        functions.forEach { item ->
+            val returnType = processingEnv.typeUtils.erasure(item.returnType)
+
+            when {
+                returnType isAssignableTo moduleModifierType -> items.modules.add(item)
+                returnType isAssignableTo commandSetType -> items.commandSets.add(item.ensureAnnotatedWith<ModuleName>())
+                returnType isAssignableTo eventSourceType -> items.sources.add(item)
+                returnType isAssignableTo eventHandlerType -> items.handlers.add(item)
+                returnType isAssignableTo filterType -> items.filters.add(item)
+                returnType isAssignableTo preconditionType -> items.preconditions.add(item)
+                returnType isAssignableTo koinType -> items.koins.add(item)
+                else -> {
+                    val message = "ignoring $item with unknown return type: $returnType"
+                    processingEnv.messager.printMessage(Diagnostic.Kind.NOTE, message)
+                }
+            }
+
+        }
+
+        return items
+    }
+
+    private inline fun <reified T : Annotation> ExecutableElement.ensureAnnotatedWith(): ExecutableElement {
+        require(this.getAnnotation(T::class.java) != null) {
+            val message = "$this needs to be annotated with ${typeOf<T>()}"
+            processingEnv.messager.printMessage(Diagnostic.Kind.ERROR, message)
+            message
+        }
+
+        return this
+    }
 
     override fun getSupportedSourceVersion() = SourceVersion.latest()!!
 
-    fun getFunctionsAnnotatedWith(annotation: Class<out Annotation>, env: RoundEnvironment): Set<ExecutableElement> {
-        val elements = env.getElementsAnnotatedWith(annotation)
-        val functions = elements.filterIsInstance<ExecutableElement>()
-        return functions.toSet()
+    val Element.isClass get() = this is TypeElement
+
+    val Element.asClass get() = this as TypeElement
+
+    inline fun FunSpec.Builder.list(
+            name: String, values: Set<ExecutableElement>,
+            crossinline append: (ExecutableElement) -> String = { "" }
+    ) {
+        if (values.isEmpty()) return
+        val joined = values.joinToString(",") { "${it.resolved}${append(it)}" }
+        addStatement("$name += listOf($joined)")
+
     }
 
-}
-
-inline fun <reified R> FunSpec.Builder.list(env: ProcessingEnvironment,
-                                            name: String, values: Set<ExecutableElement>,
-                                            crossinline join: (ExecutableElement) -> String = { "" }) {
-    if (values.isEmpty()) return
-    checkType<R>(values, env)
-    val joint = values.joinToString(",") {
-        val absName = it.qualifiedName(env)
-        "$absName()${join(it)}"
-    }
-    addStatement("$name += listOf($joint)")
-
-}
-
-inline fun <reified R> checkType(c: Collection<ExecutableElement>, env: ProcessingEnvironment) {
-    val qualified = R::class.java.canonicalName
-    val expected = env.elementUtils.getTypeElement(qualified).asType()
-    for (f in c) {
-        check(env.typeUtils.isSameType(f.returnType, expected)) { "${f.qualifiedName(env)} must return $qualified" }
+    fun FunSpec.Builder.eventHandlers(handlers: Set<ExecutableElement>) {
+        handlers.forEach {
+            addStatement("+${it.resolved}")
+        }
     }
 
-}
+    fun FunSpec.Builder.koin(modules: Set<ExecutableElement>) {
+        addStatement("""
+        koin {
+            modules(listOf(${modules.joinToString(",") { it.resolved }}))
+        }
+        """.trimIndent())
+    }
 
-inline fun <reified R> FunSpec.Builder.variable(env: ProcessingEnvironment, name: String, values: Set<ExecutableElement>) {
-    if (values.isEmpty()) return
-    checkType<R>(values, env)
-    val qualifiedName = values.first().qualifiedName(env)
-    addStatement("$name = $qualifiedName()")
-}
+    val ExecutableElement.isProperty get() = simpleName.startsWith("get") && parameters.size == 0
 
-fun ExecutableElement.qualifiedName(env: ProcessingEnvironment): String {
-    val pack = env.elementUtils.getPackageOf(this)
-    return if (pack.isUnnamed) simpleName.toString()
-    else "$pack.$simpleName"
+    val ExecutableElement.simpleKotlinName get() = when(isProperty) {
+        true -> simpleName.toString().removePrefix("get").decapitalize()
+        false -> simpleName.toString()
+    }
 
+    val ExecutableElement.resolved: String
+        get() = when (isProperty) {
+            true -> simpleName.toString().removePrefix("get").decapitalize()
+            else -> "${simpleName}(${parameters.joinToString(",") { "get()" }})" //functionCall(get(),get(),...)
+        }
 }

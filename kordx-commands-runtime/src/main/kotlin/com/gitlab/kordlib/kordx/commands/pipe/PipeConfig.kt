@@ -32,6 +32,10 @@ class PipeConfig: KoinComponent {
         prefixBuilder.builder()
     }
 
+    operator fun EventHandler<*>.unaryPlus() {
+        eventHandlers[context] = this
+    }
+
     operator fun Precondition<*>.unaryPlus() {
         preconditions.add(this)
     }

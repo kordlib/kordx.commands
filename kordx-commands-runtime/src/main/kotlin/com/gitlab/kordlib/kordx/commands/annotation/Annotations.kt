@@ -1,26 +1,7 @@
-package com.gitlab.kordlib.kordx.processor
+package com.gitlab.kordlib.kordx.commands.annotation
 
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.FILE)
+annotation class AutoWired
 
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyCommandModule
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyModuleModifier
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventFilter
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventHandler
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyEventSource
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyPrecondition
-
-
-@Target(AnnotationTarget.FUNCTION)
-annotation class SupplyPrefix
+@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
+annotation class ModuleName(val name: String)

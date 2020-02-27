@@ -9,6 +9,7 @@ import org.koin.core.Koin
 import com.gitlab.kordlib.kordx.commands.command.Module
 
 interface EventHandler<S> {
+    val context: PipeContext<S,*,*>
 
     suspend fun Pipe.onEvent(event: S)
 
@@ -45,7 +46,7 @@ interface ErrorHandler<S, A, E: CommandContext> {
 }
 
 open class BaseEventHandler<S, A, E: CommandContext>(
-        val context: PipeContext<S, A, E>,
+        override val context: PipeContext<S, A, E>,
         protected val converter: ContextConverter<S, A, E>,
         protected val handler: ErrorHandler<S, A, E>
 ) : EventHandler<S> {
