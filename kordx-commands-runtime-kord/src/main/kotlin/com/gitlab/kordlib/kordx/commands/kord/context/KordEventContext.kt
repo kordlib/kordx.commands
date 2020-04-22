@@ -10,7 +10,7 @@ import org.koin.core.Koin
 
 data class KordEventContext(
         override val event: MessageCreateEvent,
-        override val command: Command<*>,
+        override val command: Command<KordEventContext>,
         override val commands: Map<String, Command<*>>,
         private val koin: Koin
 ) : CommandContext, KordEvent, KordObject {

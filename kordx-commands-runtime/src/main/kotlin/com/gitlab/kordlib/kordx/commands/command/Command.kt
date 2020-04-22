@@ -8,7 +8,7 @@ import org.koin.core.KoinComponent
 class Command<T: CommandContext>(
         val name: String,
         val moduleName: String,
-        val context: PipeContext<*, *, *>,
+        val context: PipeContext<*, *, T>,
         val metadata: Metadata,
         val arguments: List<Argument<*, *>>,
         val modules: Map<String, Module>,
