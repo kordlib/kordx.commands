@@ -20,8 +20,7 @@ fun PipeConfig.addListener(vararg listeners: EventListener<*>) {
     }
 }
 
-class BotBuilder(val kord: Kord) {
-    val pipeConfig: PipeConfig = PipeConfig()
+class BotBuilder(val kord: Kord, val pipeConfig: PipeConfig = PipeConfig()) {
 
     val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
     val ignoreBots = eventFilter { message.author?.isBot != true }

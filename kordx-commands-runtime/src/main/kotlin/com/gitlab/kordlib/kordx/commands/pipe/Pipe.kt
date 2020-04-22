@@ -86,7 +86,7 @@ class Pipe(
         container.applyForEach()
 
         val modules = _commands.values.firstOrNull()?.modules as? MutableMap<String, Module> ?: mutableMapOf()
-        container.modules.values.forEach { it.build(modules) }
+        container.modules.values.forEach { it.build(modules, koin) }
 
         val map: Map<String, Command<out CommandContext>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
             map.keys.forEach { require(it !in acc) { "command $it is already registered in ${acc[it]!!.module.name}" } }

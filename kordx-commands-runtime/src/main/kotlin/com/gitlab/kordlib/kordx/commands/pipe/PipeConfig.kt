@@ -62,7 +62,7 @@ class PipeConfig: KoinComponent {
         container.applyForEach()
 
         val modules: MutableMap<String, Module> = mutableMapOf()
-        container.modules.values.forEach { it.build(modules) }
+        container.modules.values.forEach { it.build(modules, koinApplication.koin) }
 
         val pipe = Pipe(
                 filters = eventFilters.groupBy { it.context },

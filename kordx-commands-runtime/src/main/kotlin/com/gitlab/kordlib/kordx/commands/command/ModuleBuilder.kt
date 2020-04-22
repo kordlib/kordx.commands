@@ -1,6 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.command
 
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
+import org.koin.core.Koin
 
 @CommandsBuilder
 data class ModuleBuilder<S, A, C: CommandContext>(
@@ -20,9 +21,9 @@ data class ModuleBuilder<S, A, C: CommandContext>(
         ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
-    fun build(modules: MutableMap<String, Module>) {
+    fun build(modules: MutableMap<String, Module>, koin: Koin) {
         require(!modules.containsKey(name)) { "a module with name $name is already present" }
-        modules[name] = Module(name, commands.mapValues { it.value.build(modules) }, metaData)
+        modules[name] = Module(name, commands.mapValues { it.value.build(modules, koin) }, metaData)
     }
 }
 

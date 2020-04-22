@@ -18,6 +18,8 @@ dependencies {
     }
 
     api 'info.debatty:java-string-similarity:1.2.1'
+
+    kaptTest(project(":kordx-commands-processor"))
 }
 
 compileKotlin {
