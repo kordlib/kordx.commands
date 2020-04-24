@@ -1,9 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.model.processor
 
-import com.gitlab.kordlib.kordx.commands.model.module.Module
 import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
 import com.gitlab.kordlib.kordx.commands.model.metadata.EachCommandModifier
+import com.gitlab.kordlib.kordx.commands.model.module.Module
 import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
+import com.gitlab.kordlib.kordx.commands.model.plug.Plug
+import com.gitlab.kordlib.kordx.commands.model.plug.PlugSocket
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixBuilder
 import kotlinx.coroutines.CoroutineDispatcher
@@ -15,16 +17,18 @@ import org.koin.core.context.GlobalContext
 import org.koin.dsl.koinApplication
 
 @Suppress("MemberVisibilityCanBePrivate")
-class ProcessorConfig: KoinComponent {
+class ProcessorConfig : KoinComponent {
     override fun getKoin(): Koin = koinApplication.koin
 
-    val koinApplication: KoinApplication = GlobalContext.getOrNull() ?: koinApplication {  }
+    val koinApplication: KoinApplication = GlobalContext.getOrNull() ?: koinApplication { }
     val eventFilters: MutableList<EventFilter<*>> = mutableListOf()
     val eventHandlers: MutableMap<ProcessorContext<*, *, *>, EventHandler<*>> = mutableMapOf()
     val eventSources: MutableList<EventSource<*>> = mutableListOf()
     val preconditions: MutableList<Precondition<*>> = mutableListOf()
     val prefixBuilder: PrefixBuilder = PrefixBuilder()
     val moduleModifiers: MutableList<ModuleModifier> = mutableListOf(EachCommandModifier)
+    val plugs: MutableMap<Plug.Key<*>, MutableList<Plug<*>>> = mutableMapOf<Plug.Key<*>, MutableList<Plug<*>>>()
+    val plugSockets: MutableMap<Plug.Key<*>, PlugSocket<*, *>> = mutableMapOf()
     var dispatcher: CoroutineDispatcher = Dispatchers.IO
 
     inline fun koin(builder: KoinApplication.() -> Unit) {
@@ -33,6 +37,18 @@ class ProcessorConfig: KoinComponent {
 
     inline fun prefix(builder: PrefixBuilder.() -> Unit) {
         prefixBuilder.builder()
+    }
+
+    fun addPlugs(plugs: List<Plug<*>>) {
+        plugs.forEach { +it }
+    }
+
+    operator fun Plug<*>.unaryPlus() {
+        plugs.getOrPut(key) { mutableListOf() }.add(this)
+    }
+
+    operator fun PlugSocket<*, *>.unaryPlus() {
+        plugSockets[key] = this
     }
 
     operator fun EventHandler<*>.unaryPlus() {
@@ -79,6 +95,10 @@ class ProcessorConfig: KoinComponent {
         )
 
         this.eventSources.map { pipe.addSource(it) }
+        plugs.forEach { (key, plugs) ->
+            plugs.forEach { plugSockets.getValue(key).handle(listOf(it) as List<Nothing>) }
+        }
+
         return pipe
     }
 

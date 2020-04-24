@@ -1,24 +1,16 @@
 package com.gitlab.kordlib.kordx.commands.kord
 
 import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.kordx.commands.kord.listeners.EventListener
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContext
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContextConverter
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordErrorHandler
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventSource
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.*
+import com.gitlab.kordlib.kordx.commands.kord.plug.EventPlug
+import com.gitlab.kordlib.kordx.commands.kord.plug.KordPlugHandler
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
 import mu.KotlinLogging
-import org.koin.core.get
+import org.koin.dsl.module
 
 private val logger = KotlinLogging.logger {}
-
-fun ProcessorConfig.addListener(vararg listeners: EventListener<*>) {
-    listeners.forEach { listener ->
-        with(listener) { get<Kord>().apply() }
-    }
-}
 
 class BotBuilder(val kord: Kord, val processorConfig: ProcessorConfig = ProcessorConfig()) {
 
@@ -29,6 +21,12 @@ class BotBuilder(val kord: Kord, val processorConfig: ProcessorConfig = Processo
         processor {
             +ignoreBots
             +ignoreSelf
+        }
+        processorConfig.plugSockets[EventPlug.Key] = KordPlugHandler(kord)
+        processor {
+            koin {
+                modules(module { single { kord } })
+            }
         }
     }
 
@@ -70,11 +68,6 @@ suspend inline fun bot(token: String, configure: ProcessorConfig.() -> Unit) = b
 
 suspend inline fun bot(kord: Kord, configure: ProcessorConfig.() -> Unit) {
     val builder = BotBuilder(kord)
-    builder.processor {
-        koin {
-            modules(org.koin.dsl.module { single { kord } })
-        }
-    }
     builder.processorConfig.configure()
     builder.build()
 }

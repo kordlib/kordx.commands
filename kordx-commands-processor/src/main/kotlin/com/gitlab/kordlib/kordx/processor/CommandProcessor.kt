@@ -7,6 +7,7 @@ import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
 import com.gitlab.kordlib.kordx.commands.model.module.CommandSet
 import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
 import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
+import com.gitlab.kordlib.kordx.commands.model.plug.Plug
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
@@ -49,6 +50,7 @@ class CommandProcessor : AbstractProcessor() {
             list("eventSources", items.sources)
             list("moduleModifiers", items.commandSets) { ".toModifier(\"${it.moduleName()}\")" }
             list("preconditions", items.preconditions)
+            plug(items.plugs)
             eventHandlers(items.handlers)
             prefixes(items.prefixes)
         }.build()
@@ -57,7 +59,7 @@ class CommandProcessor : AbstractProcessor() {
         val file = File(path)
 
         with(FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")) {
-            addImport("com.gitlab.kordlib.kordx.commands.flow", "toModifier")
+            addImport("com.gitlab.kordlib.kordx.commands.model.module", "toModifier")
             addImport("org.koin.core", "get")
             fun Iterable<ExecutableElement>.import() = forEach {
                 val packageName = processingEnv.elementUtils.getPackageOf(it).qualifiedName
@@ -72,6 +74,7 @@ class CommandProcessor : AbstractProcessor() {
             items.koins.import()
             items.commandSets.import()
             items.prefixes.import()
+            items.plugs.import()
             addFunction(function)
 
         }.build().writeTo(file)
@@ -85,18 +88,7 @@ class CommandProcessor : AbstractProcessor() {
 
     fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
 
-    class PipeItems(
-            val koins: MutableSet<ExecutableElement> = mutableSetOf(),
-            val modules: MutableSet<ExecutableElement> = mutableSetOf(),
-            val sources: MutableSet<ExecutableElement> = mutableSetOf(),
-            val filters: MutableSet<ExecutableElement> = mutableSetOf(),
-            val handlers: MutableSet<ExecutableElement> = mutableSetOf(),
-            val commandSets: MutableSet<ExecutableElement> = mutableSetOf(),
-            val preconditions: MutableSet<ExecutableElement> = mutableSetOf(),
-            val prefixes: MutableSet<ExecutableElement> = mutableSetOf()
-    ) {
-        fun isEmpty() = listOf(koins, modules, sources, filters, handlers, preconditions).all { it.isEmpty() }
-    }
+
 
     /**
      * returns the wildcard type mirror of [T]
@@ -114,6 +106,7 @@ class CommandProcessor : AbstractProcessor() {
         val preconditionType = typeMirror<Precondition<*>>()
         val commandSetType = typeMirror<CommandSet>()
         val prefixesType = typeMirror<PrefixConfiguration>()
+        val plugType = typeMirror<Plug<*>>()
 
         val elements = env.getElementsAnnotatedWith(AutoWired::class.java)
         val functions = elements.flatMap {
@@ -135,9 +128,10 @@ class CommandProcessor : AbstractProcessor() {
                 returnType isAssignableTo preconditionType -> items.preconditions.add(item)
                 returnType isAssignableTo koinType -> items.koins.add(item)
                 returnType isAssignableTo prefixesType -> items.prefixes.add(item)
+                returnType isAssignableTo plugType -> items.plugs.add(item)
                 else -> {
                     val message = "ignoring $item with unknown return type: $returnType"
-                    processingEnv.messager.printMessage(Diagnostic.Kind.NOTE, message)
+                    processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, message)
                 }
             }
 
@@ -170,6 +164,15 @@ class CommandProcessor : AbstractProcessor() {
         val joined = values.joinToString(",") { "${it.resolved}${append(it)}" }
         addStatement("$name += listOf($joined)")
 
+    }
+
+    inline fun FunSpec.Builder.plug(
+            values: Set<ExecutableElement>,
+            crossinline append: (ExecutableElement) -> String = { "" }
+    ) {
+        if (values.isEmpty()) return
+        val joined = values.joinToString(",") { "${it.resolved}${append(it)}" }
+        addStatement("addPlugs(listOf($joined))")
     }
 
     fun FunSpec.Builder.eventHandlers(handlers: Set<ExecutableElement>) {

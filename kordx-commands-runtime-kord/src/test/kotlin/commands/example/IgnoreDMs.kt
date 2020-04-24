@@ -4,7 +4,7 @@ package commands.example
 
 import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.eventFilter
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.eventFilter
 import org.koin.dsl.module
 
 /**

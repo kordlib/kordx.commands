@@ -4,11 +4,11 @@ package commands.example
 
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.text.WordArgument
+import com.gitlab.kordlib.kordx.commands.kord.model.precondition.precondition
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.module.command
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
-import com.gitlab.kordlib.kordx.commands.kord.module
-import com.gitlab.kordlib.kordx.commands.kord.precondition
+import  com.gitlab.kordlib.kordx.commands.kord.module.module
 import com.gitlab.kordlib.kordx.emoji.Emojis
 import org.koin.core.get
 
