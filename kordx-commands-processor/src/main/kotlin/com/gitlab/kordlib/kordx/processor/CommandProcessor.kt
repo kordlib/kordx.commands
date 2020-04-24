@@ -4,18 +4,17 @@ package com.gitlab.kordlib.kordx.processor
 
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
-import com.gitlab.kordlib.kordx.commands.command.CommandSet
-import com.gitlab.kordlib.kordx.commands.flow.EventFilter
-import com.gitlab.kordlib.kordx.commands.flow.ModuleModifier
-import com.gitlab.kordlib.kordx.commands.flow.Precondition
-import com.gitlab.kordlib.kordx.commands.pipe.EventHandler
-import com.gitlab.kordlib.kordx.commands.pipe.EventSource
-import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
-import com.gitlab.kordlib.kordx.commands.pipe.PrefixConfiguration
+import com.gitlab.kordlib.kordx.commands.model.module.CommandSet
+import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
+import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
+import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
+import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
+import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
+import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixConfiguration
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
 import org.koin.core.module.Module
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -41,7 +40,7 @@ class CommandProcessor : AbstractProcessor() {
         if (items.isEmpty()) return true
 
         val function = FunSpec.builder("configure").apply {
-            receiver(PipeConfig::class)
+            receiver(ProcessorConfig::class)
 
             koin(items.koins)
 

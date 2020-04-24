@@ -1,7 +1,5 @@
 package com.gitlab.kordlib.kordx.commands.argument.text
 
-import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
-import com.gitlab.kordlib.kordx.commands.argument.primitives.inRange
 import com.gitlab.kordlib.kordx.commands.argument.requireFailure
 import com.gitlab.kordlib.kordx.commands.argument.requireItem
 import kotlinx.coroutines.test.runBlockingTest

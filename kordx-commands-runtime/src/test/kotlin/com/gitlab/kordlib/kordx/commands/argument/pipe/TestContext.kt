@@ -3,28 +3,30 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.Result
-import com.gitlab.kordlib.kordx.commands.command.*
-import com.gitlab.kordlib.kordx.commands.pipe.*
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.model.command.Command
+import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
+import com.gitlab.kordlib.kordx.commands.model.processor.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.koin.core.Koin
 
 class TestEventContext(
         val output: TestOutput,
         override val command: Command<*>,
-        override val commands: Map<String, Command<*>>
+        override val commands: Map<String, Command<*>>,
+        override val processor: CommandProcessor
 ): CommandContext {
     suspend fun respond(text: String): Any? {
         return output.push(EventType.Response(text))
     }
 }
 
-object TestContext : PipeContext<String, String, TestEventContext>
+object TestContext : ProcessorContext<String, String, TestEventContext>
 
 sealed class EventType {
     class Response(val text: String) : EventType()
@@ -44,15 +46,15 @@ class TestOutput {
 }
 
 class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, String, TestEventContext> {
-    override suspend fun Pipe.emptyInvocation(event: String) {
+    override suspend fun CommandProcessor.emptyInvocation(event: String) {
         output.push(EventType.EmptyInvocation)
     }
 
-    override suspend fun Pipe.notFound(event: String, command: String) {
+    override suspend fun CommandProcessor.notFound(event: String, command: String) {
         output.push(EventType.NotFound(command))
     }
 
-    override suspend fun Pipe.rejectArgument(
+    override suspend fun CommandProcessor.rejectArgument(
             event: String,
             command: Command<TestEventContext>,
             words: List<String>,
@@ -69,15 +71,15 @@ class TestConverter(private val output: TestOutput): ContextConverter<String, St
 
     override fun String.toArgumentContext(): String = this
 
-    override fun String.toEventContext(command: Command<TestEventContext>, modules: Map<String, Module>, commands: Map<String, Command<*>>, koin: Koin): TestEventContext {
-        return TestEventContext(output, command, commands)
+    override fun String.toEventContext(data: EventContextData<TestEventContext>): TestEventContext {
+        return TestEventContext(output, data.command, data.commands, data.processor)
     }
 
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
 class TestEventSource : EventSource<String> {
-    override val context: PipeContext<String, *, *>
+    override val context: ProcessorContext<String, *, *>
         get() = TestContext
 
     val channel = BroadcastChannel<String>(Channel.CONFLATED)

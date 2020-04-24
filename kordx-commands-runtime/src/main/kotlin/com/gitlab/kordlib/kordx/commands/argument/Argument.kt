@@ -1,5 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument
 
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
+
 interface Argument<T, in CONTEXT> {
     val name: String
     val example: String

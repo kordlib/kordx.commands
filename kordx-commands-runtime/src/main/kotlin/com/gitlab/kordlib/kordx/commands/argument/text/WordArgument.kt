@@ -1,8 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.argument.text
 
-import com.gitlab.kordlib.kordx.commands.argument.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
+/**
+ * Argument that accepts any single word, returning the matched word.
+ */
 open class WordArgument(override val name: String = "Word") : SingleWordArgument<String, Any?>() {
 
     final override val example: String

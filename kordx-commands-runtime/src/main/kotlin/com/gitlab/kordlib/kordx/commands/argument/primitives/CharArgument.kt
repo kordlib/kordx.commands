@@ -1,8 +1,13 @@
 package com.gitlab.kordlib.kordx.commands.argument.primitives
 
-import com.gitlab.kordlib.kordx.commands.argument.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
+/**
+ * Argument that matches against a single word, emitting success when the word is one character long.
+ *
+ * > Note that due the nature of argument parsing, this argument will never match against whitespace characters.
+ */
 open class CharArgument(override val name: String = "Character") : SingleWordArgument<Char, Any?>() {
     final override val example: String
         get() = ('a'..'Z').random().toString()

@@ -1,8 +1,13 @@
 package com.gitlab.kordlib.kordx.commands.argument.text
 
-import com.gitlab.kordlib.kordx.commands.argument.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
 import com.gitlab.kordlib.kordx.commands.argument.VariableLengthArgument
 
+/**
+ * Argument that accepts any String, returning the matched words as a list.
+ *
+ * > This Argument will consume all remaining words
+ */
 class WordsArgument(override val name: String = "Words") : VariableLengthArgument<List<String>, Any?>() {
 
     override val example: String

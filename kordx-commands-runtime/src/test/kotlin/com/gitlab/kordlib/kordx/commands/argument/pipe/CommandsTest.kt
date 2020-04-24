@@ -1,12 +1,12 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
-import com.gitlab.kordlib.kordx.commands.command.command
-import com.gitlab.kordlib.kordx.commands.command.invoke
-import com.gitlab.kordlib.kordx.commands.command.module
-import com.gitlab.kordlib.kordx.commands.pipe.BaseEventHandler
-import com.gitlab.kordlib.kordx.commands.pipe.Pipe
-import com.gitlab.kordlib.kordx.commands.pipe.PipeConfig
+import com.gitlab.kordlib.kordx.commands.model.module.command
+import com.gitlab.kordlib.kordx.commands.model.command.invoke
+import com.gitlab.kordlib.kordx.commands.model.module.module
+import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
+import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
@@ -21,7 +21,7 @@ import kotlin.test.Test
 @Suppress("EXPERIMENTAL_API_USAGE")
 class CommandsTest {
 
-    lateinit var pipe: Pipe
+    lateinit var processor: CommandProcessor
     lateinit var output: TestOutput
     lateinit var input: TestEventSource
 
@@ -29,7 +29,7 @@ class CommandsTest {
     fun setUp() = runBlockingTest {
         output = TestOutput()
         input = TestEventSource()
-        pipe = PipeConfig {
+        processor = ProcessorConfig {
             eventSources += input
             eventHandlers[TestContext] = BaseEventHandler(TestContext, TestConverter(output), TestErrorHandler(output))
             dispatcher = object : CoroutineDispatcher() {
@@ -50,7 +50,7 @@ class CommandsTest {
     fun `command gets invoked without arguments`() = runBlocking {
         val response = "a test response"
 
-        pipe += module("test", TestContext) {
+        processor += module("test", TestContext) {
             command("test") {
                 invoke {
                     respond(response)
@@ -68,7 +68,7 @@ class CommandsTest {
     fun `command gets invoked when all arguments succeed`() = runBlocking {
         val response = "a test response"
 
-        pipe += module("test", TestContext) {
+        processor += module("test", TestContext) {
             command("test") {
                 invoke(IntArgument, IntArgument) { _, _ ->
                     respond(response)
@@ -86,7 +86,7 @@ class CommandsTest {
     fun `pipe rejects command when too little arguments`() = runBlocking(Dispatchers.IO) {
         val response = "a test response"
 
-        pipe += module("test", TestContext) {
+        processor += module("test", TestContext) {
             command("test") {
                 invoke(IntArgument, IntArgument) { _, _ ->
                     respond(response)
@@ -103,7 +103,7 @@ class CommandsTest {
     fun `pipe rejects command when wrong argument type`() = runBlocking(Dispatchers.IO) {
         val response = "a test response"
 
-        pipe += module("test", TestContext) {
+        processor += module("test", TestContext) {
             command("test") {
                 invoke(IntArgument, IntArgument) { _, _ ->
                     respond(response)
@@ -120,7 +120,7 @@ class CommandsTest {
     fun `pipe rejects command when too many arguments`() = runBlocking(Dispatchers.IO) {
         val response = "a test response"
 
-        pipe += module("test", TestContext) {
+        processor += module("test", TestContext) {
             command("test") {
                 invoke(IntArgument, IntArgument) { _, _ ->
                     respond(response)

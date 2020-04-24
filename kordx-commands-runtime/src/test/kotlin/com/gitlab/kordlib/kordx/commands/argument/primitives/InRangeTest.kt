@@ -2,6 +2,7 @@
 
 package com.gitlab.kordlib.kordx.commands.argument.primitives
 
+import com.gitlab.kordlib.kordx.commands.argument.extensions.inRange
 import com.gitlab.kordlib.kordx.commands.argument.requireFailure
 import com.gitlab.kordlib.kordx.commands.argument.requireItem
 import kotlinx.coroutines.test.runBlockingTest
