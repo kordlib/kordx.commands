@@ -12,7 +12,7 @@ import org.koin.dsl.module
 
 private val logger = KotlinLogging.logger {}
 
-class BotBuilder(val kord: Kord, val processorConfig: ProcessorConfig = ProcessorConfig()) {
+class BotBuilder(val kord: Kord, val processorConfig: KordProcessorConfig = KordProcessorConfig(kord)) {
 
     val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
     val ignoreBots = eventFilter { message.author?.isBot != true }
@@ -64,9 +64,9 @@ class BotBuilder(val kord: Kord, val processorConfig: ProcessorConfig = Processo
 
 }
 
-suspend inline fun bot(token: String, configure: ProcessorConfig.() -> Unit) = bot(Kord(token), configure)
+suspend inline fun bot(token: String, configure: KordProcessorConfig.() -> Unit) = bot(Kord(token), configure)
 
-suspend inline fun bot(kord: Kord, configure: ProcessorConfig.() -> Unit) {
+suspend inline fun bot(kord: Kord, configure: KordProcessorConfig.() -> Unit) {
     val builder = BotBuilder(kord)
     builder.processorConfig.configure()
     builder.build()

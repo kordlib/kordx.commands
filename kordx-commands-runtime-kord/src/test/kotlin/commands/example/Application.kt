@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
  * entry method, `configure` is generated on build.
  */
 suspend fun main() = bot(buildKord()) {
+    enableMentionPrefix = true
     configure()
 }
 

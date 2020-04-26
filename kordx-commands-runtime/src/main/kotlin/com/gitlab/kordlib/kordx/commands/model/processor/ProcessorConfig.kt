@@ -17,7 +17,7 @@ import org.koin.core.context.GlobalContext
 import org.koin.dsl.koinApplication
 
 @Suppress("MemberVisibilityCanBePrivate")
-class ProcessorConfig : KoinComponent {
+open class ProcessorConfig : KoinComponent {
     override fun getKoin(): Koin = koinApplication.koin
 
     val koinApplication: KoinApplication = GlobalContext.getOrNull() ?: koinApplication { }
@@ -75,7 +75,7 @@ class ProcessorConfig : KoinComponent {
         moduleModifiers.add(this)
     }
 
-    suspend fun build(): CommandProcessor {
+    open suspend fun build(): CommandProcessor {
         val container = ModuleContainer()
         moduleModifiers.forEach { it.apply(container) }
         container.applyForEach()
