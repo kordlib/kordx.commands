@@ -2,8 +2,8 @@ package com.gitlab.kordlib.kordx.commands.argument.text
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.Result
-import com.gitlab.kordlib.kordx.commands.argument.result.extensions.FilterResult
-import com.gitlab.kordlib.kordx.commands.argument.result.extensions.filter
+import com.gitlab.kordlib.kordx.commands.argument.result.extension.FilterResult
+import com.gitlab.kordlib.kordx.commands.argument.result.extension.filter
 
 /**
  * Returns an Argument that, on top of the supplied argument, only accepts values in [whitelist].

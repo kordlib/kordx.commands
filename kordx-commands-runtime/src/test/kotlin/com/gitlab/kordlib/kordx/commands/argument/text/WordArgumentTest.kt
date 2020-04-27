@@ -11,12 +11,12 @@ import org.junit.jupiter.params.provider.MethodSource
 @ExperimentalCoroutinesApi
 class WordArgumentTest {
 
-    val argument = WordArgument()
+    val argument = WordArgument
 
     @ParameterizedTest
     @MethodSource("sources")
     fun `correctly parses arguments`(text: String) = runBlockingTest {
-        argument.parse(text, Unit).requireItem(text)
+        argument.parse(text.split(" "), 0, Unit).requireItem(text)
     }
 
     companion object {

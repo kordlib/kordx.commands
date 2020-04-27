@@ -14,7 +14,7 @@ class ListArgumentTest {
     @ParameterizedTest
     @MethodSource("sources")
     fun `correctly parses arguments`(separator: String, text: String, result: List<String>) = runBlockingTest {
-        ListArgument(separator = separator).parse(text.split(" "), Unit).requireItem(result)
+        ListArgument(separator = separator).parse(text.split(" "), 0, Unit).requireItem(result)
     }
 
     companion object {

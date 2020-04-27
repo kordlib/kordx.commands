@@ -3,7 +3,9 @@
 package commands.example
 
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
+import com.gitlab.kordlib.kordx.commands.argument.extension.named
 import com.gitlab.kordlib.kordx.commands.argument.text.WordArgument
+import com.gitlab.kordlib.kordx.commands.argument.text.whitelist
 import com.gitlab.kordlib.kordx.commands.kord.model.precondition.precondition
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.module.command
@@ -52,7 +54,7 @@ fun toggleCommands() = module("command-control") {
 
     command("disable") {
 
-        invoke(WordArgument("command")) {
+        invoke(WordArgument.named("command")) {
 
             val command = commands[it] ?: return@invoke run {
                 respond("no command with name $it found")
@@ -70,7 +72,7 @@ fun toggleCommands() = module("command-control") {
 
     command("enable") {
 
-        invoke(WordArgument("command")) {
+        invoke(WordArgument.named("command")) {
             val command = commands[it] ?: return@invoke run {
                 respond("no command with name $it found")
             }

@@ -6,17 +6,21 @@ import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import com.gitlab.kordlib.core.entity.channel.TextChannel
 import com.gitlab.kordlib.core.entity.channel.VoiceChannel
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.extension.filterIsInstance
+import com.gitlab.kordlib.kordx.commands.argument.result.Result
 
 private val mentionRegex = Regex("""^<#\d+>$""")
 
-open class ChannelArgument(override val name: String = "Channel") : SingleWordArgument<Channel, MessageCreateEvent>() {
+internal class InternalChannelArgument(
+        override val name: String = "Channel"
+) : SingleWordArgument<Channel, MessageCreateEvent>() {
 
-    final override val example: String
+    override val example: String
         get() = "#Channel"
 
-    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<Channel> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): Result<Channel> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
@@ -29,79 +33,27 @@ open class ChannelArgument(override val name: String = "Channel") : SingleWordAr
             else -> success(channel)
         }
     }
-
-    companion object : ChannelArgument()
-
 }
 
-open class TextChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<TextChannel, MessageCreateEvent>() {
+val ChannelArgument: Argument<Channel, MessageCreateEvent> = InternalChannelArgument()
 
-    final override val example: String
-        get() = "#Channel"
+@Suppress("FunctionName")
+fun ChannelArgument(name: String): Argument<Channel, MessageCreateEvent> = InternalChannelArgument(name)
 
-    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<TextChannel> {
-        val number = word.toLongOrNull()
-        val snowflake = when {
-            number != null -> Snowflake(number)
-            word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected mention.")
-        }
+val TextChannelArgument = TextChannelArgument("Guild text channel")
 
-        return when (val channel = context.kord.getChannel(snowflake)) {
-            null -> failure("Channel not found.")
-            is TextChannel -> success(channel)
-            else -> failure("Expected guild text channel.")
-        }
-    }
+@Suppress("FunctionName")
+fun TextChannelArgument(name: String): Argument<TextChannel, MessageCreateEvent> = InternalChannelArgument(name)
+        .filterIsInstance("Expected guild text channel.")
 
-    companion object : TextChannelArgument()
+val MessageChannelArgument = MessageChannelArgument("Text channel")
 
-}
+@Suppress("FunctionName")
+fun MessageChannelArgument(name: String): Argument<MessageChannel, MessageCreateEvent> = InternalChannelArgument(name)
+        .filterIsInstance("Expected text channel.")
 
-open class MessageChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<MessageChannel, MessageCreateEvent>() {
+val VoiceChannelArgument = VoiceChannelArgument("Guild voice channel")
 
-    final override val example: String
-        get() = "#Channel"
-
-    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<MessageChannel> {
-        val number = word.toLongOrNull()
-        val snowflake = when {
-            number != null -> Snowflake(number)
-            word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected mention.")
-        }
-
-        return when (val channel = context.kord.getChannel(snowflake)) {
-            null -> failure("Channel not found.")
-            is MessageChannel -> success(channel)
-            else -> failure("Expected guild text channel.")
-        }
-    }
-
-    companion object : MessageChannelArgument()
-
-}
-
-open class VoiceChannelArgument(override val name: String = "Guild text channel") : SingleWordArgument<VoiceChannel, MessageCreateEvent>() {
-
-    final override val example: String
-        get() = "#Channel"
-
-    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<VoiceChannel> {
-        val number = word.toLongOrNull()
-        val snowflake = when {
-            number != null -> Snowflake(number)
-            word.matches(mentionRegex) -> Snowflake(word.removeSuffix(">").dropWhile { !it.isDigit() })
-            else -> return failure("Expected mention.")
-        }
-
-        return when (val channel = context.kord.getChannel(snowflake)) {
-            null -> failure("Channel not found.")
-            is VoiceChannel -> success(channel)
-            else -> failure("Expected guild text channel.")
-        }
-    }
-
-    companion object : VoiceChannelArgument()
-
-}
+@Suppress("FunctionName")
+fun VoiceChannelArgument(name: String): Argument<VoiceChannel, MessageCreateEvent> = InternalChannelArgument(name)
+        .filterIsInstance("Expected a voice channel")

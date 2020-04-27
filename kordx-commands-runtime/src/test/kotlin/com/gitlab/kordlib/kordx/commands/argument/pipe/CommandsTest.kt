@@ -1,6 +1,6 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
-import com.gitlab.kordlib.kordx.commands.argument.primitives.IntArgument
+import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
 import com.gitlab.kordlib.kordx.commands.model.module.command
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
 import com.gitlab.kordlib.kordx.commands.model.module.module

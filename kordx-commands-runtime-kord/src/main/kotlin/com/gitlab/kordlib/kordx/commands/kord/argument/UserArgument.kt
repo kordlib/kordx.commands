@@ -9,7 +9,7 @@ import com.gitlab.kordlib.kordx.commands.argument.result.Result
 
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 
-open class UserArgument(override val name: String = "User") : SingleWordArgument<User, MessageCreateEvent>() {
+internal class InternalUserArgument(override val name: String = "User") : SingleWordArgument<User, MessageCreateEvent>() {
     final override val example: String
         get() = "@User"
 
@@ -26,7 +26,5 @@ open class UserArgument(override val name: String = "User") : SingleWordArgument
             else -> success(user)
         }
     }
-
-    companion object : UserArgument()
 
 }

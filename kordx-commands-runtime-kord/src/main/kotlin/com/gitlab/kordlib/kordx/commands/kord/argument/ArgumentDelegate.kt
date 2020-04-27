@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.kord.argument
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.Result
-import com.gitlab.kordlib.kordx.commands.argument.result.extensions.switchOnFail
+import com.gitlab.kordlib.kordx.commands.argument.result.extension.switchOnFail
 import com.gitlab.kordlib.kordx.commands.kord.model.KordEvent
 
 typealias ArgumentDelegate<T> = suspend KordEvent.() -> Result<T>
