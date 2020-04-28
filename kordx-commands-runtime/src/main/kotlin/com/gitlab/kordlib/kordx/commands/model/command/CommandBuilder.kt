@@ -20,9 +20,7 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandContext>(
     var arguments: List<Argument<*, A>> = emptyList()
 
     fun build(modules: Map<String, Module>, koin: Koin): Command<COMMANDCONTEXT> {
-        return Command(name, moduleName, context, metaData, arguments, modules, preconditions, koin) { event, items ->
-            execution.invoke(event, items)
-        }
+        return Command(name, moduleName, context, metaData.toMetaData(), arguments, modules, preconditions, koin, execution)
     }
 
     fun precondition(

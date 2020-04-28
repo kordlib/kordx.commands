@@ -27,7 +27,7 @@ data class ModuleBuilder<S, A, C: CommandContext>(
 
     fun build(modules: MutableMap<String, Module>, koin: Koin) {
         require(!modules.containsKey(name)) { "a module with name $name is already present" }
-        modules[name] = Module(name, commands.mapValues { it.value.build(modules, koin) }, metaData)
+        modules[name] = Module(name, commands.mapValues { it.value.build(modules, koin) }, metaData.toMetaData())
     }
 }
 

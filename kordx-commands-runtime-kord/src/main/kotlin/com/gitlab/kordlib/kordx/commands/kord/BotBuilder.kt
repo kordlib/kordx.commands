@@ -6,6 +6,7 @@ import com.gitlab.kordlib.kordx.commands.kord.plug.EventPlug
 import com.gitlab.kordlib.kordx.commands.kord.plug.KordPlugHandler
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
+import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
 import mu.KotlinLogging
 import org.koin.dsl.module
@@ -35,32 +36,28 @@ class BotBuilder(val kord: Kord, val processorConfig: KordProcessorConfig = Kord
     }
 
     @Suppress("EXPERIMENTAL_API_USAGE")
-    suspend fun build() {
+    suspend fun build(): CommandProcessor = processorConfig.apply {
+        eventSources += KordEventSource(kord)
 
-        processorConfig.apply {
-            eventSources += KordEventSource(kord)
+        if (eventHandlers[KordContext] == null && eventHandlers[CommonContext] == null) {
+            eventHandlers[KordContext] = BaseEventHandler(KordContext, KordContextConverter, KordErrorHandler())
+        }
 
-            if (eventHandlers[KordContext] == null && eventHandlers[CommonContext] == null) {
-                eventHandlers[KordContext] = BaseEventHandler(KordContext, KordContextConverter, KordErrorHandler())
-            }
-
-            if (prefixBuilder.suppliers[KordContext] == null && prefixBuilder.suppliers[CommonContext] == null) {
-                val message = """
+        if (prefixBuilder.suppliers[KordContext] == null && prefixBuilder.suppliers[CommonContext] == null) {
+            val message = """
                     You currently don't have a prefix registered for Kord, allowing users to accidentally invoke a command when they don't intend to.
                     Consider setting a prefix for the KordContext or CommonContext.
                 """.trimIndent()
 
-                if (logger.isWarnEnabled) {
-                    logger.warn { message }
-                } else {
-                    System.err.println(message)
-                }
-
+            if (logger.isWarnEnabled) {
+                logger.warn { message }
+            } else {
+                System.err.println(message)
             }
-        }.build()
 
-        kord.login()
-    }
+        }
+    }.build()
+
 
 }
 
@@ -70,4 +67,5 @@ suspend inline fun bot(kord: Kord, configure: KordProcessorConfig.() -> Unit) {
     val builder = BotBuilder(kord)
     builder.processorConfig.configure()
     builder.build()
+    kord.login()
 }
