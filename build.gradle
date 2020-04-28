@@ -18,7 +18,9 @@ buildscript {
 }
 
 ext {
-    lib_version = '0.2.1'
+    lib_version = System.getenv("CI_COMMIT_TAG") ?: System.getenv("CI_COMMIT_SHA") ?: "undefined"
+    lib_group = 'com.gitlab.kordlib.kordx.commands'
+
     lib_group = 'com.gitlab.kordlib.kordx'
     serialization_version = '0.12.0'
     ktor_version = '1.2.2'
@@ -27,7 +29,6 @@ ext {
     mockk_version = '1.9.3'
     kotlin_logging_version = '1.6.26'
     log4j_version = '1.7.26'
-    kord_version = '0.2.1'
     koin_version = '2.0.1'
 }
 
@@ -38,6 +39,9 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'kotlin'
     apply plugin: 'kotlinx-serialization'
+    apply plugin: 'com.jfrog.bintray'
+    apply plugin: 'maven-publish'
+    apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'kotlin-kapt'
 
     repositories {
@@ -65,14 +69,65 @@ subprojects {
     }
 
     compileKotlin {
-        kotlinOptions.jvmTarget = "9"
+        kotlinOptions.jvmTarget = "1.8"
     }
     compileTestKotlin {
-        kotlinOptions.jvmTarget = "9"
+        kotlinOptions.jvmTarget = "1.8"
     }
     test {
         useJUnitPlatform {
             includeEngines 'junit-jupiter'
         }
     }
+
+    task sourcesJar(type: Jar) {
+        archiveClassifier.set 'sources'
+        from sourceSets.main.allSource
+    }
+
+    archivesBaseName = project.name
+
+    publishing {
+        publications {
+            Cache(MavenPublication) {
+                from components.kotlin
+                groupId lib_group
+                artifactId archivesBaseName
+                version lib_version
+
+                artifact sourcesJar
+                pom.withXml {
+                    def root = asNode()
+
+                    root.dependencies.removeAll { dep ->
+                        dep.scope == "test"
+                    }
+                }
+            }
+        }
+    }
+
+    bintray {
+        user = System.getenv('BINTRAY_USER')
+        key = System.getenv('BINTRAY_KEY')
+        publications = ['Cache']
+        publish = true
+        pkg {
+            repo = 'Kord'
+            name = 'kordx.commands'
+            userOrg = 'kordlib'
+            licenses = ['MIT']
+            vcsUrl = 'https://gitlab.com/kordlib/kordx.commands.git'
+            websiteUrl = 'https://gitlab.com/kordlib/kordx.commands'
+            issueTrackerUrl = 'https://gitlab.com/kordlib/kordx.commands/issues'
+
+            version {
+                name = lib_version
+                desc = "Command library for Kotlin"
+                released = new Date()
+                vcsTag = lib_version
+            }
+        }
+    }
+
 }
