@@ -89,7 +89,7 @@ subprojects {
 
     publishing {
         publications {
-            Cache(MavenPublication) {
+            Commands(MavenPublication) {
                 from components.kotlin
                 groupId lib_group
                 artifactId archivesBaseName
@@ -110,7 +110,7 @@ subprojects {
     bintray {
         user = System.getenv('BINTRAY_USER')
         key = System.getenv('BINTRAY_KEY')
-        publications = ['Cache']
+        publications = ['Commands']
         publish = true
         pkg {
             repo = 'Kord'
