@@ -81,6 +81,16 @@ open class BaseEventHandler<S, A, E: CommandContext>(
             event.toArgumentContext()
         }
 
+        val eventContext = with(converter) {
+            argumentContext.toEventContext(EventContextData(command, command.modules, commands, koin, this@onEvent))
+        }
+
+        val preconditions = getPreconditions(context) + command.preconditions
+
+        val passed = preconditions.sortedByDescending { it.priority }.all { it(eventContext) }
+
+        if (!passed) return
+
         val (items) = when (val result = parseArguments(words.drop(1), arguments, argumentContext)) {
             is ArgumentsResult.Success -> result
             is ArgumentsResult.TooManyWords -> return with(handler) { tooManyWords(event, command, result) }
@@ -90,17 +100,7 @@ open class BaseEventHandler<S, A, E: CommandContext>(
             }
         }
 
-        val eventContext = with(converter) {
-            argumentContext.toEventContext(EventContextData(command, command.modules, commands, koin, this@onEvent))
-        }
-
-        val preconditions = getPreconditions(context) + command.preconditions
-
-        val passed = preconditions.sortedByDescending { it.priority }.all { it(eventContext) }
-
-        if (passed) {
             command.invoke(eventContext, items)
-        } else return
     }
 
     protected open suspend fun CommandProcessor.parseArguments(words: List<String>, arguments: List<Argument<*, A>>, event: A): ArgumentsResult<A> {

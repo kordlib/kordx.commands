@@ -5,7 +5,7 @@ import com.gitlab.kordlib.kordx.commands.model.module.ModuleBuilder
 
 class ModuleContainer(internal val modules: MutableMap<String, ModuleBuilder<*, *, *>> = mutableMapOf()) {
 
-    private val consumers: MutableList<suspend  (ModuleBuilder<*, *, *>) -> Unit> = mutableListOf()
+    private val consumers: MutableList<suspend (ModuleBuilder<*, *, *>) -> Unit> = mutableListOf()
 
     operator fun get(name: String): ModuleBuilder<*, *, *> = modules.getOrPut(name) { ModuleBuilder(name, CommonContext) }
 

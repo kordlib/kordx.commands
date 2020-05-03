@@ -25,25 +25,26 @@ data class ModuleBuilder<S, A, C: CommandContext>(
         ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
+    fun command(
+            name: String,
+            builder: CommandBuilder<S, A, C>.() -> Unit
+    ) {
+        val command = CommandBuilder(name, this.name, context).apply(builder)
+        add(command)
+    }
+
+    fun <NEWS, NEWA, NEWC: CommandContext> command(
+            name: String,
+            context: ProcessorContext<NEWS, NEWA, NEWC>,
+            builder: CommandBuilder<NEWS, NEWA, NEWC>.() -> Unit
+    ) {
+        val command = CommandBuilder(name, this.name, context).apply(builder)
+        add(command)
+    }
+
+
     fun build(modules: MutableMap<String, Module>, koin: Koin) {
         require(!modules.containsKey(name)) { "a module with name $name is already present" }
         modules[name] = Module(name, commands.mapValues { it.value.build(modules, koin) }, metaData.toMetaData())
     }
-}
-
-fun <S, A, C: CommandContext> ModuleBuilder<S, A, C>.command(
-        name: String,
-        builder: CommandBuilder<S, A, C>.() -> Unit
-) {
-    val command = CommandBuilder(name, this.name, context).apply(builder)
-    add(command)
-}
-
-fun <NEWS, NEWA, NEWC: CommandContext> ModuleBuilder<*, *, *>.command(
-        name: String,
-        context: ProcessorContext<NEWS, NEWA, NEWC>,
-        builder: CommandBuilder<NEWS, NEWA, NEWC>.() -> Unit
-) {
-    val command = CommandBuilder(name, this.name, context).apply(builder)
-    add(command)
 }

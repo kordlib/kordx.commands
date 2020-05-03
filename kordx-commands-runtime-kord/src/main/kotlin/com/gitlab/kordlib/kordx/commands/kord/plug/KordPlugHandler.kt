@@ -9,8 +9,8 @@ class KordPlugHandler(private val kord: Kord) : PlugSocket<Kord, EventPlug<*>> {
     override val key: Plug.Key<Kord>
         get() = EventPlug.Key
 
-    override suspend fun handle(plug: List<EventPlug<*>>) {
-        plug.forEach { it.apply(kord) }
+    override suspend fun handle(plugs: List<EventPlug<*>>) {
+        plugs.forEach { it.apply(kord) }
     }
 
 }

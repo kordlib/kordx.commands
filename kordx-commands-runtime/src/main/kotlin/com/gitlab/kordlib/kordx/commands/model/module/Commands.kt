@@ -4,12 +4,16 @@ import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
 import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
+interface CommandSet {
+    fun ModuleBuilder<*, *, *>.apply()
+}
+
 fun <S, A, C: CommandContext> commands(
         context: ProcessorContext<S, A, C>,
         builder: ModuleBuilder<S, A, C>.() -> Unit
 ): CommandSet = object : CommandSet {
     override fun ModuleBuilder<*, *, *>.apply() {
-        commands += ModuleBuilder(name, context, metaData, commands).apply(builder).commands
+        withContext(context) { builder() }
     }
 }
 
@@ -19,6 +23,3 @@ fun <S, A, C: CommandContext> command(
         builder: CommandBuilder<S, A, C>.() -> Unit
 ): CommandSet = commands(context) { command(name, builder) }
 
-interface CommandSet {
-    fun ModuleBuilder<*, *, *>.apply()
-}
