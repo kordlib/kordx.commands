@@ -1,29 +1,29 @@
 package com.gitlab.kordlib.kordx.commands.argument.result.extension
 
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 
 /**
- * Applies the [mapper] to the [Result.Success.item] if this is a [Result.Success] returning a [Result.Success] with
- * the new value, or a [Result.Failure] otherwise.
+ * Applies the [mapper] to the [ArgumentResult.Success.item] if this is a [ArgumentResult.Success] returning a [ArgumentResult.Success] with
+ * the new value, or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T, R> Result<T>.map(mapper: (T) -> R): Result<R> = when (this) {
-    is Result.Success -> Result.Success(mapper(item), wordsTaken)
-    is Result.Failure -> this as Result<R>
+inline fun <T, R> ArgumentResult<T>.map(mapper: (T) -> R): ArgumentResult<R> = when (this) {
+    is ArgumentResult.Success -> ArgumentResult.Success(mapper(item), wordsTaken)
+    is ArgumentResult.Failure -> this as ArgumentResult<R>
 }
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the result of [mapper] is a [MapResult.Pass],
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the result of [mapper] is a [MapResult.Pass],
+ * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T, R : Any> Result<T>.tryMap(mapper: (T) -> MapResult<R>): Result<R> = when (this) {
-    is Result.Success -> when (val result = mapper(item)) {
-        is MapResult.Pass -> Result.Success(result.item, wordsTaken)
-        is MapResult.Fail -> Result.Failure(result.reason, 0)
+inline fun <T, R : Any> ArgumentResult<T>.tryMap(mapper: (T) -> MapResult<R>): ArgumentResult<R> = when (this) {
+    is ArgumentResult.Success -> when (val result = mapper(item)) {
+        is MapResult.Pass -> ArgumentResult.Success(result.item, wordsTaken)
+        is MapResult.Fail -> ArgumentResult.Failure(result.reason, 0)
     }
-    is Result.Failure -> this as Result<R>
+    is ArgumentResult.Failure -> this as ArgumentResult<R>
 }
 
 /**

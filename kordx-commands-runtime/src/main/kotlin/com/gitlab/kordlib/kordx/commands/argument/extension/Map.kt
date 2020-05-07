@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.extension
 
 import com.gitlab.kordlib.kordx.commands.argument.*
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.MapResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.map
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.tryMap
@@ -14,7 +14,7 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.tryMap
 fun <T, R, CONTEXT> Argument<T, CONTEXT>.map(mapper: suspend CONTEXT.(T) -> R): Argument<R, CONTEXT> =
         object : Argument<R, CONTEXT> by this as Argument<R, CONTEXT> {
 
-            override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<R> {
+            override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<R> {
                 return this@map.parse(words, fromIndex, context).map { mapper(context, it) }
             }
         }
@@ -28,7 +28,7 @@ fun <T, R : Any, CONTEXT> Argument<T, CONTEXT>.tryMap(
         mapper: suspend CONTEXT.(T) -> MapResult<R>
 ): Argument<R, CONTEXT> = object : Argument<R, CONTEXT> by this as Argument<R, CONTEXT> {
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<R> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<R> {
         return this@tryMap.parse(words, fromIndex, context).tryMap { mapper.invoke(context, it) }
     }
 }

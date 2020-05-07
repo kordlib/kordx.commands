@@ -1,11 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.model.processor
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
 import org.koin.core.Koin
 import com.gitlab.kordlib.kordx.commands.model.module.Module
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 interface EventHandler<S> {
     val context: ProcessorContext<S, *, *>
@@ -33,7 +33,7 @@ interface ContextConverter<S, A, E: CommandContext> {
 sealed class ArgumentsResult<A> {
     data class Success<A>(val items: List<*>) : ArgumentsResult<A>()
     data class TooManyWords<A>(val context: A, val arguments: List<Argument<*, A>>, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
-    data class Failure<A>(val context: A, val failure: Result.Failure<*>, val argument: Argument<*, A>, val arguments: List<Argument<*, A>>, val argumentsTaken: Int, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
+    data class Failure<A>(val context: A, val failure: ArgumentResult.Failure<*>, val argument: Argument<*, A>, val arguments: List<Argument<*, A>>, val argumentsTaken: Int, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
 }
 
 interface ErrorHandler<S, A, E: CommandContext> {
@@ -46,7 +46,7 @@ interface ErrorHandler<S, A, E: CommandContext> {
             command: Command<E>,
             words: List<String>,
             argument: Argument<*, A>,
-            failure: Result.Failure<*>
+            failure: ArgumentResult.Failure<*>
     ) {}
 
     suspend fun CommandProcessor.tooManyWords(event: S, command: Command<E>, result: ArgumentsResult.TooManyWords<A>) {}
@@ -108,11 +108,11 @@ open class BaseEventHandler<S, A, E: CommandContext>(
         val items = mutableListOf<Any?>()
         arguments.forEachIndexed { index, argument ->
             when (val result = argument.parse(words, wordIndex, event)) {
-                is Result.Success -> {
+                is ArgumentResult.Success -> {
                     wordIndex += result.wordsTaken
                     items += result.item
                 }
-                is Result.Failure -> return ArgumentsResult.Failure(event, result, argument, arguments, index, words, wordIndex)
+                is ArgumentResult.Failure -> return ArgumentsResult.Failure(event, result, argument, arguments, index, words, wordIndex)
             }
         }
 

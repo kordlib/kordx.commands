@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.kord.model.processor
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.model.KordEvent
 import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandContext
@@ -70,7 +70,7 @@ class KordErrorHandler(
         }
     }
 
-    override suspend fun CommandProcessor.rejectArgument(event: MessageCreateEvent, command: Command<KordCommandContext>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: Result.Failure<*>) {
+    override suspend fun CommandProcessor.rejectArgument(event: MessageCreateEvent, command: Command<KordCommandContext>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: ArgumentResult.Failure<*>) {
         respondError(event, command, words, failure.atWord, failure.reason)
     }
 

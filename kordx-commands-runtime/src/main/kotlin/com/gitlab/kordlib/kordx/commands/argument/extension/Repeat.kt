@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.extension
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 fun<T, CONTEXT> Argument<T, CONTEXT>.repeated(
         range: IntRange = 0..Int.MAX_VALUE,
@@ -24,14 +24,14 @@ private class RepeatArg<T, CONTEXT>(
     override val example: String
         get() = "${argument.example} repeated"
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<List<T>> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<List<T>> {
         var index = fromIndex
         val results = mutableListOf<T>()
         var repeats = 0
         loop@while (index < words.size && repeats < maxRepeats) {
             when(val result = argument.parse(words, index, context)) {
-                is Result.Failure -> break@loop
-                is Result.Success -> {
+                is ArgumentResult.Failure -> break@loop
+                is ArgumentResult.Success -> {
                     results += result.item
                     index += result.wordsTaken
                     repeats += 1
@@ -40,8 +40,8 @@ private class RepeatArg<T, CONTEXT>(
         }
 
         return when {
-            results.size < minRepeats -> Result.Failure("expected at least $minRepeats repeats of ${argument.name}, but only got ${results.size}", index)
-            else -> Result.Success(results, index - fromIndex)
+            results.size < minRepeats -> ArgumentResult.Failure("expected at least $minRepeats repeats of ${argument.name}, but only got ${results.size}", index)
+            else -> ArgumentResult.Success(results, index - fromIndex)
         }
     }
 

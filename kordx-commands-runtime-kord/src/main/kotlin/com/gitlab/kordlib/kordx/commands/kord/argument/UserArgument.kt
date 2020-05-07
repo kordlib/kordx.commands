@@ -1,11 +1,10 @@
 package com.gitlab.kordlib.kordx.commands.kord.argument
 
 import com.gitlab.kordlib.common.entity.Snowflake
-import com.gitlab.kordlib.core.behavior.UserBehavior
 import com.gitlab.kordlib.core.entity.User
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.*
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 
@@ -13,7 +12,7 @@ internal class InternalUserArgument(override val name: String = "User") : Single
     final override val example: String
         get() = "@User"
 
-    final override suspend fun parse(word: String, context: MessageCreateEvent): Result<User> {
+    final override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<User> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)

@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.extension
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.FilterResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.filter
 import kotlin.random.Random
@@ -16,13 +16,14 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.inRange(
         range: ClosedRange<T>
 ): Argument<T, CONTEXT> where T : Number, T : Comparable<T> = object : Argument<T, CONTEXT> by this {
 
+    @Suppress("IMPLICIT_CAST_TO_ANY")
     override val example: String
         get() = when (range.start) {
             is Float, is Double -> Random.nextDouble(range.start.toDouble(), range.endInclusive.toDouble())
             else -> Random.nextLong(range.start.toLong(), range.endInclusive.toLong())
         }.toString()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@inRange.parse(words, fromIndex, context).filter {
             if (it in range) FilterResult.Pass
             else FilterResult.Fail("expected number in range of [${range.start}..${range.endInclusive}]")
@@ -122,7 +123,7 @@ private inline fun <T, CONTEXT> Argument<T, CONTEXT>.filterWithExample(
     override val example: String
         get() = example()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@filterWithExample.parse(words, fromIndex, context).filter(filter)
     }
 }

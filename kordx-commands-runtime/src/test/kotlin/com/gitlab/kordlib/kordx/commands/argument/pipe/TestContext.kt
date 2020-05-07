@@ -3,7 +3,6 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
@@ -14,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 class TestEventContext(
         val output: TestOutput,
@@ -32,7 +32,7 @@ sealed class EventType {
     class Response(val text: String) : EventType()
     class NotFound(val command: String) : EventType()
     object EmptyInvocation : EventType()
-    class RejectArgument(val command: Command<*>, words: List<String>, failure: Result.Failure<*>) : EventType()
+    class RejectArgument(val command: Command<*>, words: List<String>, failure: ArgumentResult.Failure<*>) : EventType()
     class RejectPrecondition(val command: Command<*>, val preconditionResult: Boolean) : EventType()
 }
 
@@ -59,7 +59,7 @@ class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, St
             command: Command<TestEventContext>,
             words: List<String>,
             argument: Argument<*, String>,
-            failure: Result.Failure<*>
+            failure: ArgumentResult.Failure<*>
     ) {
         output.push(EventType.RejectArgument(command, words, failure))
     }

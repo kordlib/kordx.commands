@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.extension
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.map
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.switchOnFail
 
@@ -58,8 +58,8 @@ private class EitherArgument<A, B, CONTEXT>(
         get() = "$left or $right"
 
     @Suppress("RemoveExplicitTypeArguments")
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<Either<A, B>> {
-        val left: Result<Either<A, B>> = left.parse(words, fromIndex, context).map { Either.Left<A,B>(it) }
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<Either<A, B>> {
+        val left: ArgumentResult<Either<A, B>> = left.parse(words, fromIndex, context).map { Either.Left<A,B>(it) }
         return left.switchOnFail { right.parse(words, fromIndex, context).map { Either.Right<A,B>(it) } }
     }
 

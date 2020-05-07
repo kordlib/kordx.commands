@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.extension
 
 import com.gitlab.kordlib.kordx.commands.argument.*
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.*
 
 /**
@@ -11,7 +11,7 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.filter(
         filter: suspend CONTEXT.(T) -> FilterResult
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@filter.parse(words, fromIndex, context).filter { filter(context, it) }
     }
 }
@@ -29,7 +29,7 @@ inline fun <reified T, CONTEXT> Argument<*, CONTEXT>.filterIsInstance(
     override val name: String
         get() = this@filterIsInstance.name
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@filterIsInstance.parse(words, fromIndex, context).filterIsInstance(failMessage)
     }
 }
@@ -43,7 +43,7 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.filterNotNull(
         failMessage: String
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@filterNotNull.parse(words, fromIndex, context).filterNotNull(failMessage)
     }
 }
@@ -57,7 +57,7 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.filterNotNull(
         failMessage: suspend (T?) -> String
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<T> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@filterNotNull.parse(words, fromIndex, context).filterNotNull { failMessage(it) }
     }
 }

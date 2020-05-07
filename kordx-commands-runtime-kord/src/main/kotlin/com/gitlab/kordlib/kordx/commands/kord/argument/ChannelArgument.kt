@@ -9,7 +9,7 @@ import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.extension.filterIsInstance
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 private val mentionRegex = Regex("""^<#\d+>$""")
 
@@ -20,7 +20,7 @@ internal class InternalChannelArgument(
     override val example: String
         get() = "#Channel"
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): Result<Channel> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Channel> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)

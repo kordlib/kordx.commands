@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.text
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.FilterResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.filter
 
@@ -16,7 +16,7 @@ fun <CONTEXT> Argument<String, CONTEXT>.whitelist(
     override val example: String
         get() = whitelist.random()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): Result<String> {
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
         return this@whitelist.parse(words, fromIndex, context).filter {
             when {
                 ignoreCase -> when {

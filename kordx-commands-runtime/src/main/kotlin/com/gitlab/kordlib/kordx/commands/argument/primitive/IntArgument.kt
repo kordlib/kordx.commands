@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.primitive
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import kotlin.random.Random
 
@@ -9,7 +9,7 @@ class InternalIntArgument(override val name: String = "Number") : SingleWordArgu
     override val example: String
         get() = Random.nextInt(-100, 100).toString()
 
-    override suspend fun parse(word: String, context: Any?): Result<Int> = when (val number = word.toIntOrNull()) {
+    override suspend fun parse(word: String, context: Any?): ArgumentResult<Int> = when (val number = word.toIntOrNull()) {
         null -> failure("Expected a whole number.")
         else -> success(number)
     }

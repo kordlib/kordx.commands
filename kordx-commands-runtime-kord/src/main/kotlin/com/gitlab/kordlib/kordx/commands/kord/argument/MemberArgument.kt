@@ -4,7 +4,7 @@ import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.Member
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
@@ -15,7 +15,7 @@ internal class InternalMemberArgument(
     override val example: String
         get() = "@User"
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): Result<Member> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Member> {
         val guildId = context.message.guildId ?: return failure("Can't get member outside of guilds.")
 
         val number = word.toLongOrNull()

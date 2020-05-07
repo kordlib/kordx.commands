@@ -1,12 +1,12 @@
 package com.gitlab.kordlib.kordx.commands.argument.result.extension
 
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 /**
- * Returns this if this is a [Result.Success], or a [Result.Success] with null as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success], or a [ArgumentResult.Success] with null as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Result<T>.optional(): Result.Success<T?> = when (this) {
-    is Result.Success -> this as Result.Success<T?>
-    is Result.Failure -> Result.Success(null, 0)
+fun <T : Any> ArgumentResult<T>.optional(): ArgumentResult.Success<T?> = when (this) {
+    is ArgumentResult.Success -> this as ArgumentResult.Success<T?>
+    is ArgumentResult.Failure -> ArgumentResult.Success(null, 0)
 }

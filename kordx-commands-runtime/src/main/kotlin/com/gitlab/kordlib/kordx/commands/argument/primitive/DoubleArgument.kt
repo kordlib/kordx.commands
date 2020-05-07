@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.primitive
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import kotlin.random.Random
 
@@ -11,7 +11,7 @@ internal class InternalDoubleArgument : SingleWordArgument<Double, Any?>() {
     override val example: String
         get() = Random.nextDouble(-100.0, 100.0).toString()
 
-    override suspend fun parse(word: String, context: Any?): Result<Double> =
+    override suspend fun parse(word: String, context: Any?): ArgumentResult<Double> =
             when (val number = word.toDoubleOrNull()) {
                 null -> failure("Expected a number.")
                 else -> success(number)

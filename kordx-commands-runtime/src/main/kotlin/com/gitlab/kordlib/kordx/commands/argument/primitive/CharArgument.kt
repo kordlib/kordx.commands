@@ -1,14 +1,14 @@
 package com.gitlab.kordlib.kordx.commands.argument.primitive
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
 internal class InternalCharArgument(override val name: String = "Character") : SingleWordArgument<Char, Any?>() {
     override val example: String
         get() = ('a'..'Z').random().toString()
 
-    override suspend fun parse(word: String, context: Any?): Result<Char> = when (word.length) {
+    override suspend fun parse(word: String, context: Any?): ArgumentResult<Char> = when (word.length) {
         1 -> success(word[0])
         else -> failure("Expected a character.")
     }

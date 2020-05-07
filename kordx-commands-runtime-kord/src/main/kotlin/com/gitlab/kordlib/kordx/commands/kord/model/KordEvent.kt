@@ -5,7 +5,7 @@ import com.gitlab.kordlib.core.behavior.channel.createMessage
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.rest.builder.message.EmbedBuilder
 import com.gitlab.kordlib.rest.builder.message.MessageCreateBuilder
 import kotlinx.coroutines.flow.*
@@ -53,8 +53,8 @@ interface KordEvent {
             .filter { it.message.author?.id == message.author!!.id }
             .filter { it.message.channel.id == channel.id }
             .map { argument.parse(it.message.content.split(" "), 0, it) }
-            .onEach { if (it is Result.Failure) respond(it.reason) }
-            .filterIsInstance<Result.Success<T>>()
+            .onEach { if (it is ArgumentResult.Failure) respond(it.reason) }
+            .filterIsInstance<ArgumentResult.Success<T>>()
             .map { it.item }
             .filter(filter)
             .take(1)
@@ -92,8 +92,8 @@ interface KordEvent {
             .filter { it.message.channel.id == channel.id }
             .takeWhile { !escape(it) }
             .map { argument.parse(it.message.content.split(" "), 0, it) }
-            .onEach { if (it is Result.Failure) respond(it.reason) }
-            .filterIsInstance<Result.Success<T>>()
+            .onEach { if (it is ArgumentResult.Failure) respond(it.reason) }
+            .filterIsInstance<ArgumentResult.Success<T>>()
             .map { it.item }
             .filter(filter)
             .take(1)

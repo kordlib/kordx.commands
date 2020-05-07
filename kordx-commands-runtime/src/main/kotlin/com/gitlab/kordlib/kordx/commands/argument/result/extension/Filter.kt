@@ -1,79 +1,79 @@
 package com.gitlab.kordlib.kordx.commands.argument.result.extension
 
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the [Result.Success.item] is [T],
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * or a [ArgumentResult.Failure] otherwise.
  *
- * @param [failMessage] the message to supply when the [Result.Success.item] is not [T].
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T> Result<*>.filterIsInstance(failMessage: String): Result<T> = when (val result = this) {
-    is Result.Success -> when (result.item) {
-        is T -> result as Result<T>
-        else -> Result.Failure(failMessage, 0)
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: String): ArgumentResult<T> = when (val result = this) {
+    is ArgumentResult.Success -> when (result.item) {
+        is T -> result as ArgumentResult<T>
+        else -> ArgumentResult.Failure(failMessage, 0)
     }
-    is Result.Failure -> this as Result<T>
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the [Result.Success.item] is [T],
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * or a [ArgumentResult.Failure] otherwise.
  *
- * @param [failMessage] the message to supply when the [Result.Success.item] is not [T].
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T> Result<*>.filterIsInstance(failMessage: () -> String): Result<T> = when (val result = this) {
-    is Result.Success -> when (result.item) {
-        is T -> result as Result<T>
-        else -> Result.Failure(failMessage(), 0)
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: () -> String): ArgumentResult<T> = when (val result = this) {
+    is ArgumentResult.Success -> when (result.item) {
+        is T -> result as ArgumentResult<T>
+        else -> ArgumentResult.Failure(failMessage(), 0)
     }
-    is Result.Failure -> this as Result<T>
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the [Result.Success.item] is not null,
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
+ * or a [ArgumentResult.Failure] otherwise.
  *
- * @param [failMessage] the message to supply when the [Result.Success.item] is null.
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is null.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Result<T?>.filterNotNull(failMessage: String): Result<T> = when (this) {
-    is Result.Success -> when (item) {
-        null -> Result.Failure(failMessage, wordsTaken)
-        else -> Result.Success(item, wordsTaken)
+fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: String): ArgumentResult<T> = when (this) {
+    is ArgumentResult.Success -> when (item) {
+        null -> ArgumentResult.Failure(failMessage, wordsTaken)
+        else -> ArgumentResult.Success(item, wordsTaken)
     }
-    is Result.Failure -> this as Result<T>
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the [Result.Success.item] is not null,
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
+ * or a [ArgumentResult.Failure] otherwise.
  *
- * @param [failMessage] the message to supply when the [Result.Success.item] is null.
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is null.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T : Any> Result<T?>.filterNotNull(failMessage: (T?) -> String): Result<T> = when (this) {
-    is Result.Success -> when (item) {
-        null -> Result.Failure(failMessage(item), wordsTaken)
-        else -> Result.Success(item, wordsTaken)
+inline fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: (T?) -> String): ArgumentResult<T> = when (this) {
+    is ArgumentResult.Success -> when (item) {
+        null -> ArgumentResult.Failure(failMessage(item), wordsTaken)
+        else -> ArgumentResult.Success(item, wordsTaken)
     }
-    is Result.Failure -> this as Result<T>
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
 
 /**
- * Returns a [Result.Success] if this result is a [Result.Success] *and* the result of [filter] is a [FilterResult.Pass],
- * or a [Result.Failure] otherwise.
+ * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the result of [filter] is a [FilterResult.Pass],
+ * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T> Result<T>.filter(filter: (T) -> FilterResult): Result<T> = when (this) {
-    is Result.Success -> when (val result = filter(item)) {
+inline fun <T> ArgumentResult<T>.filter(filter: (T) -> FilterResult): ArgumentResult<T> = when (this) {
+    is ArgumentResult.Success -> when (val result = filter(item)) {
         FilterResult.Pass -> this
-        is FilterResult.Fail -> Result.Failure(result.reason, 0)
+        is FilterResult.Fail -> ArgumentResult.Failure(result.reason, 0)
     }
-    is Result.Failure -> this
+    is ArgumentResult.Failure -> this
 }
 
 /**

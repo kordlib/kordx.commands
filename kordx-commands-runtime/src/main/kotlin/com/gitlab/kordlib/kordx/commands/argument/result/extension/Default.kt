@@ -1,58 +1,59 @@
 package com.gitlab.kordlib.kordx.commands.argument.result.extension
 
-import com.gitlab.kordlib.kordx.commands.argument.result.Result
+import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 
 /**
- * Returns the result of the [generator] if this is a [Result.Failure], or [this] otherwise.
+ * Returns the result of the [generator] if this is a [ArgumentResult.Failure], or [this] otherwise.
  */
-inline fun <T> Result<T>.switchOnFail(generator: () -> Result<T>): Result<T> = when (this) {
-    is Result.Success -> this
-    is Result.Failure -> generator()
+inline fun <T> ArgumentResult<T>.switchOnFail(generator: () -> ArgumentResult<T>): ArgumentResult<T> = when (this) {
+    is ArgumentResult.Success -> this
+    is ArgumentResult.Failure -> generator()
 }
 
 
 /**
- * Returns this if this is a [Result.Success] and [Result.Success.item] is not null, or a [Result.Success] with
+ * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null, or a [ArgumentResult.Success] with
  * the [default] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> Result<T?>.orDefault(default: T): Result.Success<T> = when (this) {
-    is Result.Success -> when (item) {
-        null -> Result.Success(default, wordsTaken)
-        else -> this as Result.Success<T>
+fun <T : Any> ArgumentResult<T?>.orDefault(default: T): ArgumentResult.Success<T> = when (this) {
+    is ArgumentResult.Success -> when (item) {
+        null -> ArgumentResult.Success(default, wordsTaken)
+        else -> this as ArgumentResult.Success<T>
     }
-    is Result.Failure -> Result.Success(default, 0)
+    is ArgumentResult.Failure -> ArgumentResult.Success(default, 0)
 }
 
 /**
- * Returns this if this is a [Result.Success] and [Result.Success.item] is not null, or a [Result.Success] with
+ * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null, or a [ArgumentResult.Success] with
  * the [fallback] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T : Any> Result<T?>.orSupplyDefault(fallback: () -> T): Result.Success<T> = when (this) {
-    is Result.Success -> when (item) {
-        null -> Result.Success(fallback(), wordsTaken)
-        else -> this as Result.Success<T>
+@JvmName("orElseSupplyNullable")
+inline fun <T : Any> ArgumentResult<T?>.orElseSupply(fallback: () -> T): ArgumentResult.Success<T> = when (this) {
+    is ArgumentResult.Success -> when (item) {
+        null -> ArgumentResult.Success(fallback(), wordsTaken)
+        else -> this as ArgumentResult.Success<T>
     }
-    is Result.Failure -> Result.Success(fallback(), 0)
+    is ArgumentResult.Failure -> ArgumentResult.Success(fallback(), 0)
 }
 
 
 /**
- * Returns this if this is a [Result.Success], or a [Result.Success] with the [fallBack] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success], or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T> Result<T>.orElse(fallBack: T): Result.Success<T> = when (this) {
-    is Result.Success -> Result.Success(item, wordsTaken)
-    is Result.Failure -> Result.Success(fallBack, 0)
+fun <T> ArgumentResult<T>.orElse(fallBack: T): ArgumentResult.Success<T> = when (this) {
+    is ArgumentResult.Success -> ArgumentResult.Success(item, wordsTaken)
+    is ArgumentResult.Failure -> ArgumentResult.Success(fallBack, 0)
 }
 
 /**
- * Returns this if this is a [Result.Success], or a [Result.Success] with the [fallBack] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success], or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <T> Result<T>.orElseSupply(fallBack: () -> T): Result.Success<T> = when (this) {
-    is Result.Success -> Result.Success(item, wordsTaken)
-    is Result.Failure -> Result.Success(fallBack(), 0)
+inline fun <T> ArgumentResult<T>.orElseSupply(fallBack: () -> T): ArgumentResult.Success<T> = when (this) {
+    is ArgumentResult.Success -> ArgumentResult.Success(item, wordsTaken)
+    is ArgumentResult.Failure -> ArgumentResult.Success(fallBack(), 0)
 }
