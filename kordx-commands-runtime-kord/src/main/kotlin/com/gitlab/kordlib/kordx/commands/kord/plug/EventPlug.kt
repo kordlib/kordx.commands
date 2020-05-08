@@ -17,6 +17,12 @@ interface EventPlug<T : Event> : Plug<Kord> {
 
 }
 
+/**
+ * Adds an event listener to the bot, listening to events of type [T] and invoking the [consumer] on each one.
+ *
+ * > All event listeners run isolated from the command framework. They can not interact with any commands or vice versa,
+ * no features are provided past the initial setup.
+ */
 inline fun <reified T : Event> on(noinline consumer: suspend T.() -> Unit) = object : EventPlug<T> {
 
     override fun apply(kord: Kord) {

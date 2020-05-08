@@ -15,7 +15,26 @@ private val logger = KotlinLogging.logger {}
 
 class BotBuilder(val kord: Kord, val processorConfig: KordProcessorConfig = KordProcessorConfig(kord)) {
 
+    /**
+     * Filter that will ignore all events created by the bot itself, added by default
+     * Can be disabled by invoking the `unaryMinus` operator inside the configuration.
+     * ```kotlin
+     * {
+     *     -ignoreSelf
+     * }
+     * ```
+     */
     val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
+
+    /**
+     * Filter that will ignore all events created by bots, added by default.
+     * Can be disabled by invoking the `unaryMinus` operator inside the configuration.
+     * ```kotlin
+     * {
+     *     -ignoreBots
+     * }
+     * ```
+     */
     val ignoreBots = eventFilter { message.author?.isBot != true }
 
     init {
@@ -61,8 +80,16 @@ class BotBuilder(val kord: Kord, val processorConfig: KordProcessorConfig = Kord
 
 }
 
+/**
+ * Creates a bot with the given [token] as discord bot token, applying [configure] to the bot's configuration.
+ * Once created, the bot will log in to the gateway and suspend until the gateway until logged out.
+ */
 suspend inline fun bot(token: String, configure: KordProcessorConfig.() -> Unit) = bot(Kord(token), configure)
 
+/**
+ * Creates a bot with the given [kord] instance, applying [configure] to the bot's configuration.
+ * Once created, the bot will log in to the gateway and suspend until the gateway until logged out.
+ */
 suspend inline fun bot(kord: Kord, configure: KordProcessorConfig.() -> Unit) {
     val builder = BotBuilder(kord)
     builder.processorConfig.configure()

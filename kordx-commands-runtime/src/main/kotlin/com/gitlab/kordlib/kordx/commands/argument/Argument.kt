@@ -1,9 +1,18 @@
 package com.gitlab.kordlib.kordx.commands.argument
 
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import com.gitlab.kordlib.kordx.commands.argument.extension.*
 
 /**
  * A parser that takes in a set of words and a [CONTEXT], producing a [ArgumentResult] with a possible generated [T].
+ *
+ * Arguments come with a set of extension functions to further customize them to your requirements:
+ * * [optional] and [withDefault] will replace parsing failures with default values.
+ * * [map] and [tryMap] allow mapping to more complex types from more basic arguments.
+ * * [filter] and [filterIsInstance] will reduce the scope of allowed values.
+ * * [or] can be used to accept one of two arguments in the same position.
+ * * [repeated] can be used to accept a range of the same argument.
+ *
  */
 interface Argument<out T, in CONTEXT> {
     /**

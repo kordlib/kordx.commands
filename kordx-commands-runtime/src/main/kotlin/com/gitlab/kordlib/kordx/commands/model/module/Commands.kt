@@ -4,10 +4,39 @@ import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
 import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
+/**
+ * A configuration of a [Module] that doesn't belong to any given module name.
+ * The use case of CommandSets is small since module configurations are additive,
+ * therefore the [module] builder is generally preferred over this one.
+ *
+ * ```kotlin
+ * //don't do this
+ * val set = commandSet(context) {
+ *      //commands
+ * }
+ *
+ * val module = module("name", context) {
+ *     +set
+ *     //commands
+ * }
+ *
+ * //prefer this instead
+ * val partialModule1 = module("name",context) {
+ *      //commands
+ * }
+ *
+ * val partialModule2 = module("name", context) {
+ *     //commands
+ * }
+ * ```
+ */
 interface CommandSet {
     fun ModuleBuilder<*, *, *>.apply()
 }
 
+/**
+ * Defines a [CommandSet] configured by the [builder].
+ */
 fun <S, A, C: CommandContext> commands(
         context: ProcessorContext<S, A, C>,
         builder: ModuleBuilder<S, A, C>.() -> Unit
@@ -17,6 +46,9 @@ fun <S, A, C: CommandContext> commands(
     }
 }
 
+/**
+* Defines a [CommandSet] with a single command with the given [name] and configured by the [builder].
+*/
 fun <S, A, C: CommandContext> command(
         context: ProcessorContext<S, A, C>,
         name: String,
