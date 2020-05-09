@@ -1,21 +1,17 @@
 package com.gitlab.kordlib.kordx.commands.model.module
 
 import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.metadata.Metadata
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
-inline fun <S, A, C: CommandContext> module(
-        name: String,
-        context: ProcessorContext<S, A, C>,
-        crossinline builder: suspend ModuleBuilder<S, A, C>.() -> Unit
-): ModuleModifier = moduleModifier(name) {
-    withContext(context) { builder() }
-}
 
+/**
+ * A container of [commands] with a unique [name].
+ */
 class Module(
         val name: String,
-        val commands: Map<String, Command<out CommandContext>>,
+        val commands: Map<String, Command<out CommandEvent>>,
         val metadata: Metadata
 )
 

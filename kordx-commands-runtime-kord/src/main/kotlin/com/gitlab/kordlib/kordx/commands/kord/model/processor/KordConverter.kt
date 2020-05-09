@@ -6,18 +6,18 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.model.KordEvent
-import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandContext
+import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandEvent
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.*
 
-object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordCommandContext> {
+object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
     override val MessageCreateEvent.text: String get() =  message.content
 
     override fun MessageCreateEvent.toArgumentContext(): MessageCreateEvent = this
 
-    override fun MessageCreateEvent.toEventContext(data: EventContextData<KordCommandContext>): KordCommandContext {
-        return KordCommandContext(this, data.command, data.commands, data.koin, data.processor)
+    override fun MessageCreateEvent.toEventContext(data: EventContextData<KordCommandEvent>): KordCommandEvent {
+        return KordCommandEvent(this, data.command, data.commands, data.koin, data.processor)
 
     }
 
@@ -25,11 +25,11 @@ object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreate
 
 class KordErrorHandler(
         private val suggester: CommandSuggester = CommandSuggester.Companion
-) : ErrorHandler<MessageCreateEvent, MessageCreateEvent, KordCommandContext> {
+) : ErrorHandler<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
 
     private suspend inline fun respondError(
             event: MessageCreateEvent,
-            command: Command<KordCommandContext>,
+            command: Command<KordCommandEvent>,
             words: List<String>,
             wordPointerIndex: Int,
             message: String
@@ -70,11 +70,11 @@ class KordErrorHandler(
         }
     }
 
-    override suspend fun CommandProcessor.rejectArgument(event: MessageCreateEvent, command: Command<KordCommandContext>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: ArgumentResult.Failure<*>) {
+    override suspend fun CommandProcessor.rejectArgument(event: MessageCreateEvent, command: Command<KordCommandEvent>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: ArgumentResult.Failure<*>) {
         respondError(event, command, words, failure.atWord, failure.reason)
     }
 
-    override suspend fun CommandProcessor.tooManyWords(event: MessageCreateEvent, command: Command<KordCommandContext>, result: ArgumentsResult.TooManyWords<MessageCreateEvent>) {
+    override suspend fun CommandProcessor.tooManyWords(event: MessageCreateEvent, command: Command<KordCommandEvent>, result: ArgumentsResult.TooManyWords<MessageCreateEvent>) {
         respondError(event, command, result.words, result.wordsTaken, "Too many arguments, reached end of command parsing.")
     }
 }

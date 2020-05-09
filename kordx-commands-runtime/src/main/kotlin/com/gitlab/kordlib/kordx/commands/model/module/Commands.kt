@@ -1,7 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.model.module
 
 import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
 /**
@@ -37,7 +37,7 @@ interface CommandSet {
 /**
  * Defines a [CommandSet] configured by the [builder].
  */
-fun <S, A, C: CommandContext> commands(
+fun <S, A, C: CommandEvent> commands(
         context: ProcessorContext<S, A, C>,
         builder: ModuleBuilder<S, A, C>.() -> Unit
 ): CommandSet = object : CommandSet {
@@ -49,7 +49,7 @@ fun <S, A, C: CommandContext> commands(
 /**
 * Defines a [CommandSet] with a single command with the given [name] and configured by the [builder].
 */
-fun <S, A, C: CommandContext> command(
+fun <S, A, C: CommandEvent> command(
         context: ProcessorContext<S, A, C>,
         name: String,
         builder: CommandBuilder<S, A, C>.() -> Unit

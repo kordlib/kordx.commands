@@ -1,9 +1,9 @@
 package com.gitlab.kordlib.kordx.commands.model.precondition
 
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
-interface Precondition<C: CommandContext> {
+interface Precondition<C: CommandEvent> {
     val priority: Long get() = 0
     val context: ProcessorContext<*, *, C>
     suspend operator fun invoke(event: C): Boolean
@@ -19,7 +19,7 @@ interface Precondition<C: CommandContext> {
  * will be run before others. This can be used to delay potentially expensive preconditions or define a fixed behavior
  * in side effects.
  */
-fun <C: CommandContext> precondition(
+fun <C: CommandEvent> precondition(
         context: ProcessorContext<*, *, C>,
         priority: Long = 0,
         precondition: suspend C.() -> Boolean

@@ -2,7 +2,7 @@ package com.gitlab.kordlib.kordx.commands.model.processor
 
 import com.gitlab.kordlib.kordx.commands.internal.cast
 import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
 import com.gitlab.kordlib.kordx.commands.model.module.Module
@@ -28,8 +28,8 @@ private val logger = KotlinLogging.logger { }
 
 class CommandProcessor(
         val filters: Map<ProcessorContext<*, *, *>, List<EventFilter<*>>>,
-        val preconditions: Map<ProcessorContext<*, *, *>, List<Precondition<out CommandContext>>>,
-        commands: Map<String, Command<out CommandContext>>,
+        val preconditions: Map<ProcessorContext<*, *, *>, List<Precondition<out CommandEvent>>>,
+        commands: Map<String, Command<out CommandEvent>>,
         val prefix: Prefix,
         private val handlers: Map<ProcessorContext<*, *, *>, EventHandler<*>>,
         private var modifiers: List<ModuleModifier>,
@@ -39,17 +39,17 @@ class CommandProcessor(
     private val editMutex = Mutex()
     override val coroutineContext: CoroutineContext = dispatcher + Job()
 
-    private var _commands: Map<String, Command<out CommandContext>> = commands
-    val commands: Map<String, Command<out CommandContext>> get() = _commands
+    private var _commands: Map<String, Command<out CommandEvent>> = commands
+    val commands: Map<String, Command<out CommandEvent>> get() = _commands
 
     @Suppress("UNCHECKED_CAST")
-    fun <T : CommandContext> getPreconditions(context: ProcessorContext<*, *, T>): List<Precondition<T>> {
+    fun <T : CommandEvent> getPreconditions(context: ProcessorContext<*, *, T>): List<Precondition<T>> {
         return preconditions[context].orEmpty() as List<Precondition<T>>
     }
 
     fun getCommand(name: String): Command<*>? = commands[name]
 
-    fun <T : CommandContext> getCommand(context: ProcessorContext<*, *, T>, name: String): Command<T>? {
+    fun <T : CommandEvent> getCommand(context: ProcessorContext<*, *, T>, name: String): Command<T>? {
         val command = commands[name] ?: return null
         if (command.context != context) return null
 
@@ -105,7 +105,7 @@ class CommandProcessor(
         val modules = _commands.values.firstOrNull()?.modules as? MutableMap<String, Module> ?: mutableMapOf()
         container.modules.values.forEach { it.build(modules, koin) }
 
-        val map: Map<String, Command<out CommandContext>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
+        val map: Map<String, Command<out CommandEvent>> = modules.values.map { it.commands }.fold(emptyMap()) { acc, map ->
             map.keys.forEach { require(it !in acc) { "command $it is already registered in ${acc[it]!!.module.name}" } }
             acc + map
         }

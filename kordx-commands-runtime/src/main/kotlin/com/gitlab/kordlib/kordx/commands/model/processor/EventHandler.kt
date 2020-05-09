@@ -2,7 +2,7 @@ package com.gitlab.kordlib.kordx.commands.model.processor
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import org.koin.core.Koin
 import com.gitlab.kordlib.kordx.commands.model.module.Module
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
@@ -14,7 +14,7 @@ interface EventHandler<S> {
 
 }
 
-data class EventContextData<E: CommandContext>(
+data class EventContextData<E: CommandEvent>(
         val command: Command<E>,
         val modules: Map<String, Module>,
         val commands: Map<String, Command<*>>,
@@ -22,7 +22,7 @@ data class EventContextData<E: CommandContext>(
         val processor: CommandProcessor
 )
 
-interface ContextConverter<S, A, E: CommandContext> {
+interface ContextConverter<S, A, E: CommandEvent> {
     val S.text: String
 
     fun S.toArgumentContext(): A
@@ -36,7 +36,7 @@ sealed class ArgumentsResult<A> {
     data class Failure<A>(val context: A, val failure: ArgumentResult.Failure<*>, val argument: Argument<*, A>, val arguments: List<Argument<*, A>>, val argumentsTaken: Int, val words: List<String>, val wordsTaken: Int) : ArgumentsResult<A>()
 }
 
-interface ErrorHandler<S, A, E: CommandContext> {
+interface ErrorHandler<S, A, E: CommandEvent> {
     suspend fun CommandProcessor.notFound(event: S, command: String) {}
 
     suspend fun CommandProcessor.emptyInvocation(event: S) {}
@@ -52,7 +52,7 @@ interface ErrorHandler<S, A, E: CommandContext> {
     suspend fun CommandProcessor.tooManyWords(event: S, command: Command<E>, result: ArgumentsResult.TooManyWords<A>) {}
 }
 
-open class BaseEventHandler<S, A, E: CommandContext>(
+open class BaseEventHandler<S, A, E: CommandEvent>(
         override val context: ProcessorContext<S, A, E>,
         protected val converter: ContextConverter<S, A, E>,
         protected val handler: ErrorHandler<S, A, E>

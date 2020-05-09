@@ -23,7 +23,7 @@ annotation class AutoWired
 
 /**
  * Annotation that specifies the module name for command sets.
- * This annotation is required for [AutoWired] [EventHandlers][com.gitlab.kordlib.kordx.commands.processor.EventHandler].
+ * This annotation is required for [AutoWired] [EventHandlers][com.gitlab.kordlib.kordx.commands.model.processor.EventHandler].
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class ModuleName(val name: String)

@@ -4,7 +4,7 @@ package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import com.gitlab.kordlib.kordx.commands.model.processor.*
 import kotlinx.coroutines.channels.BroadcastChannel
@@ -15,18 +15,18 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
-class TestEventContext(
+class TestEventEvent(
         val output: TestOutput,
         override val command: Command<*>,
         override val commands: Map<String, Command<*>>,
         override val processor: CommandProcessor
-): CommandContext {
+): CommandEvent {
     suspend fun respond(text: String): Any? {
         return output.push(EventType.Response(text))
     }
 }
 
-object TestContext : ProcessorContext<String, String, TestEventContext>
+object TestContext : ProcessorContext<String, String, TestEventEvent>
 
 sealed class EventType {
     class Response(val text: String) : EventType()
@@ -45,7 +45,7 @@ class TestOutput {
     }
 }
 
-class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, String, TestEventContext> {
+class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, String, TestEventEvent> {
     override suspend fun CommandProcessor.emptyInvocation(event: String) {
         output.push(EventType.EmptyInvocation)
     }
@@ -56,7 +56,7 @@ class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, St
 
     override suspend fun CommandProcessor.rejectArgument(
             event: String,
-            command: Command<TestEventContext>,
+            command: Command<TestEventEvent>,
             words: List<String>,
             argument: Argument<*, String>,
             failure: ArgumentResult.Failure<*>
@@ -65,14 +65,14 @@ class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, St
     }
 }
 
-class TestConverter(private val output: TestOutput): ContextConverter<String, String, TestEventContext> {
+class TestConverter(private val output: TestOutput): ContextConverter<String, String, TestEventEvent> {
 
     override val String.text: String get() = this
 
     override fun String.toArgumentContext(): String = this
 
-    override fun String.toEventContext(data: EventContextData<TestEventContext>): TestEventContext {
-        return TestEventContext(output, data.command, data.commands, data.processor)
+    override fun String.toEventContext(data: EventContextData<TestEventEvent>): TestEventEvent {
+        return TestEventEvent(output, data.command, data.commands, data.processor)
     }
 
 }

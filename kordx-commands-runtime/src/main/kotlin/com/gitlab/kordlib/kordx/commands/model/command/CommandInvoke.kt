@@ -3,7 +3,7 @@ package com.gitlab.kordlib.kordx.commands.model.command
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.internal.cast
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         execute: suspend CCONTEXT.() -> Unit
 ) {
@@ -11,14 +11,14 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext>
     execution = { context, _ -> execute(context.cast()) }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(first: Argument<A,
         ACONTEXT>, execute: suspend CCONTEXT.(first: A) -> Unit) {
     arguments = listOf(first)
     execution = { context, arguments -> execute(context.cast(), arguments[0].cast()) }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -31,7 +31,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -49,7 +49,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -69,7 +69,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -91,7 +91,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -115,7 +115,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -141,7 +141,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G>
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H>
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H>
         CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -169,7 +169,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -199,7 +199,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -231,7 +231,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -266,7 +266,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -303,7 +303,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -342,7 +342,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -383,7 +383,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -426,7 +426,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -471,7 +471,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q> CommandBuilder<SCONTEXT, ACONTEXT, CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
         second: Argument<B, ACONTEXT>,
@@ -518,7 +518,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R> CommandBuilder<SCONTEXT, ACONTEXT,
         CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
@@ -568,7 +568,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R, S> CommandBuilder<SCONTEXT, ACONTEXT,
         CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,
@@ -620,7 +620,7 @@ operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G,
     }
 }
 
-operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandContext, A, B, C, D, E, F, G, H,
+operator fun <SCONTEXT, ACONTEXT, CCONTEXT: CommandEvent, A, B, C, D, E, F, G, H,
         I, J, K, L, M, N, O, P, Q, R, S, T> CommandBuilder<SCONTEXT, ACONTEXT,
         CCONTEXT>.invoke(
         first: Argument<A, ACONTEXT>,

@@ -8,8 +8,11 @@ import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
 
+/**
+ * DSL builder for a [Command].
+ */
 @CommandsBuilder
-class CommandBuilder<S, A, COMMANDCONTEXT : CommandContext>(
+class CommandBuilder<S, A, COMMANDCONTEXT : CommandEvent>(
         val name: String,
         val moduleName: String,
         val context: ProcessorContext<S, A, COMMANDCONTEXT>,
@@ -23,6 +26,9 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandContext>(
         return Command(name, moduleName, context, metaData.toMetaData(), arguments, modules, preconditions, koin, execution)
     }
 
+    /**
+     * Defines a [Precondition] for this specific command with a given [priority][Precondition.priority].
+     */
     fun precondition(
             priority: Long = 0,
             precondition: suspend COMMANDCONTEXT.() -> Boolean

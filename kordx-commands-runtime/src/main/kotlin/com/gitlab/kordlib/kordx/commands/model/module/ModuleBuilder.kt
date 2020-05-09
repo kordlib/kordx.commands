@@ -2,13 +2,21 @@ package com.gitlab.kordlib.kordx.commands.model.module
 
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
 import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
-import com.gitlab.kordlib.kordx.commands.model.command.CommandContext
+import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
 
+inline fun <S, A, C: CommandEvent> module(
+        name: String,
+        context: ProcessorContext<S, A, C>,
+        crossinline builder: suspend ModuleBuilder<S, A, C>.() -> Unit
+): ModuleModifier = moduleModifier(name) {
+    withContext(context) { builder() }
+}
+
 @CommandsBuilder
-data class ModuleBuilder<S, A, C: CommandContext>(
+data class ModuleBuilder<S, A, C: CommandEvent>(
         val name: String,
         val context: ProcessorContext<S, A, C>,
         val metaData: MutableMetadata = MutableMetadata(),
@@ -21,7 +29,7 @@ data class ModuleBuilder<S, A, C: CommandContext>(
 
     operator fun CommandSet.unaryPlus() = apply()
 
-    inline fun<S,A,C: CommandContext> withContext(context: ProcessorContext<S, A, C>, builder: ModuleBuilder<S, A, C>.() -> Unit) {
+    inline fun<S,A,C: CommandEvent> withContext(context: ProcessorContext<S, A, C>, builder: ModuleBuilder<S, A, C>.() -> Unit) {
         ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
@@ -33,7 +41,7 @@ data class ModuleBuilder<S, A, C: CommandContext>(
         add(command)
     }
 
-    fun <NEWS, NEWA, NEWC: CommandContext> command(
+    fun <NEWS, NEWA, NEWC: CommandEvent> command(
             name: String,
             context: ProcessorContext<NEWS, NEWA, NEWC>,
             builder: CommandBuilder<NEWS, NEWA, NEWC>.() -> Unit
