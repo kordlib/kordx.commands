@@ -9,10 +9,10 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 
 internal class InternalUserArgument(override val name: String = "User") : SingleWordArgument<User, MessageCreateEvent>() {
-    final override val example: String
+    override val example: String
         get() = "@User"
 
-    final override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<User> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<User> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
@@ -27,3 +27,8 @@ internal class InternalUserArgument(override val name: String = "User") : Single
     }
 
 }
+
+val UserArgument: Argument<User, MessageCreateEvent> = InternalUserArgument()
+
+@Suppress("FunctionName")
+fun UserArgument(name: String): Argument<User, MessageCreateEvent> = InternalUserArgument(name)
