@@ -13,5 +13,15 @@ data class PipeItems(
         val prefixes: MutableSet<ExecutableElement> = mutableSetOf(),
         val plugs: MutableSet<ExecutableElement> = mutableSetOf()
 ) {
-    fun isEmpty() = listOf(koins, modules, sources, filters, handlers, preconditions).all { it.isEmpty() }
+    fun isEmpty() = listOf(
+            koins,
+            modules,
+            sources,
+            filters,
+            handlers,
+            commandSets,
+            preconditions,
+            prefixes,
+            plugs
+    ).all { it.isEmpty() }
 }

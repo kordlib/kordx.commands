@@ -38,7 +38,10 @@ class CommandProcessor : AbstractProcessor() {
 
     override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
         val items = getAutoWired(env)
-        if (items.isEmpty()) return true
+        if (items.isEmpty()) {
+            processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, "no autowireable entities found")
+            return true
+        }
 
         val function = FunSpec.builder("configure").apply {
             receiver(ProcessorConfig::class)
