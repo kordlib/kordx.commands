@@ -18,7 +18,7 @@ buildscript {
 }
 
 ext {
-    lib_version = System.getenv("CI_COMMIT_TAG") ?: System.getenv("CI_COMMIT_SHA") ?: "undefined"
+    lib_version = System.getenv("CI_COMMIT_TAG") ?: System.getenv("CI_COMMIT_SHA") ?:  System.getenv("VERSION") ?: "undefined"
     lib_group = 'com.gitlab.kordlib.kordx.commands'
 
     lib_group = 'com.gitlab.kordlib.kordx'
