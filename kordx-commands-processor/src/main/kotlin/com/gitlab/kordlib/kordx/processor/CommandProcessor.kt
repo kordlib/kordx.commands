@@ -16,6 +16,7 @@ import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixConfiguration
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
 import org.koin.core.module.Module
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
@@ -44,6 +45,7 @@ class CommandProcessor : AbstractProcessor() {
         }
 
         val function = FunSpec.builder("configure").apply {
+            addModifiers(KModifier.SUSPEND, KModifier.INLINE)
             receiver(ProcessorConfig::class)
 
             koin(items.koins)
