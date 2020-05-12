@@ -14,13 +14,15 @@ import org.koin.core.Koin
 import org.koin.core.KoinApplication
 import org.koin.core.KoinComponent
 import org.koin.core.context.GlobalContext
+import org.koin.core.context.KoinContext
+import org.koin.core.context.KoinContextHandler
 import org.koin.dsl.koinApplication
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class ProcessorConfig : KoinComponent {
     override fun getKoin(): Koin = koinApplication.koin
 
-    val koinApplication: KoinApplication = GlobalContext.getOrNull() ?: koinApplication { }
+    val koinApplication: KoinApplication = koinApplication { }
     val eventFilters: MutableList<EventFilter<*>> = mutableListOf()
     val eventHandlers: MutableMap<ProcessorContext<*, *, *>, EventHandler<*>> = mutableMapOf()
     val eventSources: MutableList<EventSource<*>> = mutableListOf()

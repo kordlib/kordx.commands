@@ -19,17 +19,14 @@ buildscript {
 
 ext {
     lib_version = System.getenv("CI_COMMIT_TAG") ?: System.getenv("CI_COMMIT_SHA") ?:  System.getenv("VERSION") ?: "undefined"
-    lib_group = 'com.gitlab.kordlib.kordx.commands'
-
     lib_group = 'com.gitlab.kordlib.kordx'
-    serialization_version = '0.12.0'
-    ktor_version = '1.2.2'
+    coroutines_version = '1.3.6'
+    koin_version = '2.1.5'
+
     junit_version = '5.5.0-RC1'
-    coroutines_version = '1.3.2'
     mockk_version = '1.9.3'
     kotlin_logging_version = '1.6.26'
     log4j_version = '1.7.26'
-    koin_version = '2.0.1'
 }
 
 group lib_group
