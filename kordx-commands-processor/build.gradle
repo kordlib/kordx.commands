@@ -6,3 +6,8 @@ dependencies {
     testImplementation project(':kordx-commands-runtime-kord')
 }
 
+kapt {
+    arguments {
+        arg("kordx.commands.verbose", "true")
+    }
+}

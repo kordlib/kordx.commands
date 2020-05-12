@@ -4,15 +4,15 @@ package com.gitlab.kordlib.kordx.processor
 
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
-import com.gitlab.kordlib.kordx.commands.model.module.CommandSet
 import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
+import com.gitlab.kordlib.kordx.commands.model.module.CommandSet
 import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.model.plug.Plug
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
+import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixConfiguration
 import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
-import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixConfiguration
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -20,6 +20,7 @@ import com.squareup.kotlinpoet.KModifier
 import org.koin.core.module.Module
 import java.io.File
 import javax.annotation.processing.AbstractProcessor
+import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
@@ -32,15 +33,50 @@ import javax.tools.Diagnostic
 import kotlin.reflect.typeOf
 
 const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+const val KEY_VERBOSE = "kordx.commands.verbose"
+
+fun ProcessingEnvironment.getOption(key: String): Boolean = when (options[key]) {
+    "", "true", "True" -> true
+    else -> false
+}
 
 @ExperimentalStdlibApi
 @AutoService(Processor::class)
 class CommandProcessor : AbstractProcessor() {
+    var firstRun = true
+
+    override fun getSupportedOptions(): MutableSet<String> = mutableSetOf("kordx.commands.verbose")
+
+    val verbose get() = processingEnv.getOption(KEY_VERBOSE)
+
+    fun PipeItems.log(env: ProcessingEnvironment) {
+        if (!verbose) return
+
+        val kind = Diagnostic.Kind.WARNING
+
+        with(env.messager) {
+            printMessage(kind, "commandSets: $commandSets")
+            printMessage(kind, "filters: $filters")
+            printMessage(kind, "handlers: $handlers")
+            printMessage(kind, "koins: $koins")
+            printMessage(kind, "modules: $modules")
+            printMessage(kind, "plugs: $plugs")
+            printMessage(kind, "precondtions: $preconditions")
+            printMessage(kind, "prefixes: $prefixes")
+            printMessage(kind, "sources: $sources")
+        }
+    }
 
     override fun process(p0: MutableSet<out TypeElement>?, env: RoundEnvironment): Boolean {
         val items = getAutoWired(env)
-        if (items.isEmpty()) {
+        items.log(processingEnv)
+
+        if (items.isEmpty() && firstRun) { //first time we ran this and we didn't get anything to autowire, better warn
             processingEnv.messager.printMessage(Diagnostic.Kind.WARNING, "no autowireable entities found")
+        }
+
+        if (items.isEmpty() && !firstRun) { //consecutive runs didn't find anything else, we're fine
+            //TODO: Eventually we want to store the items from each consecutive run, compare them, and generate if needed
             return true
         }
 
@@ -83,6 +119,7 @@ class CommandProcessor : AbstractProcessor() {
             addFunction(function)
 
         }.build().writeTo(file)
+        firstRun = false
         return true
     }
 
@@ -92,7 +129,6 @@ class CommandProcessor : AbstractProcessor() {
     )
 
     fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
-
 
 
     /**
@@ -208,10 +244,11 @@ class CommandProcessor : AbstractProcessor() {
 
     val ExecutableElement.isProperty get() = simpleName.startsWith("get") && parameters.size == 0
 
-    val ExecutableElement.simpleKotlinName get() = when(isProperty) {
-        true -> simpleName.toString().removePrefix("get").decapitalize()
-        false -> simpleName.toString()
-    }
+    val ExecutableElement.simpleKotlinName
+        get() = when (isProperty) {
+            true -> simpleName.toString().removePrefix("get").decapitalize()
+            false -> simpleName.toString()
+        }
 
     val ExecutableElement.resolved: String
         get() = when (isProperty) {
