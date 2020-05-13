@@ -33,7 +33,7 @@ data class ModuleBuilder<S, A, C: CommandEvent>(
         ModuleBuilder(name, context, metaData, commands).apply(builder)
     }
 
-    fun command(
+    inline fun command(
             name: String,
             builder: CommandBuilder<S, A, C>.() -> Unit
     ) {
@@ -41,7 +41,7 @@ data class ModuleBuilder<S, A, C: CommandEvent>(
         add(command)
     }
 
-    fun <NEWS, NEWA, NEWC: CommandEvent> command(
+    inline fun <NEWS, NEWA, NEWC: CommandEvent> command(
             name: String,
             context: ProcessorContext<NEWS, NEWA, NEWC>,
             builder: CommandBuilder<NEWS, NEWA, NEWC>.() -> Unit
