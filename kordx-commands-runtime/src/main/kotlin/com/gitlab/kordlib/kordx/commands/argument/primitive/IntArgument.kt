@@ -5,11 +5,17 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import kotlin.random.Random
 
+private const val INT_EXAMPLE_MIN_VALUE = -100
+private const val INT_EXAMPLE_MAX_VALUE = 100
+
 internal class InternalIntArgument(override val name: String = "Number") : SingleWordArgument<Int, Any?>() {
     override val example: String
-        get() = Random.nextInt(-100, 100).toString()
+        get() = Random.nextInt(INT_EXAMPLE_MIN_VALUE, INT_EXAMPLE_MAX_VALUE).toString()
 
-    override suspend fun parse(word: String, context: Any?): ArgumentResult<Int> = when (val number = word.toIntOrNull()) {
+    override suspend fun parse(
+            word: String,
+            context: Any?
+    ): ArgumentResult<Int> = when (val number = word.toIntOrNull()) {
         null -> failure("Expected a whole number.")
         else -> success(number)
     }
@@ -22,7 +28,7 @@ internal class InternalIntArgument(override val name: String = "Number") : Singl
 val IntArgument: Argument<Int, Any?> = InternalIntArgument()
 
 /**
- * Argument that matches against a single world, emitting success when the word is a valid integer value.
+ * Argument with [name] that matches against a single world, emitting success when the word is a valid integer value.
  */
 @Suppress("FunctionName")
 fun IntArgument(name: String): Argument<Int, Any?> = InternalIntArgument(name)

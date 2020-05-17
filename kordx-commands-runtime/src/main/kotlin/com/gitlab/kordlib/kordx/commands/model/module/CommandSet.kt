@@ -31,6 +31,10 @@ import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
  * ```
  */
 interface CommandSet {
+
+    /**
+     * Applies this CommandSet to the ModuleBuilder.
+     */
     fun ModuleBuilder<*, *, *>.apply()
 }
 

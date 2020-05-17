@@ -1,11 +1,30 @@
 package com.gitlab.kordlib.kordx.commands.model.precondition
 
+import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
+import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 
-interface Precondition<C: CommandEvent> {
+/**
+ * A predicate used to filter out [CommandEvents][CommandEvent] before they are invoked.
+ */
+interface Precondition<C : CommandEvent> {
+
+    /**
+     * The priority of this precondition, a precondition with a priority higher than another precondition will run
+     * first.
+     */
     val priority: Long get() = 0
+
+    /**
+     * The context for this precondition, only commands with the same [Command.context] will be matched.
+     * If the precondition has [CommonContext] then it will match against any context instead.
+     */
     val context: ProcessorContext<*, *, C>
+
+    /**
+     * Filters the [event], preventing further processing on `false`.
+     */
     suspend operator fun invoke(event: C): Boolean
 }
 
@@ -15,11 +34,11 @@ interface Precondition<C: CommandEvent> {
  * Note that preconditions run *before* arguments get parsed, a command that passed a precondition is therefore
  * not necessarily invoked.
  *
- * @param priority The priority of this precondition compared to other preconditions. Preconditions with a higher priority
- * will be run before others. This can be used to delay potentially expensive preconditions or define a fixed behavior
- * in side effects.
+ * @param priority The priority of this precondition compared to other preconditions.
+ * Preconditions with a higher priority will be run before others.
+ * This can be used to delay potentially expensive preconditions or define a fixed behavior in side effects.
  */
-fun <C: CommandEvent> precondition(
+fun <C : CommandEvent> precondition(
         context: ProcessorContext<*, *, C>,
         priority: Long = 0,
         precondition: suspend C.() -> Boolean

@@ -1,12 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
-import com.gitlab.kordlib.kordx.commands.model.module.command
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
 import com.gitlab.kordlib.kordx.commands.model.module.module
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
@@ -29,7 +28,7 @@ class CommandsTest {
     fun setUp() = runBlockingTest {
         output = TestOutput()
         input = TestEventSource()
-        processor = ProcessorConfig {
+        processor = ProcessorBuilder {
             eventSources += input
             eventHandlers[TestContext] = BaseEventHandler(TestContext, TestConverter(output), TestErrorHandler(output))
             dispatcher = object : CoroutineDispatcher() {

@@ -10,7 +10,9 @@ import com.gitlab.kordlib.kordx.commands.model.command.Command
  * [Commands][Command] with a CommonContext as their [context][Command.context] will be able to
  * receive events from every defined context.
  *
- * This context is effectively a [ProcessorContext] version of Kotlin's generic [star projection](https://kotlinlang.org/docs/reference/generics.html#star-projections),
- * a command with this context will accept every other context purely because this context has the lowest possible generic requirements.
+ * This context is effectively a [ProcessorContext] version of Kotlin's generic
+ * [star projection](https://kotlinlang.org/docs/reference/generics.html#star-projections),
+ * a command with this context will accept every other context purely because this context has
+ * the lowest possible generic requirements.
  */
 object CommonContext : ProcessorContext<Any?, Any?, CommandEvent>

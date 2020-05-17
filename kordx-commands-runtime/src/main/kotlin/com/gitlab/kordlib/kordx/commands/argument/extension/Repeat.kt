@@ -3,6 +3,18 @@ package com.gitlab.kordlib.kordx.commands.argument.extension
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
+/**
+ * Returns an argument that accepts this argument multiple times.
+ *
+ * @param range the range of acceptable repeats. If the amount of repeats is less than the minimum of [range], the
+ * argument will fail. Once the maximum amount of repeats has been reached the argument will return a success with
+ * that amount.
+ *
+ * @param name The name of this argument.
+ *
+ * @throws IllegalArgumentException if the range starts at a value that is not > 0 or has a minimum value higher
+ * than the maximum value.
+ */
 fun<T, CONTEXT> Argument<T, CONTEXT>.repeated(
         range: IntRange = 0..Int.MAX_VALUE,
         name: String = "${this.name} repeated"
@@ -40,7 +52,10 @@ private class RepeatArg<T, CONTEXT>(
         }
 
         return when {
-            results.size < minRepeats -> ArgumentResult.Failure("expected at least $minRepeats repeats of ${argument.name}, but only got ${results.size}", index)
+            results.size < minRepeats -> ArgumentResult.Failure(
+                    "expected at least $minRepeats repeats of ${argument.name}, but only got ${results.size}",
+                    index
+            )
             else -> ArgumentResult.Success(results, index - fromIndex)
         }
     }

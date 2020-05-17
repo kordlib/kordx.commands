@@ -14,7 +14,8 @@ class ModuleContainer(internal val modules: MutableMap<String, ModuleBuilder<*, 
     /**
      * Gets or creates a [ModuleBuilder] with the given [name].
      */
-    operator fun get(name: String): ModuleBuilder<*, *, *> = modules.getOrPut(name) { ModuleBuilder(name, CommonContext) }
+    operator fun get(name: String): ModuleBuilder<*, *, *> =
+            modules.getOrPut(name) { ModuleBuilder(name, CommonContext) }
 
     /**
      * Removes a module with this name, if it exists.

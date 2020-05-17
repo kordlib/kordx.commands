@@ -9,7 +9,9 @@ import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 
 private val mentionRegex = Regex("""^<#&\d+>$""")
 
-internal class InternalRoleArgument(override val name: String = "Role") : SingleWordArgument<Role, MessageCreateEvent>() {
+internal class InternalRoleArgument(
+        override val name: String = "Role"
+) : SingleWordArgument<Role, MessageCreateEvent>() {
 
     override val example: String
         get() = "@Role"
@@ -31,7 +33,15 @@ internal class InternalRoleArgument(override val name: String = "Role") : Single
 
 }
 
+/**
+ * Argument that matches a role mention or a role id as a number.
+ */
 val RoleArgument: Argument<Role, MessageCreateEvent> = InternalRoleArgument()
 
+/**
+ * Argument that matches a role mention or a role id as a number.
+ *
+ * @param name The name of this argument.
+ */
 @Suppress("FunctionName")
 fun RoleArgument(name: String) : Argument<Role, MessageCreateEvent> = InternalRoleArgument(name)

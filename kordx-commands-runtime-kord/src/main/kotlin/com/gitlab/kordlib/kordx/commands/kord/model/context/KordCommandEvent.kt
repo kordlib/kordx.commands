@@ -8,8 +8,12 @@ import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
 import org.koin.core.Koin
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContext
 
-data class KordCommandEvent(
+/**
+ * A [CommandEvent] for the [KordContext].
+ */
+class KordCommandEvent(
         override val event: MessageCreateEvent,
         override val command: Command<KordCommandEvent>,
         override val commands: Map<String, Command<*>>,

@@ -5,13 +5,18 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.VariableLengthArgument
 
 
-internal class InternalListArgument(private val separator: String = "|") : VariableLengthArgument<List<String>, Any?>() {
+internal class InternalListArgument(
+        private val separator: String = "|"
+) : VariableLengthArgument<List<String>, Any?>() {
     override val name: String = "Separated $separator text"
 
     override val example: String
         get() = "words $separator separated $separator by $separator"
 
-    override suspend fun parse(words: List<String>, context: Any?): ArgumentResult<List<String>> = success(words.joinToString(" ").split(separator), words.size)
+    override suspend fun parse(
+            words: List<String>,
+            context: Any?
+    ): ArgumentResult<List<String>> = success(words.joinToString(" ").split(separator), words.size)
 
 }
 

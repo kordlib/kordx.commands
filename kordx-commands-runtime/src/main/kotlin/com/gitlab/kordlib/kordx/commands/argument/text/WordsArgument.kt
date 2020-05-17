@@ -5,12 +5,17 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.VariableLengthArgument
 
 
-internal class InternalWordsArgument(override val name: String = "Words") : VariableLengthArgument<List<String>, Any?>() {
+internal class InternalWordsArgument(
+        override val name: String = "Words"
+) : VariableLengthArgument<List<String>, Any?>() {
 
     override val example: String
         get() = "any combination of words"
 
-    override suspend fun parse(words: List<String>, context: Any?): ArgumentResult<List<String>> = success(words, words.size)
+    override suspend fun parse(
+            words: List<String>,
+            context: Any?
+    ): ArgumentResult<List<String>> = success(words, words.size)
 
 }
 

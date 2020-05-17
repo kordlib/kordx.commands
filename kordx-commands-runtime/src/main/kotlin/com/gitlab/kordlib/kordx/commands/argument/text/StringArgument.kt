@@ -16,7 +16,8 @@ internal class InternalStringArgument(override val name: String = "Text") : Vari
 }
 
 /**
- * Argument that accepts any String, returning the matched words joined to a single string, separating the words with a space.
+ * Argument that accepts any String, returning the matched words joined to a single string,
+ * separating the words with a space.
  *
  * > This Argument will consume all remaining words
  */

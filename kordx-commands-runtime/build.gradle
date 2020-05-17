@@ -2,8 +2,3 @@ dependencies {
     api("org.koin:koin-core:$koin_version")
 }
 
-compileKotlin {
-    kotlinOptions {
-        freeCompilerArgs = ["-XXLanguage:+InlineClasses", "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi", "-Xuse-experimental=kotlin.Experimental"]
-    }
-}

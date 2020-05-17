@@ -5,7 +5,8 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.extension.*
 
 /**
- * Returns an Argument that filters all success emits through the [filter], only emitting success on values returning [FilterResult.Pass].
+ * Returns an Argument that filters all success emits through the [filter],
+ * only emitting success on values returning [FilterResult.Pass].
  */
 fun <T, CONTEXT> Argument<T, CONTEXT>.filter(
         filter: suspend CONTEXT.(T) -> FilterResult
@@ -17,7 +18,8 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.filter(
 }
 
 /**
- * Returns an Argument that filters all success emits through the [filter], only emitting success on values returning [FilterResult.Pass].
+ * Returns an Argument that filters all success emits through the [filter],
+ * only emitting success on values returning [FilterResult.Pass].
  */
 inline fun <reified T, CONTEXT> Argument<*, CONTEXT>.filterIsInstance(
         failMessage: String

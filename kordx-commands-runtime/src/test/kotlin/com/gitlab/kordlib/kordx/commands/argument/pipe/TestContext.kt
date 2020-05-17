@@ -71,7 +71,7 @@ class TestConverter(private val output: TestOutput): ContextConverter<String, St
 
     override fun String.toArgumentContext(): String = this
 
-    override fun String.toEventContext(data: EventContextData<TestEventEvent>): TestEventEvent {
+    override fun String.toCommandEvent(data: CommandEventData<TestEventEvent>): TestEventEvent {
         return TestEventEvent(output, data.command, data.commands, data.processor)
     }
 

@@ -57,7 +57,9 @@ fun <CONTEXT> Argument<Long, CONTEXT>.strictPositive(): Argument<Long, CONTEXT> 
  * might thus return invalid example values.
  */
 @JvmName("longNegative")
-fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filterWithExample({ Random.nextLong(Long.MIN_VALUE, 0).toString() }) {
+fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filterWithExample(
+        { Random.nextLong(Long.MIN_VALUE, 0).toString() }
+) {
     if (it <= 0) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Long.MIN_VALUE}..0]")
 }
@@ -69,7 +71,9 @@ fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filt
  * might thus return invalid example values.
  */
 @JvmName("longStrictNegative")
-fun <CONTEXT> Argument<Long, CONTEXT>.strictNegative(): Argument<Long, CONTEXT> = filterWithExample({ Random.nextLong(Long.MIN_VALUE, -1).toString() }) {
+fun <CONTEXT> Argument<Long, CONTEXT>.strictNegative(): Argument<Long, CONTEXT> = filterWithExample(
+        { Random.nextLong(Long.MIN_VALUE, -1).toString() }
+) {
     if (it <= -1) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Long.MIN_VALUE}..-1]")
 }
@@ -99,7 +103,9 @@ fun <CONTEXT> Argument<Int, CONTEXT>.strictPositive(): Argument<Int, CONTEXT> = 
  * might thus return invalid example values.
  */
 @JvmName("intNegative")
-fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filterWithExample({ Random.nextInt(Int.MIN_VALUE, 0).toString() }) {
+fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filterWithExample(
+        { Random.nextInt(Int.MIN_VALUE, 0).toString() }
+) {
     if (it <= 0) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Int.MIN_VALUE}..0]")
 }
@@ -111,7 +117,9 @@ fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filter
  * might thus return invalid example values.
  */
 @JvmName("LongStrictNegative")
-fun <CONTEXT> Argument<Int, CONTEXT>.strictNegative(): Argument<Int, CONTEXT> = filterWithExample({ Random.nextInt(Int.MIN_VALUE, -1).toString() }) {
+fun <CONTEXT> Argument<Int, CONTEXT>.strictNegative(): Argument<Int, CONTEXT> = filterWithExample(
+        { Random.nextInt(Int.MIN_VALUE, -1).toString() }
+) {
     if (it <= -1) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Int.MIN_VALUE}..-1]")
 }

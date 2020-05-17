@@ -19,16 +19,39 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.switchOnFail
  * }
  *
  */
-infix fun <A, B, CONTEXT> Argument<A, CONTEXT>.or(other: Argument<B, CONTEXT>): Argument<Either<A,B>, CONTEXT> = EitherArgument(this, other)
+infix fun <A, B, CONTEXT> Argument<A, CONTEXT>.or(
+        other: Argument<B, CONTEXT>
+): Argument<Either<A,B>, CONTEXT> = EitherArgument(this, other)
 
+/**
+ * Represents one of two possible values, [left] or [right].
+ */
 sealed class Either<A, B> {
 
+    /**
+     * Gets the left value, if present.
+     */
     operator fun component1(): A? = left
+
+    /**
+     * Gets the right value, if present.
+     */
     operator fun component2(): B? = right
 
+    /**
+     * The left value, if present.
+     */
     abstract val left: A?
+
+    /**
+     * The right value, if present.
+     */
     abstract val right: B?
 
+    /**
+     * Represents a present [left] value and a missing right value.
+     *
+     */
     class Left<A, B>(override val left: A) : Either<A, B>() {
 
         override val right: B?
@@ -36,6 +59,9 @@ sealed class Either<A, B> {
 
     }
 
+    /**
+     * Represents a [right] value and a missing left value.
+     */
     class Right<A, B>(override val right: B) : Either<A, B>() {
 
         override val left: A?
@@ -44,6 +70,9 @@ sealed class Either<A, B> {
 
 }
 
+/**
+ * Gets the present value in either left or right.
+ */
 val <T, A: T, B:T> Either<A,B>.value get() = when(this) {
     is Either.Left -> left
     is Either.Right -> right

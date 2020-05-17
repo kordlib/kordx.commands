@@ -4,8 +4,8 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 
 /**
- * Applies the [mapper] to the [ArgumentResult.Success.item] if this is a [ArgumentResult.Success] returning a [ArgumentResult.Success] with
- * the new value, or a [ArgumentResult.Failure] otherwise.
+ * Applies the [mapper] to the [ArgumentResult.Success.item] if  this is a [ArgumentResult.Success],
+ * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <T, R> ArgumentResult<T>.map(mapper: (T) -> R): ArgumentResult<R> = when (this) {
@@ -14,7 +14,8 @@ inline fun <T, R> ArgumentResult<T>.map(mapper: (T) -> R): ArgumentResult<R> = w
 }
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the result of [mapper] is a [MapResult.Pass],
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the result of [mapper] is a [MapResult.Pass],
  * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
@@ -45,17 +46,5 @@ sealed class MapResult<T> {
         companion object
     }
 
-    companion object {
-
-        inline fun <reified R> filterInstance(item: Any, failMessage: String): MapResult<R> = when (item) {
-            is R -> Pass(item)
-            else -> Fail(failMessage)
-        }
-
-        inline fun <reified R> filterInstance(item: Any, failMessage: () -> String): MapResult<R> = when (item) {
-            is R -> Pass(item)
-            else -> Fail(failMessage())
-        }
-
-    }
+    companion object
 }

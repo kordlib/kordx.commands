@@ -1,8 +1,9 @@
 package com.gitlab.kordlib.kordx.commands.model.plug
 
+import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 
-interface Plug<T> {
-    val key: Key<T>
+/**
+ * [AutoWired] element that can be processed by a [PlugSocket],
+ */
+interface Plug
 
-    interface Key<T>
-}

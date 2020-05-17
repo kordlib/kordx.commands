@@ -3,12 +3,14 @@ package com.gitlab.kordlib.kordx.commands.argument.extension
 import com.gitlab.kordlib.kordx.commands.argument.*
 import com.gitlab.kordlib.kordx.commands.argument.primitive.DoubleArgument
 import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class EitherArgumentTest {
 
     val argument = IntArgument or DoubleArgument

@@ -16,7 +16,7 @@ internal class InternalMemberArgument(
         get() = "@User"
 
     override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Member> {
-        val guildId = context.message.guildId ?: return failure("Can't get member outside of guilds.")
+        val guildId = context.message.guildId ?: return failure("Can't get members outside of guilds.")
 
         val number = word.toLongOrNull()
         val snowflake = when {
@@ -33,7 +33,15 @@ internal class InternalMemberArgument(
 
 }
 
+/**
+ * Argument that matches against a user/member mention in a guild channel or a user id as a number.
+ */
 val MemberArgument: Argument<Member, MessageCreateEvent> = InternalMemberArgument()
 
+/**
+ * Argument that matches against a user/member mention in a guild channel or a user id as a number.
+ *
+ * @param name The name of this argument.
+ */
 @Suppress("FunctionName")
 fun MemberArgument(name: String) : Argument<Member, MessageCreateEvent> = InternalMemberArgument(name)

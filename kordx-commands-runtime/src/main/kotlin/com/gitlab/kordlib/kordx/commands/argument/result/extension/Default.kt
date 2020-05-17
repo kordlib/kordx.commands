@@ -13,8 +13,8 @@ inline fun <T> ArgumentResult<T>.switchOnFail(generator: () -> ArgumentResult<T>
 
 
 /**
- * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null, or a [ArgumentResult.Success] with
- * the [default] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null,
+ * or a [ArgumentResult.Success] with the [default] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> ArgumentResult<T?>.orDefault(default: T): ArgumentResult.Success<T> = when (this) {
@@ -26,8 +26,8 @@ fun <T : Any> ArgumentResult<T?>.orDefault(default: T): ArgumentResult.Success<T
 }
 
 /**
- * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null, or a [ArgumentResult.Success] with
- * the [fallback] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success] and [ArgumentResult.Success.item] is not null,
+ * or a [ArgumentResult.Success] with the [fallback] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 @JvmName("orElseSupplyNullable")
@@ -41,7 +41,8 @@ inline fun <T : Any> ArgumentResult<T?>.orElseSupply(fallback: () -> T): Argumen
 
 
 /**
- * Returns this if this is a [ArgumentResult.Success], or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success],
+ * or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> ArgumentResult<T>.orElse(fallBack: T): ArgumentResult.Success<T> = when (this) {
@@ -50,7 +51,8 @@ fun <T> ArgumentResult<T>.orElse(fallBack: T): ArgumentResult.Success<T> = when 
 }
 
 /**
- * Returns this if this is a [ArgumentResult.Success], or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
+ * Returns this if this is a [ArgumentResult.Success],
+ * or a [ArgumentResult.Success] with the [fallBack] as item otherwise.
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <T> ArgumentResult<T>.orElseSupply(fallBack: () -> T): ArgumentResult.Success<T> = when (this) {

@@ -1,9 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.annotation
 
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
+import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 
 /**
- * Will mark this element for automatic registry to the [ProcessorConfig] using the annotation processor, suspending functions are supported.
+ * Will mark this element for automatic registry to the [ProcessorBuilder] using the annotation processor,
+ * suspending functions are supported.
  * Functions and properties annotated with [AutoWired] need to return one of the following types:
  * * [org.koin.core.module.Module]
  * * [com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier]
@@ -22,8 +24,8 @@ import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
 annotation class AutoWired
 
 /**
- * Annotation that specifies the module name for command sets.
- * This annotation is required for [AutoWired] [EventHandlers][com.gitlab.kordlib.kordx.commands.model.processor.EventHandler].
+ * Annotation that specifies the module [name] for command sets.
+ * This annotation is required for [AutoWired] [EventHandlers][EventHandler].
  */
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER)
 annotation class ModuleName(val name: String)

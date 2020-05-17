@@ -4,13 +4,16 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
  * or a [ArgumentResult.Failure] otherwise.
  *
  * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: String): ArgumentResult<T> = when (val result = this) {
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(
+        failMessage: String
+): ArgumentResult<T> = when (val result = this) {
     is ArgumentResult.Success -> when (result.item) {
         is T -> result as ArgumentResult<T>
         else -> ArgumentResult.Failure(failMessage, 0)
@@ -19,13 +22,16 @@ inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: String): 
 }
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
  * or a [ArgumentResult.Failure] otherwise.
  *
  * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
  */
 @Suppress("UNCHECKED_CAST")
-inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: () -> String): ArgumentResult<T> = when (val result = this) {
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(
+        failMessage: () -> String
+): ArgumentResult<T> = when (val result = this) {
     is ArgumentResult.Success -> when (result.item) {
         is T -> result as ArgumentResult<T>
         else -> ArgumentResult.Failure(failMessage(), 0)
@@ -34,13 +40,16 @@ inline fun <reified T> ArgumentResult<*>.filterIsInstance(failMessage: () -> Str
 }
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
  * or a [ArgumentResult.Failure] otherwise.
  *
  * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is null.
  */
 @Suppress("UNCHECKED_CAST")
-fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: String): ArgumentResult<T> = when (this) {
+fun <T : Any> ArgumentResult<T?>.filterNotNull(
+        failMessage: String
+): ArgumentResult<T> = when (this) {
     is ArgumentResult.Success -> when (item) {
         null -> ArgumentResult.Failure(failMessage, wordsTaken)
         else -> ArgumentResult.Success(item, wordsTaken)
@@ -49,7 +58,8 @@ fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: String): ArgumentRes
 }
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is not null,
  * or a [ArgumentResult.Failure] otherwise.
  *
  * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is null.
@@ -64,7 +74,8 @@ inline fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: (T?) -> Strin
 }
 
 /**
- * Returns a [ArgumentResult.Success] if this result is a [ArgumentResult.Success] *and* the result of [filter] is a [FilterResult.Pass],
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the result of [filter] is a [FilterResult.Pass],
  * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
@@ -94,6 +105,10 @@ sealed class FilterResult {
     }
 
     companion object {
+
+        /**
+         * Returns [Pass] when [predicate] is `true`, or a [Fail] with the [failureReason] on `false`.
+         */
         inline operator fun invoke(predicate: Boolean, failureReason: () -> String) = when {
             predicate -> Pass
             else -> Fail(failureReason())

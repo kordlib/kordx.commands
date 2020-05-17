@@ -10,4 +10,5 @@ import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
  */
 fun eventFilter(
         predicate: suspend MessageCreateEvent.() -> Boolean
-): EventFilter<MessageCreateEvent> = com.gitlab.kordlib.kordx.commands.model.eventFilter.eventFilter(KordContext, predicate)
+): EventFilter<MessageCreateEvent> =
+        com.gitlab.kordlib.kordx.commands.model.eventFilter.eventFilter(KordContext, predicate)

@@ -12,7 +12,7 @@ import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixConfiguration
 import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorConfig
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
 import com.google.auto.service.AutoService
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
@@ -24,7 +24,6 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.Processor
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
-import javax.lang.model.element.Element
 import javax.lang.model.element.ExecutableElement
 import javax.lang.model.element.Modifier
 import javax.lang.model.element.TypeElement
@@ -32,24 +31,28 @@ import javax.lang.model.type.TypeMirror
 import javax.tools.Diagnostic
 import kotlin.reflect.typeOf
 
-const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
-const val KEY_VERBOSE = "kordx.commands.verbose"
+internal const val KAPT_KOTLIN_GENERATED_OPTION_NAME = "kapt.kotlin.generated"
+internal const val KEY_VERBOSE = "kordx.commands.verbose"
 
-fun ProcessingEnvironment.getOption(key: String): Boolean = when (options[key]) {
+internal fun ProcessingEnvironment.getOption(key: String): Boolean = when (options[key]) {
     "", "true", "True" -> true
     else -> false
 }
 
+/**
+ * Processor that creates a `configure` extension function for a [ProcessorBuilder], automatically
+ * setting up static [AutoWired] members.
+ */
 @ExperimentalStdlibApi
 @AutoService(Processor::class)
 class CommandProcessor : AbstractProcessor() {
-    var firstRun = true
+    private var firstRun = true
 
     override fun getSupportedOptions(): MutableSet<String> = mutableSetOf("kordx.commands.verbose")
 
-    val verbose get() = processingEnv.getOption(KEY_VERBOSE)
+    private val verbose get() = processingEnv.getOption(KEY_VERBOSE)
 
-    fun PipeItems.log(env: ProcessingEnvironment) {
+    private fun PipeItems.log(env: ProcessingEnvironment) {
         if (!verbose) return
 
         val kind = Diagnostic.Kind.WARNING
@@ -76,13 +79,12 @@ class CommandProcessor : AbstractProcessor() {
         }
 
         if (items.isEmpty() && !firstRun) { //consecutive runs didn't find anything else, we're fine
-            //TODO: Eventually we want to store the items from each consecutive run, compare them, and generate if needed
             return true
         }
 
         val function = FunSpec.builder("configure").apply {
             addModifiers(KModifier.SUSPEND, KModifier.INLINE)
-            receiver(ProcessorConfig::class)
+            receiver(ProcessorBuilder::class)
 
             koin(items.koins)
 
@@ -128,17 +130,19 @@ class CommandProcessor : AbstractProcessor() {
             ModuleName::class.java.name
     )
 
-    fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
-
+    private fun ExecutableElement.moduleName(): String = getAnnotation(ModuleName::class.java).name
 
     /**
      * returns the wildcard type mirror of [T]
      */
-    private inline fun <reified T> typeMirror() = processingEnv.typeUtils.erasure(processingEnv.elementUtils.getTypeElement(T::class.java.canonicalName).asType())
+    private inline fun <reified T> typeMirror(): TypeMirror {
+        val nonErasedType = processingEnv.elementUtils.getTypeElement(T::class.java.canonicalName).asType()
+        return processingEnv.typeUtils.erasure(nonErasedType)
+    }
 
-    infix fun TypeMirror.isAssignableTo(other: TypeMirror) = processingEnv.typeUtils.isAssignable(this, other)
+    private infix fun TypeMirror.isAssignableTo(other: TypeMirror) = processingEnv.typeUtils.isAssignable(this, other)
 
-    fun getAutoWired(env: RoundEnvironment): PipeItems {
+    private fun getAutoWired(env: RoundEnvironment): PipeItems {
         val moduleModifierType = typeMirror<ModuleModifier>()
         val eventSourceType = typeMirror<EventSource<*>>()
         val eventHandlerType = typeMirror<EventHandler<*>>()
@@ -147,12 +151,13 @@ class CommandProcessor : AbstractProcessor() {
         val preconditionType = typeMirror<Precondition<*>>()
         val commandSetType = typeMirror<CommandSet>()
         val prefixesType = typeMirror<PrefixConfiguration>()
-        val plugType = typeMirror<Plug<*>>()
+        val plugType = typeMirror<Plug>()
 
         val elements = env.getElementsAnnotatedWith(AutoWired::class.java)
         val functions = elements.flatMap {
             if (it.isClass) {
-                it.asClass.enclosedElements.filterIsInstance<ExecutableElement>().filter { Modifier.STATIC in it.modifiers }
+                it.asClass.enclosedElements.filterIsInstance<ExecutableElement>()
+                        .filter { element -> Modifier.STATIC in element.modifiers }
             } else listOf(it).filterIsInstance<ExecutableElement>()
         }
 
@@ -161,8 +166,9 @@ class CommandProcessor : AbstractProcessor() {
             val returnType = processingEnv.typeUtils.erasure(item.returnType)
 
             when {
+                returnType isAssignableTo commandSetType ->
+                    items.commandSets.add(item.ensureAnnotatedWith<ModuleName>())
                 returnType isAssignableTo moduleModifierType -> items.modules.add(item)
-                returnType isAssignableTo commandSetType -> items.commandSets.add(item.ensureAnnotatedWith<ModuleName>())
                 returnType isAssignableTo eventSourceType -> items.sources.add(item)
                 returnType isAssignableTo eventHandlerType -> items.handlers.add(item)
                 returnType isAssignableTo filterType -> items.filters.add(item)
@@ -193,66 +199,4 @@ class CommandProcessor : AbstractProcessor() {
 
     override fun getSupportedSourceVersion() = SourceVersion.latest()!!
 
-    val Element.isClass get() = this is TypeElement
-
-    val Element.asClass get() = this as TypeElement
-
-    inline fun FunSpec.Builder.list(
-            name: String, values: Set<ExecutableElement>,
-            crossinline append: (ExecutableElement) -> String = { "" }
-    ) {
-        if (values.isEmpty()) return
-        val joined = values.joinToString(",") { "${it.resolved}${append(it)}" }
-        addStatement("$name += listOf($joined)")
-
-    }
-
-    inline fun FunSpec.Builder.plug(
-            values: Set<ExecutableElement>,
-            crossinline append: (ExecutableElement) -> String = { "" }
-    ) {
-        if (values.isEmpty()) return
-        val joined = values.joinToString(",") { "${it.resolved}${append(it)}" }
-        addStatement("addPlugs(listOf($joined))")
-    }
-
-    fun FunSpec.Builder.eventHandlers(handlers: Set<ExecutableElement>) {
-        handlers.forEach {
-            addStatement("+${it.resolved}")
-        }
-    }
-
-    fun FunSpec.Builder.prefixes(prefixes: Set<ExecutableElement>) {
-        val applying = prefixes.joinToString("\n") {
-            "${it.resolved}.apply(this)"
-        }
-        if (applying.isEmpty()) return
-        addStatement("""
-            prefix {
-                $applying
-            }
-        """.trimIndent())
-    }
-
-    fun FunSpec.Builder.koin(modules: Set<ExecutableElement>) {
-        addStatement("""
-        koin {
-            modules(listOf(${modules.joinToString(",") { it.resolved }}))
-        }
-        """.trimIndent())
-    }
-
-    val ExecutableElement.isProperty get() = simpleName.startsWith("get") && parameters.size == 0
-
-    val ExecutableElement.simpleKotlinName
-        get() = when (isProperty) {
-            true -> simpleName.toString().removePrefix("get").decapitalize()
-            false -> simpleName.toString()
-        }
-
-    val ExecutableElement.resolved: String
-        get() = when (isProperty) {
-            true -> simpleName.toString().removePrefix("get").decapitalize()
-            else -> "${simpleName}(${parameters.joinToString(",") { "get()" }})" //functionCall(get(),get(),...)
-        }
 }

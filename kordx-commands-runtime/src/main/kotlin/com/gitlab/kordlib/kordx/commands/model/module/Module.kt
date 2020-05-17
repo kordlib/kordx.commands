@@ -8,6 +8,8 @@ import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
 /**
  * A container of [commands] with a unique [name].
+ *
+ * @param metadata the metadata for this module.
  */
 class Module(
         val name: String,

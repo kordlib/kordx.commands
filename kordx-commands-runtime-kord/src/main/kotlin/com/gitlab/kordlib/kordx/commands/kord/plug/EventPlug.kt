@@ -5,16 +5,15 @@ import com.gitlab.kordlib.core.event.Event
 import com.gitlab.kordlib.core.on
 import com.gitlab.kordlib.kordx.commands.model.plug.Plug
 
+/**
+ * A [Plug] that listens to [Kord] events.
+ */
+interface EventPlug : Plug {
 
-interface EventPlug<T : Event> : Plug<Kord> {
-
-    override val key: Plug.Key<Kord>
-        get() = Key
-
-    object Key : Plug.Key<Kord>
-
+    /**
+     * Listens to events from [kord].
+     */
     fun apply(kord: Kord)
-
 }
 
 /**
@@ -23,7 +22,7 @@ interface EventPlug<T : Event> : Plug<Kord> {
  * > All event listeners run isolated from the command framework. They can not interact with any commands or vice versa,
  * no features are provided past the initial setup.
  */
-inline fun <reified T : Event> on(noinline consumer: suspend T.() -> Unit) = object : EventPlug<T> {
+inline fun <reified T : Event> on(noinline consumer: suspend T.() -> Unit) = object : EventPlug {
 
     override fun apply(kord: Kord) {
         kord.on<T> { consumer() }

@@ -10,21 +10,40 @@ import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandEvent
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.*
+import com.gitlab.kordlib.core.Kord
 
+/**
+ * [ContextConverter] for [KordContext], using the [Message.content] to parse commands.
+ */
 object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
     override val MessageCreateEvent.text: String get() =  message.content
 
     override fun MessageCreateEvent.toArgumentContext(): MessageCreateEvent = this
 
-    override fun MessageCreateEvent.toEventContext(data: EventContextData<KordCommandEvent>): KordCommandEvent {
+    override fun MessageCreateEvent.toCommandEvent(data: CommandEventData<KordCommandEvent>): KordCommandEvent {
         return KordCommandEvent(this, data.command, data.commands, data.koin, data.processor)
 
     }
 
 }
 
+/**
+ * Default error handler for the [KordContext]. It will report all errors in the channel the event was typed in and
+ * will represent the as embeds, pointing towards the part of the message that created the error.
+ * example:
+ * ```
+ *  Command("add", IntArgument, IntArgument)
+ *  > add 4
+ *  ´´´
+ *  add
+ *  ----^ Not enough arguments, reached end of parsing
+ *  ´´´
+ *  ```
+ *
+ *  [notFound] Errors will instead suggest the most similar event given by the [suggester].
+ */
 class KordErrorHandler(
-        private val suggester: CommandSuggester = CommandSuggester.Companion
+        private val suggester: CommandSuggester = CommandSuggester.Levenshtein
 ) : ErrorHandler<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
 
     private suspend inline fun respondError(
@@ -70,11 +89,26 @@ class KordErrorHandler(
         }
     }
 
-    override suspend fun CommandProcessor.rejectArgument(event: MessageCreateEvent, command: Command<KordCommandEvent>, words: List<String>, argument: Argument<*, MessageCreateEvent>, failure: ArgumentResult.Failure<*>) {
+    override suspend fun CommandProcessor.rejectArgument(
+            event: MessageCreateEvent,
+            command: Command<KordCommandEvent>,
+            words: List<String>, argument: Argument<*, MessageCreateEvent>,
+            failure: ArgumentResult.Failure<*>
+    ) {
         respondError(event, command, words, failure.atWord, failure.reason)
     }
 
-    override suspend fun CommandProcessor.tooManyWords(event: MessageCreateEvent, command: Command<KordCommandEvent>, result: ArgumentsResult.TooManyWords<MessageCreateEvent>) {
-        respondError(event, command, result.words, result.wordsTaken, "Too many arguments, reached end of command parsing.")
+    override suspend fun CommandProcessor.tooManyWords(
+            event: MessageCreateEvent,
+            command: Command<KordCommandEvent>,
+            result: ArgumentsResult.TooManyWords<MessageCreateEvent>
+    ) {
+        respondError(
+                event,
+                command,
+                result.words,
+                result.wordsTaken,
+                "Too many arguments, reached end of command parsing."
+        )
     }
 }
