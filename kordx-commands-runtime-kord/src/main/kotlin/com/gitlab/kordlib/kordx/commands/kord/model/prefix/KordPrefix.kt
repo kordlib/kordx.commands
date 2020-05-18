@@ -20,7 +20,7 @@ internal fun mentionPrefix(
 }
 
 private fun onlyBotMention(botId: Snowflake): suspend (MessageCreateEvent) -> String {
-    val regex = Regex("""^<(@!?${botId.value}>$""".trimMargin())
+    val regex = Regex("""^<@!?${botId.value}>$""")
     return {
         val words = it.message.content.split(" ")
         if (words.firstOrNull()?.matches(regex) == true) words.first()
