@@ -106,7 +106,7 @@ open class ProcessorBuilder : KoinComponent {
     /**
      * Adds this plug to the configuration under its type [T].
      */
-    inline fun <reified T : Plug> T.unaryPlus() = addPlug(this)
+    inline operator fun <reified T : Plug> T.unaryPlus() = addPlug(this)
 
     /**
      * Adds the socket to the configuration.
