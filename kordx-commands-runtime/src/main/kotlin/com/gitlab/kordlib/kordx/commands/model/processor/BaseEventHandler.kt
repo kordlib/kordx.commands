@@ -3,6 +3,7 @@ package com.gitlab.kordlib.kordx.commands.model.processor
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
+import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixRule
 import mu.KotlinLogging
 
 
@@ -20,18 +21,24 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
         protected val handler: ErrorHandler<S, A, E>
 ) : EventHandler<S> {
 
+    private val whiteSpaceRegex = Regex("\\s")
+
     override suspend fun CommandProcessor.onEvent(event: S) {
         val filters = getFilters(context)
         if (!filters.all { it(event) }) return
 
-        val prefix = prefix.getPrefix(context, event)
-        with(converter) {
-            if (!event.text.startsWith(prefix)) return
+        val text = with(converter) {
+            event.text
         }
 
-        val words = with(converter) {
-            event.text.removePrefix(prefix).split(" ")
+        val rule = prefix.getPrefixRule(context) ?: PrefixRule.none<S>()
+
+        val prefix = when(val result = rule.consume(text, event)) {
+            PrefixRule.Result.Denied -> return
+            is PrefixRule.Result.Accepted -> result.prefix
         }
+
+        val words = text.removePrefix(prefix).split(whiteSpaceRegex)
 
         val commandName = words.firstOrNull() ?: return with(handler) { emptyInvocation(event) }
         val command = getCommand(context, commandName) ?: return with(handler) { notFound(event, commandName) }

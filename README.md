@@ -118,7 +118,7 @@ suspend fun main() = bot("token") {
 }
 
 val prefix = prefix {
-    kord { "!" }
+    kord { literal("!") or mention() }
 }
 
 fun testModule() = module("test-module") {

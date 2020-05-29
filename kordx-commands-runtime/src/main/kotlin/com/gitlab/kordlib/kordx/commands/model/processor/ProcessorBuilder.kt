@@ -10,7 +10,6 @@ import com.gitlab.kordlib.kordx.commands.model.plug.Plug
 import com.gitlab.kordlib.kordx.commands.model.plug.PlugContainer
 import com.gitlab.kordlib.kordx.commands.model.plug.PlugSocket
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
-import com.gitlab.kordlib.kordx.commands.model.prefix.Prefix
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -58,7 +57,7 @@ open class ProcessorBuilder : KoinComponent {
     /**
      * Builder for the [Prefix].
      */
-    val prefixBuilder: PrefixBuilder = PrefixBuilder()
+    val prefixBuilder: PrefixBuilder = PrefixBuilder(koinApplication.koin)
 
     /**
      * Modifiers used to build [modules][Module] and [commands][Command]

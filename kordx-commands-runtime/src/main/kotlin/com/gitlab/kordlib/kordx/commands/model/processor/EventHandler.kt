@@ -9,8 +9,6 @@ import org.koin.core.Koin
 import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.prefix.Prefix
-import mu.KotlinLogging
-import java.lang.Exception
 
 /**
  * An event handler for a specific [context]. The handler consumes source events [S] and invokes the correct commands

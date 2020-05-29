@@ -1,4 +1,10 @@
-#0.1.1
+# 0.2.0
+
+## Changes
+
+* Prefixes have been reworked considerably. #3
+
+# 0.1.1
 
 ## Fixes
 
