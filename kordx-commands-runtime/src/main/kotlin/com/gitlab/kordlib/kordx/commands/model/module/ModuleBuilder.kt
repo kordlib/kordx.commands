@@ -5,6 +5,7 @@ import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
+import com.gitlab.kordlib.kordx.commands.model.processor.BuildEnvironment
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
 
@@ -85,12 +86,17 @@ data class ModuleBuilder<S, A, C : CommandEvent>(
 
 
     /**
-     * Builds the modules, adding it to the [modules].
+     * Builds the modules, adding it to the [environment].
      *
      * @throws IllegalStateException when a module with the same name already exists.
      */
-    fun build(modules: MutableMap<String, Module>, koin: Koin) {
-        check(!modules.containsKey(name)) { "a module with name $name is already present" }
-        modules[name] = Module(name, commands.mapValues { it.value.build(modules, koin) }, metadata.toMetaData())
+    fun build(environment: BuildEnvironment) {
+        val commands = commands.values
+                .flatMap { it.build(environment) }
+                .map { it.name to it }
+                .toMap()
+
+        val module = Module(name, commands, metadata.toMetaData())
+        environment.addModule(module)
     }
 }

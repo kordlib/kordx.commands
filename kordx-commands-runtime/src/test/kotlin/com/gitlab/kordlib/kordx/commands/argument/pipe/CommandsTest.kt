@@ -1,6 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
 import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
+import com.gitlab.kordlib.kordx.commands.model.command.AliasInfo
 import com.gitlab.kordlib.kordx.commands.model.command.invoke
 import com.gitlab.kordlib.kordx.commands.model.module.module
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
@@ -58,6 +59,68 @@ class CommandsTest {
         }
 
         input.channel.send("test")
+        Assertions.assertEquals(1, output.events.size)
+        val event = output.events[0] as EventType.Response
+        Assertions.assertEquals(response, event.text)
+    }
+
+    @Test
+    fun `alias gets invoked with child type`() = runBlocking {
+        val response = "a test response"
+
+        var error: String? = null
+
+        processor += module("test", TestContext) {
+            command("test") {
+                alias("an-alias")
+
+                invoke {
+                    if (command.aliasInfo !is AliasInfo.Child) error = "expected alias info to be a child"
+                    respond(response)
+                }
+            }
+        }
+
+        input.channel.send("an-alias")
+        if(error != null) throw IllegalStateException(error)
+    }
+
+    @Test
+    fun `parent of alias gets invoked with parent type`() = runBlocking {
+        val response = "a test response"
+
+        var error: String? = null
+
+        processor += module("test", TestContext) {
+            command("test") {
+                alias("an-alias")
+
+                invoke {
+                    if (command.aliasInfo !is AliasInfo.Child) error = "expected alias info to be a child"
+                    respond(response)
+                }
+            }
+        }
+
+        input.channel.send("an-alias")
+        if(error != null) throw IllegalStateException(error)
+    }
+
+    @Test
+    fun `command gets invoked with alias`() = runBlocking {
+        val response = "a test response"
+
+        processor += module("test", TestContext) {
+            command("test") {
+                alias("an-alias")
+
+                invoke {
+                    respond(response)
+                }
+            }
+        }
+
+        input.channel.send("an-alias")
         Assertions.assertEquals(1, output.events.size)
         val event = output.events[0] as EventType.Response
         Assertions.assertEquals(response, event.text)
