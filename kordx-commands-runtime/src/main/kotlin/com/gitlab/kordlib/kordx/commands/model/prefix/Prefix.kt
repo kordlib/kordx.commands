@@ -14,16 +14,15 @@ fun prefix(configuration: PrefixBuilder.() -> Unit) = object : PrefixConfigurati
 /**
  * A collection of [suppliers] used to get a prefix for a certain [ProcessorContext].
  */
-class Prefix(private val suppliers: Map<ProcessorContext<*, *, *>, PrefixSupplier<*>> = mapOf()) {
+class Prefix(private val suppliers: Map<ProcessorContext<*, *, *>, PrefixRule<*>> = mapOf()) {
 
     /**
-     * Returns the most precise prefix for the [context]. First trying to find one for the [context], then
-     * for the [CommonContext] and finally returning an empty String to denote a lock of prefix.
+     * Returns the most precise [PrefixRule] for the [context]. First trying to find one for the [context], then
+     * for the [CommonContext]. Returns null if neither contain a rule.
      */
     @Suppress("UNCHECKED_CAST")
-    suspend fun <S, A, E : CommandEvent> getPrefix(context: ProcessorContext<S, A, E>, event: S): String {
-        val supplier = (suppliers[context] ?: suppliers[CommonContext] ?: return "") as PrefixSupplier<S>
-        return supplier(event)
-    }
+    fun <S, A, E : CommandEvent> getPrefixRule(
+            context: ProcessorContext<S, A, E>
+    ): PrefixRule<S>? = (suppliers[context] ?: suppliers[CommonContext]) as? PrefixRule<S>
 
 }

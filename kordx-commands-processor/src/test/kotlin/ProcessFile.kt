@@ -11,6 +11,7 @@ import com.gitlab.kordlib.kordx.commands.kord.module.command
 import com.gitlab.kordlib.kordx.commands.kord.module.commands
 import com.gitlab.kordlib.kordx.commands.kord.module.module
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
+import com.gitlab.kordlib.kordx.commands.model.prefix.literal
 import com.gitlab.kordlib.kordx.commands.model.prefix.prefix
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
@@ -47,7 +48,7 @@ val propertyCommand
     get() = command("swing") {}
 
 val kordPrefix = prefix {
-    kord { "+" }
+    kord { literal("+") }
 }
 
 suspend fun testReference() = bot("sample") {

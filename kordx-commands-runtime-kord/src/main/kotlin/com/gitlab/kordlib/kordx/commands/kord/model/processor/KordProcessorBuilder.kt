@@ -1,12 +1,13 @@
 package com.gitlab.kordlib.kordx.commands.kord.model.processor
 
 import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.core.event.message.MessageCreateEvent
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.mentionPrefix
-import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
-import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixSupplier
 import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
+
+private const val PREFIX_FLAG_DEPRECATED_MESSAGE = """
+'enableMentionPrefix' is deprecated and has been implemented as a prefix rule instead, 
+replace it with `or mention()` in the kord prefix configuration.
+"""
 
 /**
  * ProcessorBuilder with extra utility for the [KordContext].
@@ -18,17 +19,12 @@ class KordProcessorBuilder(val kord: Kord) : ProcessorBuilder() {
     /**
      * True if `@bot` mentions should work as a substitute for the prefix. Default is `true`.
      */
-    var enableMentionPrefix: Boolean = true
+    @Deprecated(PREFIX_FLAG_DEPRECATED_MESSAGE, level = DeprecationLevel.ERROR)
+    var enableMentionPrefix: Boolean
+        get() = error(PREFIX_FLAG_DEPRECATED_MESSAGE)
+        set(value) = error(PREFIX_FLAG_DEPRECATED_MESSAGE)
 
     override suspend fun build(): CommandProcessor {
-        if (enableMentionPrefix) {
-            val prefix: PrefixSupplier<MessageCreateEvent>? = (
-                    prefixBuilder[KordContext] ?: prefixBuilder[CommonContext]
-                    )
-            val newPrefix: PrefixSupplier<MessageCreateEvent> = mentionPrefix(kord.selfId, prefix)
-            prefixBuilder.add(KordContext, newPrefix)
-        }
-
         return super.build()
     }
 
