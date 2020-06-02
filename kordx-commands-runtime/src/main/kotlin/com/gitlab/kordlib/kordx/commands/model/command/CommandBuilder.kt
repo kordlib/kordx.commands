@@ -1,13 +1,13 @@
 package com.gitlab.kordlib.kordx.commands.model.command
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
-import com.gitlab.kordlib.kordx.commands.model.module.Module
+import com.gitlab.kordlib.kordx.commands.model.exception.ConflictingAliasException
 import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
-import org.koin.core.Koin
+import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.precondition.precondition
+import com.gitlab.kordlib.kordx.commands.model.processor.BuildEnvironment
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 
 private val spaceRegex = Regex("\\s")
 
@@ -18,6 +18,7 @@ private val spaceRegex = Regex("\\s")
  * @param context The context this command operates in, used as a type token.
  * @param metaData The metadata for this command.
  * @param preconditions Preconditions for this command.
+ * @param aliases the aliases that will be created for this command.
  *
  * @throws IllegalArgumentException when [name] contains whitespace characters.
  */
@@ -27,7 +28,8 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandEvent>(
         val moduleName: String,
         val context: ProcessorContext<S, A, COMMANDCONTEXT>,
         val metaData: MutableMetadata = MutableMetadata(),
-        val preconditions: MutableList<Precondition<COMMANDCONTEXT>> = mutableListOf()
+        val preconditions: MutableList<Precondition<COMMANDCONTEXT>> = mutableListOf(),
+        val aliases: MutableSet<String> = mutableSetOf()
 ) {
 
     init {
@@ -45,21 +47,38 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandEvent>(
     var arguments: List<Argument<*, A>> = emptyList()
 
     /**
-     * Builds the command from the current data.
+     * Adds the [aliases] to this command's aliases.
      */
-    fun build(modules: Map<String, Module>, koin: Koin): Command<COMMANDCONTEXT> {
+    fun alias(vararg aliases: String) = this.aliases.addAll(aliases)
+
+    /**
+     * Builds the command from the current data and adds it to the [environment].
+     */
+    fun build(environment: BuildEnvironment): Set<Command<COMMANDCONTEXT>> {
+        if (name in aliases) throw ConflictingAliasException(this, name)
+
         val data = CommandData(
                 name,
                 moduleName,
                 context,
                 metaData.toMetaData(),
                 arguments,
-                modules,
+                environment.modules,
                 preconditions,
-                koin,
+                environment.koin,
+                if (aliases.isEmpty()) AliasInfo.None()
+                else AliasInfo.Parent(aliases, environment.commands),
                 execution
         )
-        return Command(data)
+
+        val children = aliases.map {
+            data.copy(name = it, aliasInfo = AliasInfo.Child(name, environment.commands))
+        }
+
+        val commands = (children + data).map { Command(it) }
+
+        commands.forEach { environment.addCommand(it) }
+        return commands.toSet()
     }
 
     /**
