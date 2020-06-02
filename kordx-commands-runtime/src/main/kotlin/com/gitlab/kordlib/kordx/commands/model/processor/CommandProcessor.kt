@@ -29,7 +29,7 @@ private val logger = KotlinLogging.logger { }
 data class CommandProcessorData(
         val filters: Map<ProcessorContext<*, *, *>, List<EventFilter<*>>>,
         val preconditions: Map<ProcessorContext<*, *, *>, List<Precondition<out CommandEvent>>>,
-        var commands: Map<String, Command<out CommandEvent>>,
+        var environment: BuildEnvironment,
         val prefix: Prefix,
         val handlers: Map<ProcessorContext<*, *, *>, EventHandler<*>>,
         var modifiers: List<ModuleModifier>,
@@ -63,7 +63,7 @@ class CommandProcessor(private val data: CommandProcessorData) : CoroutineScope 
     /**
      * All commands in this processor.
      */
-    val commands: Map<String, Command<out CommandEvent>> get() = data.commands
+    val commands: Map<String, Command<out CommandEvent>> get() = data.environment.commands
 
     /**
      * The collection of prefix suppliers used to get the prefix for a certain [ProcessorContext].
@@ -168,29 +168,27 @@ class CommandProcessor(private val data: CommandProcessorData) : CoroutineScope 
         rebuild()
     }
 
+    /**
+     * Adds the [modifiers] to the current modules and commands, rebuilding the processor in the process.
+     *
+     * > This is potentially a **very** expensive operation, as every command and module needs to be rebuild.
+     * If you need to temporarily disable/enable an entity
+     * consider doing so with an [EventFilter] or [Precondition] instead.
+     */
+    suspend fun addModules(vararg modifiers: ModuleModifier) = edit {
+        data.modifiers += modifiers
+        rebuild()
+    }
+
     private suspend fun rebuild() {
         val container = ModuleContainer()
         data.modifiers.forEach { it.apply(container) }
         container.applyForEach()
 
-        val modules = commands.values.firstOrNull()?.modules ?: mutableMapOf()
-        val modifiableModules = modules as MutableMap<String, Module>
-        container.modules.values.forEach { it.build(modifiableModules, koin) }
+        val environment = BuildEnvironment(koin)
+        container.modules.values.forEach { it.build(environment) }
 
-        val map: Map<String, Command<out CommandEvent>> = modifiableModules.values
-                .map { it.commands }
-                .fold(emptyMap()) { acc, map ->
-                    map.keys.forEach {
-                        require(it !in acc) {
-                            "command $it is already registered in ${acc.getValue(it).module.name}"
-                        }
-                    }
-                    acc + map
-                }
-        map.keys.forEach {
-            require(it !in commands) { "command $it is already registered ${commands[it]!!.module.name}" }
-        }
-        data.commands = map
+        data.environment = environment
     }
 
     /**

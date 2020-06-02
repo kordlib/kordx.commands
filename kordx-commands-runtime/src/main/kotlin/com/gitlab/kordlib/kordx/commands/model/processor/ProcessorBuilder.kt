@@ -165,12 +165,12 @@ open class ProcessorBuilder : KoinComponent {
         moduleModifiers.forEach { it.apply(container) }
         container.applyForEach()
 
-        val modules: MutableMap<String, Module> = mutableMapOf()
-        container.modules.values.forEach { it.build(modules, koinApplication.koin) }
+        val environment = BuildEnvironment(koinApplication.koin)
+        container.modules.values.forEach { it.build(environment) }
 
         val data = CommandProcessorData(
                 filters = eventFilters.groupBy { it.context },
-                commands = modules.values.map { it.commands }.fold(emptyMap()) { acc, map -> acc + map },
+                environment = environment,
                 handlers = eventHandlers.toMap(),
                 preconditions = preconditions.groupBy { it.context },
                 prefix = prefixBuilder.build(),
