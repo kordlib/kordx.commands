@@ -9,7 +9,13 @@
 * Added support for aliases
 * You can now handle exceptions using the `ErrorHandler`.
 
-# 0.1.1
+#0.1.2
+
+## Fixes
+
+* Fixed an incorrect version range for Kord in kordx.commands.
+
+#0.1.1
 
 ## Fixes
 
