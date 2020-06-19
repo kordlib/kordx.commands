@@ -3,16 +3,14 @@ dependencies {
 
     api project(':kordx-commands-runtime')
 
-    api("com.gitlab.kordlib.kord:kord-core") {
+    api("com.gitlab.kordlib.kord:kord-core:0.4.+") {
         version {
-            strictly("[0.5.0,0.6.0[")
             prefer("latest.release")
         }
     }
 
-    api("com.gitlab.kordlib:kordx.emoji") {
+    api("com.gitlab.kordlib:kordx.emoji:0.2.+") {
         version {
-            strictly("[0.1.0,0.2.0[")
             prefer("latest.release")
         }
     }
