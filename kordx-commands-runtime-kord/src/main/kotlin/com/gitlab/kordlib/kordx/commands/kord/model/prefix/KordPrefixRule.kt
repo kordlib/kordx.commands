@@ -18,7 +18,7 @@ import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixRule
 fun PrefixBuilder.guild(
         supplier: (guild: GuildBehavior) -> String?
 ): PrefixRule<MessageCreateEvent> = PrefixRule { message, context ->
-    val guild = context.message.guild ?: return@PrefixRule PrefixRule.Result.Denied
+    val guild = context.message.getGuildOrNull() ?: return@PrefixRule PrefixRule.Result.Denied
     val prefix = supplier(guild) ?: return@PrefixRule PrefixRule.Result.Denied
     if (message.startsWith(prefix)) PrefixRule.Result.Accepted(prefix)
     else PrefixRule.Result.Denied

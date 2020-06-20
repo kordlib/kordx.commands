@@ -16,7 +16,7 @@ internal class InternalMemberArgument(
         get() = "@User"
 
     override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Member> {
-        val guildId = context.message.guildId ?: return failure("Can't get members outside of guilds.")
+        val guildId = context.getGuild()?.id ?: return failure("Can't get members outside of guilds.")
 
         val number = word.toLongOrNull()
         val snowflake = when {
@@ -25,7 +25,7 @@ internal class InternalMemberArgument(
             else -> return failure("Expected mention.")
         }
 
-        return when (val member = context.kord.getMember(guildId, snowflake)) {
+        return when (val member = context.kord.getGuild(guildId)?.getMember(snowflake)) {
             null -> failure("User not found.")
             else -> success(member)
         }
@@ -44,4 +44,4 @@ val MemberArgument: Argument<Member, MessageCreateEvent> = InternalMemberArgumen
  * @param name The name of this argument.
  */
 @Suppress("FunctionName")
-fun MemberArgument(name: String) : Argument<Member, MessageCreateEvent> = InternalMemberArgument(name)
+fun MemberArgument(name: String): Argument<Member, MessageCreateEvent> = InternalMemberArgument(name)

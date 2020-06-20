@@ -4,6 +4,7 @@ import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.Kord
 import com.gitlab.kordlib.core.behavior.GuildBehavior
 import com.gitlab.kordlib.core.behavior.channel.MessageChannelBehavior
+import com.gitlab.kordlib.core.entity.Guild
 import com.gitlab.kordlib.core.entity.Member
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.entity.User
@@ -26,11 +27,12 @@ inline fun mockEvent(apply: MessageCreateEvent.() -> Unit = {}) = mockk<MessageC
 inline fun MessageCreateEvent.mockMessage(apply: Message.() -> Unit = {}) {
     val mockMessage = mockk<Message> { apply() }
     every { message } returns mockMessage
+    every { guildId } returns null
 }
 
 inline fun Message.mockGuild(apply: GuildBehavior.() -> Unit = {}) {
-    val mockGuild = mockk<GuildBehavior> { apply() }
-    every { guild } returns mockGuild
+    val mockGuild = mockk<Guild> { apply() }
+    coEvery { getGuildOrNull() } returns mockGuild
 }
 
 inline fun Message.mockChannel(apply: MessageChannelBehavior.() -> Unit = {}) {
@@ -49,7 +51,7 @@ inline fun Message.mockMember(apply: Member.() -> Unit = {}) {
 }
 
 fun Message.mockNoGuild() {
-    every { guild } returns null
+    coEvery { getGuildOrNull() } returns null
 }
 
 fun mockKord() = mockk<Kord> {
@@ -96,7 +98,10 @@ internal class KordPrefixRuleTest {
         val guildRule = prefix { guild { "+" } }
 
         val event = mockEvent {
-            mockMessage { mockGuild() }
+            mockMessage {
+                mockGuild()
+                every { guildId } returns null
+            }
         }
 
         val result = guildRule.consume("!test", event)

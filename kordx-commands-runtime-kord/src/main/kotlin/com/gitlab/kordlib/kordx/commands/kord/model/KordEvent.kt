@@ -43,7 +43,7 @@ interface KordEvent {
     /**
      * The guild the [message] was created in, or null if it was made in a DM.
      */
-    val guild get() = message.guild
+    val guild get() = event.guildId?.let { kord.unsafe.guild(it) }
 
     /**
      * Creates a message in the [KordEvent.channel].

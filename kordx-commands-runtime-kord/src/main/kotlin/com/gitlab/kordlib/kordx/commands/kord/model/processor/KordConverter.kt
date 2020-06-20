@@ -16,7 +16,7 @@ import com.gitlab.kordlib.core.Kord
  * [ContextConverter] for [KordContext], using the [Message.content] to parse commands.
  */
 object KordContextConverter : ContextConverter<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
-    override val MessageCreateEvent.text: String get() =  message.content
+    override val MessageCreateEvent.text: String get() = message.content
 
     override fun MessageCreateEvent.toArgumentContext(): MessageCreateEvent = this
 
@@ -62,7 +62,8 @@ class KordErrorHandler(
                 """.trimIndent())
     }
 
-    override suspend fun CommandProcessor.emptyInvocation(event: MessageCreateEvent) { /*ignored*/ }
+    override suspend fun CommandProcessor.emptyInvocation(event: MessageCreateEvent) { /*ignored*/
+    }
 
     override suspend fun CommandProcessor.notFound(event: MessageCreateEvent, command: String) {
         val mostProbable = suggester.suggest(command, commands)
@@ -84,7 +85,9 @@ class KordErrorHandler(
         if (confirmed) {
             val correctedText = event.message.content.replaceFirst(command, mostProbable.name)
             val data = event.message.data.copy(content = correctedText)
-            val event = MessageCreateEvent(Message(data, event.kord))
+            val event = with(event) {
+                MessageCreateEvent(Message(data, kord), guildId, member, shard, supplier)
+            }
             handle(event, KordContext)
         }
     }

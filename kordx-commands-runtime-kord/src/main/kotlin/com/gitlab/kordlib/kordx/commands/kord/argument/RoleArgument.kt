@@ -17,7 +17,7 @@ internal class InternalRoleArgument(
         get() = "@Role"
 
     override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Role> {
-        val guildId = context.message.guildId ?: return failure("Can't get role outside of guilds.")
+        val guildId = context.message.getGuildOrNull()?.id ?: return failure("Can't get role outside of guilds.")
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
@@ -25,7 +25,7 @@ internal class InternalRoleArgument(
             else -> return failure("Expected mention.")
         }
 
-        return when (val role = context.kord.getRole(guildId, snowflake)) {
+        return when (val role = context.kord.getGuild(guildId)?.getRole(snowflake)) {
             null -> failure("Role not found.")
             else -> success(role)
         }
@@ -44,4 +44,4 @@ val RoleArgument: Argument<Role, MessageCreateEvent> = InternalRoleArgument()
  * @param name The name of this argument.
  */
 @Suppress("FunctionName")
-fun RoleArgument(name: String) : Argument<Role, MessageCreateEvent> = InternalRoleArgument(name)
+fun RoleArgument(name: String): Argument<Role, MessageCreateEvent> = InternalRoleArgument(name)

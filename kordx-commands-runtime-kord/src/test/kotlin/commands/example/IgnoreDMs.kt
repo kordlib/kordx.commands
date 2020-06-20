@@ -23,7 +23,7 @@ class UserResponses(val users: MutableMap<Snowflake, Boolean> = mutableMapOf())
  * Ignore the messages from DMs, tell the user to flip off once.
  */
 fun guildOnly(responses: UserResponses) = eventFilter {
-    (message.guildId != null).also {
+    (message.getGuildOrNull() != null).also {
         if (!it && responses.users[message.author!!.id] != true) {
             message.channel.createMessage("I only respond to guild messages.")
             responses.users[message.author!!.id] == true

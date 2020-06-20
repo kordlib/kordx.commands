@@ -5,7 +5,7 @@ dependencies {
 
     api("com.gitlab.kordlib.kord:kord-core") {
         version {
-            strictly("[0.4.0,0.5.0[")
+            strictly("[0.5.0,0.6.0[")
             prefer("latest.release")
         }
     }
