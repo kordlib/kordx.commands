@@ -181,4 +181,9 @@ interface ErrorHandler<S, A, E : CommandEvent> {
      * ```
      */
     suspend fun CommandProcessor.tooManyWords(event: S, command: Command<E>, result: ArgumentsResult.TooManyWords<A>) {}
+
+    /**
+     * Called when the invocation of a [command] for a [event] threw an [Exception].
+     */
+    suspend fun CommandProcessor.exceptionThrown(event: S, command: Command<E>, exception: Exception){}
 }

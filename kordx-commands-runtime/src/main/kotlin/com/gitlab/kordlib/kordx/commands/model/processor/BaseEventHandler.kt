@@ -33,7 +33,7 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
 
         val rule = prefix.getPrefixRule(context) ?: PrefixRule.none<S>()
 
-        val prefix = when(val result = rule.consume(text, event)) {
+        val prefix = when (val result = rule.consume(text, event)) {
             PrefixRule.Result.Denied -> return
             is PrefixRule.Result.Accepted -> result.prefix
         }
@@ -73,6 +73,7 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
             command.invoke(eventContext, items)
         } catch (exception: Exception) {
             baseHandlerLogger.catching(exception)
+            with(handler) { exceptionThrown(event, command, exception) }
         }
     }
 

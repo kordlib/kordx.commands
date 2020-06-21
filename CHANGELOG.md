@@ -7,6 +7,7 @@
 ## Additions
 
 * Added support for aliases
+* You can now handle exceptions using the `ErrorHandler`.
 
 # 0.1.1
 
