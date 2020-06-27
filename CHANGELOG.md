@@ -1,3 +1,9 @@
+# 0.3.0
+
+## Additions
+
+* Added `Argument#flatten` to flatten an `Argument<Either<T,T>, CONTEXT>` into a `Argument<T, CONTEXT>`.
+
 # 0.2.1
 
 ## Fixes
@@ -8,7 +14,6 @@
 
 * CommandProcessor will run commands in parallel.
  
-
 # 0.2.0
 
 ## Changes

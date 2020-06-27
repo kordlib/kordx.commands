@@ -21,7 +21,19 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.switchOnFail
  */
 infix fun <A, B, CONTEXT> Argument<A, CONTEXT>.or(
         other: Argument<B, CONTEXT>
-): Argument<Either<A,B>, CONTEXT> = EitherArgument(this, other)
+): Argument<Either<A, B>, CONTEXT> = EitherArgument(this, other)
+
+fun <T, CONTEXT> Argument<Either<T, T>, CONTEXT>.flatten(): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> {
+    override val example: String
+        get() = this@flatten.example
+
+    override val name: String
+        get() = this@flatten.name
+
+    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@flatten.parse(words, fromIndex, context).map { (it.left ?: it.right)!! }
+    }
+}
 
 /**
  * Represents one of two possible values, [left] or [right].
@@ -73,10 +85,11 @@ sealed class Either<A, B> {
 /**
  * Gets the present value in either left or right.
  */
-val <T, A: T, B:T> Either<A,B>.value get() = when(this) {
-    is Either.Left -> left
-    is Either.Right -> right
-}
+val <T, A : T, B : T> Either<A, B>.value
+    get() = when (this) {
+        is Either.Left -> left
+        is Either.Right -> right
+    }
 
 private class EitherArgument<A, B, CONTEXT>(
         private val left: Argument<A, CONTEXT>,
@@ -88,8 +101,8 @@ private class EitherArgument<A, B, CONTEXT>(
 
     @Suppress("RemoveExplicitTypeArguments")
     override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<Either<A, B>> {
-        val left: ArgumentResult<Either<A, B>> = left.parse(words, fromIndex, context).map { Either.Left<A,B>(it) }
-        return left.switchOnFail { right.parse(words, fromIndex, context).map { Either.Right<A,B>(it) } }
+        val left: ArgumentResult<Either<A, B>> = left.parse(words, fromIndex, context).map { Either.Left<A, B>(it) }
+        return left.switchOnFail { right.parse(words, fromIndex, context).map { Either.Right<A, B>(it) } }
     }
 
 }
