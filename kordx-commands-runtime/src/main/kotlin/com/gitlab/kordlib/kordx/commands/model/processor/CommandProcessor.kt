@@ -10,7 +10,10 @@ import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.model.module.forEachModule
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.prefix.Prefix
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
@@ -133,13 +136,11 @@ class CommandProcessor(private val data: CommandProcessorData) : CoroutineScope 
      * Starts listening to the [source] launched in [CommandProcessorData.dispatcher].
      */
     fun <S> addSource(source: EventSource<S>): Job {
-        return source.events.onEach {
-            launch(data.dispatcher) {
-                try {
-                    handle(it, source.context.cast())
-                } catch (exception: Exception) {
-                    logger.catching(exception)
-                }
+        return source.events.buffer(Channel.UNLIMITED).onEach {
+            try {
+                handle(it, source.context.cast())
+            } catch (exception: Exception) {
+                logger.catching(exception)
             }
         }.catch { logger.catching(it) }.launchIn(this)
     }
