@@ -1,3 +1,9 @@
+# 0.2.1
+
+## Fixes
+
+* Commands dropping out of the events flow.
+
 # 0.2.0
 
 ## Changes

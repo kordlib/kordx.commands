@@ -5,7 +5,9 @@ import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContext
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.filterIsInstance
 
 /**
@@ -20,6 +22,6 @@ class KordEventSource(
         get() = KordContext
 
     override val events: Flow<MessageCreateEvent>
-        get() = kord.events.filterIsInstance()
+        get() = kord.events.buffer(Channel.UNLIMITED).filterIsInstance()
 
 }
