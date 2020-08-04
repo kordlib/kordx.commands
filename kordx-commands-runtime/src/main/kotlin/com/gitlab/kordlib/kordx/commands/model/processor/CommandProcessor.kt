@@ -10,10 +10,7 @@ import com.gitlab.kordlib.kordx.commands.model.module.ModuleModifier
 import com.gitlab.kordlib.kordx.commands.model.module.forEachModule
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.prefix.Prefix
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.catch
@@ -36,7 +33,7 @@ data class CommandProcessorData(
         val handlers: Map<ProcessorContext<*, *, *>, EventHandler<*>>,
         var modifiers: List<ModuleModifier>,
         val koin: Koin,
-        val dispatcher: CoroutineDispatcher = Dispatchers.IO
+        val dispatcher: CoroutineDispatcher = Dispatchers.Default
 )
 
 /**
@@ -101,7 +98,7 @@ class CommandProcessor(private val data: CommandProcessorData) : CoroutineScope 
     @Suppress("UNCHECKED_CAST")
     fun <T : CommandEvent> getCommand(context: ProcessorContext<*, *, T>, name: String): Command<T>? {
         val command = commands[name] ?: return null
-        return when(command.context) {
+        return when (command.context) {
             CommonContext -> command
             context -> command
             else -> null
@@ -137,10 +134,12 @@ class CommandProcessor(private val data: CommandProcessorData) : CoroutineScope 
      */
     fun <S> addSource(source: EventSource<S>): Job {
         return source.events.onEach {
-            try {
-                handle(it, source.context.cast())
-            } catch (exception: Exception) {
-                logger.catching(exception)
+            launch(data.dispatcher) {
+                try {
+                    handle(it, source.context.cast())
+                } catch (exception: Exception) {
+                    logger.catching(exception)
+                }
             }
         }.catch { logger.catching(it) }.launchIn(this)
     }

@@ -2,7 +2,12 @@
 
 ## Fixes
 
-* Commands dropping out of the events flow.
+* Fixed messages dropping out of the events flow buffer.
+
+## Changes 
+
+* CommandProcessor will run commands in parallel.
+ 
 
 # 0.2.0
 
