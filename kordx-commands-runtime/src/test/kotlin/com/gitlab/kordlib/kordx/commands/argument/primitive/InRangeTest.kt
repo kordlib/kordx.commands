@@ -17,13 +17,13 @@ class InRangeTest {
     @ParameterizedTest
     @MethodSource("passingSources")
     fun `correctly accepts arguments`(text: String, result: Int) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireItem(result)
+        argument.parse(text, 0, Unit).requireItem(result)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireFailure()
+        argument.parse(text, 0, Unit).requireFailure()
     }
 
 

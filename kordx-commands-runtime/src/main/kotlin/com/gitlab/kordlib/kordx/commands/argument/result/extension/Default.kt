@@ -19,7 +19,7 @@ inline fun <T> ArgumentResult<T>.switchOnFail(generator: () -> ArgumentResult<T>
 @Suppress("UNCHECKED_CAST")
 fun <T : Any> ArgumentResult<T?>.orDefault(default: T): ArgumentResult.Success<T> = when (this) {
     is ArgumentResult.Success -> when (item) {
-        null -> ArgumentResult.Success(default, wordsTaken)
+        null -> ArgumentResult.Success(default, newIndex)
         else -> this as ArgumentResult.Success<T>
     }
     is ArgumentResult.Failure -> ArgumentResult.Success(default, 0)
@@ -33,7 +33,7 @@ fun <T : Any> ArgumentResult<T?>.orDefault(default: T): ArgumentResult.Success<T
 @JvmName("orElseSupplyNullable")
 inline fun <T : Any> ArgumentResult<T?>.orElseSupply(fallback: () -> T): ArgumentResult.Success<T> = when (this) {
     is ArgumentResult.Success -> when (item) {
-        null -> ArgumentResult.Success(fallback(), wordsTaken)
+        null -> ArgumentResult.Success(fallback(), newIndex)
         else -> this as ArgumentResult.Success<T>
     }
     is ArgumentResult.Failure -> ArgumentResult.Success(fallback(), 0)
@@ -46,7 +46,7 @@ inline fun <T : Any> ArgumentResult<T?>.orElseSupply(fallback: () -> T): Argumen
  */
 @Suppress("UNCHECKED_CAST")
 fun <T> ArgumentResult<T>.orElse(fallBack: T): ArgumentResult.Success<T> = when (this) {
-    is ArgumentResult.Success -> ArgumentResult.Success(item, wordsTaken)
+    is ArgumentResult.Success -> ArgumentResult.Success(item, newIndex)
     is ArgumentResult.Failure -> ArgumentResult.Success(fallBack, 0)
 }
 
@@ -56,6 +56,6 @@ fun <T> ArgumentResult<T>.orElse(fallBack: T): ArgumentResult.Success<T> = when 
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <T> ArgumentResult<T>.orElseSupply(fallBack: () -> T): ArgumentResult.Success<T> = when (this) {
-    is ArgumentResult.Success -> ArgumentResult.Success(item, wordsTaken)
+    is ArgumentResult.Success -> ArgumentResult.Success(item, newIndex)
     is ArgumentResult.Failure -> ArgumentResult.Success(fallBack(), 0)
 }

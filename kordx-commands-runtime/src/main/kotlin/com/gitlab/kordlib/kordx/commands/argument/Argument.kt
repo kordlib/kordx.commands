@@ -2,6 +2,8 @@ package com.gitlab.kordlib.kordx.commands.argument
 
 import com.gitlab.kordlib.kordx.commands.argument.extension.*
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
+import com.gitlab.kordlib.kordx.commands.argument.state.*
 
 /**
  * A parser that takes in a set of words and a [CONTEXT], producing a [ArgumentResult] with a possible generated [T].
@@ -26,69 +28,105 @@ interface Argument<out T, in CONTEXT> {
     val example: String
 
     /**
-     * Parses the given [words], reading the remaining words starting from [fromIndex].
+     * Parses the given [text], reading the remaining chars starting from [fromIndex].
      * Returns a [ArgumentResult] which represents either a failure or success in parsing a certain amount of words.
      */
-    suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T>
+    suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T>
+
+
+    companion object {
+
+        internal val whitespaceRegex = Regex("\\s")
+
+    }
 }
 
 /**
  * Utility class for Arguments that expect one word.
  */
-abstract class SingleWordArgument<T, CONTEXT> : Argument<T, CONTEXT> {
+abstract class SingleWordArgument<T, CONTEXT> : StateArgument<T, CONTEXT>() {
 
-    final override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        if (words.size <= fromIndex) return ArgumentResult.Failure("expected at least 1 word", 0)
-        return parse(words[fromIndex], context)
+    override suspend fun ParseState.parse(context: CONTEXT): ArgumentResult<T> {
+        val cursorBefore = cursor
+        val word = flush { consumeWord() }
+
+        val result = parse(word, context)
+        require(result.wordsTaken <= 1) {
+            "Single word arguments cannot take more than one word: $result"
+        }
+
+        val argumentResult = result.toArgumentResult(cursorBefore, word)
+        return  argumentResult
     }
 
     /**
      * Convenience method that parses the first word only.
      */
-    abstract suspend fun parse(word: String, context: CONTEXT): ArgumentResult<T>
+    abstract suspend fun parse(word: String, context: CONTEXT): WordResult<T>
+
 
     /**
      * Convenience method that creates a success for one word taken.
      */
-    protected fun <T> success(value: T): ArgumentResult<T> = ArgumentResult.Success(value, 1)
+    protected fun <T> success(value: T): WordResult<T> = WordResult.Success(value, 1)
 
     /**
      * Convenience method that creates a failure for no words taken.
      */
-    protected fun <T> failure(reason: String): ArgumentResult<T> = ArgumentResult.Failure(reason, 0)
+    protected fun <T> failure(reason: String): WordResult<T> = WordResult.Failure(reason, 0)
 }
 
 /**
  * Utility class for Arguments that expect a fixed amount of words.
  */
-abstract class FixedLengthArgument<T, CONTEXT> : Argument<T, CONTEXT> {
+abstract class FixedLengthArgument<T, CONTEXT> : StateArgument<T, CONTEXT>() {
 
     /**
      * The expected word length. Word lists with fewer words will automatically return a [failure].
      */
     abstract val length: Int
 
-    final override suspend fun parse(
-            words: List<String>,
-            fromIndex: Int,
-            context: CONTEXT
-    ): ArgumentResult<T> = when {
-        words.size - (fromIndex + 1) < length -> ArgumentResult.Failure(
-                "expected at least $length words",
-                0
-        )
-        else -> parse(words.slice(fromIndex..(fromIndex + length)), context)
+    override suspend fun ParseState.parse(context: CONTEXT): ArgumentResult<T> {
+        @OptIn(ExperimentalStdlibApi::class)
+        val words = buildList {
+            repeat(length) {
+                dropWhiteSpace()
+                if (ended) {
+                    return ArgumentResult.Failure("expected at least $length words", 0)
+                }
+
+                add(flush { consumeWord() })
+
+            }
+        }
+
+        val result = parse(words, context)
+
+        /**
+         * Now that we know how many words to take, we'll translate this back to characters.
+         * One might assume that this would simply be: (length of n words) + (n - 1).
+         * You'd be wrong, some targets (like Discord) accept multiple spaces between words.
+         * This seems like a sane solution given the information.
+         */
+        reset()
+        repeat(result.wordsTaken){
+            dropWhiteSpace()
+            //TODO: contemplate the need for a `dropword`, or rethink the whole convention.
+            dropWhile { !it.isWhitespace() } //don't consume word, saves on allocations
+        }
+
+        return parse(words, context).toArgumentResult(cursor)
     }
 
     /**
      * Convenience method that parses a list of words with a fixed [length].
      */
-    abstract suspend fun parse(words: List<String>, context: CONTEXT): ArgumentResult<T>
+    abstract suspend fun parse(words: List<String>, context: CONTEXT): WordResult<T>
 
     /**
      * Convenience method to create a success with a fixed [length].
      */
-    protected fun <T> success(value: T): ArgumentResult<T> = ArgumentResult.Success(value, length)
+    protected fun <T> success(value: T): WordResult<T> = WordResult.Success(value, 1)
 
     /**
      * Convenience method to create a failure, defaults to the first word.
@@ -96,7 +134,7 @@ abstract class FixedLengthArgument<T, CONTEXT> : Argument<T, CONTEXT> {
     protected fun <T> failure(
             reason: String,
             atWord: Int = 0
-    ): ArgumentResult<T> = ArgumentResult.Failure(reason, atWord)
+    ): WordResult<T> = WordResult.Failure(reason, atWord)
 
 }
 
@@ -105,8 +143,9 @@ abstract class FixedLengthArgument<T, CONTEXT> : Argument<T, CONTEXT> {
  */
 abstract class VariableLengthArgument<T, CONTEXT> : Argument<T, CONTEXT> {
 
-    final override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return parse(words.drop(fromIndex), context)
+    final override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        val words = text.substring(fromIndex).split(Argument.whitespaceRegex)
+        return parse(words, context)
     }
 
     /**

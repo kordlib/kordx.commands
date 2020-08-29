@@ -23,6 +23,10 @@ infix fun <A, B, CONTEXT> Argument<A, CONTEXT>.or(
         other: Argument<B, CONTEXT>
 ): Argument<Either<A, B>, CONTEXT> = EitherArgument(this, other)
 
+/**
+ * Converts an Either argument where both sides have the same type to an Argument of that type.
+ * Either the [Either.left] or [Either.right] will be emitted on success.
+ */
 fun <T, CONTEXT> Argument<Either<T, T>, CONTEXT>.flatten(): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> {
     override val example: String
         get() = this@flatten.example
@@ -30,8 +34,8 @@ fun <T, CONTEXT> Argument<Either<T, T>, CONTEXT>.flatten(): Argument<T, CONTEXT>
     override val name: String
         get() = this@flatten.name
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@flatten.parse(words, fromIndex, context).map { (it.left ?: it.right)!! }
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@flatten.parse(text, fromIndex, context).map { (it.left ?: it.right)!! }
     }
 }
 
@@ -100,9 +104,9 @@ private class EitherArgument<A, B, CONTEXT>(
         get() = "$left or $right"
 
     @Suppress("RemoveExplicitTypeArguments")
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<Either<A, B>> {
-        val left: ArgumentResult<Either<A, B>> = left.parse(words, fromIndex, context).map { Either.Left<A, B>(it) }
-        return left.switchOnFail { right.parse(words, fromIndex, context).map { Either.Right<A, B>(it) } }
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<Either<A, B>> {
+        val left: ArgumentResult<Either<A, B>> = left.parse(text, fromIndex, context).map { Either.Left<A, B>(it) }
+        return left.switchOnFail { right.parse(text, fromIndex, context).map { Either.Right<A, B>(it) } }
     }
 
 }

@@ -3,6 +3,7 @@ package com.gitlab.kordlib.kordx.commands.argument.primitive
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
 internal class InternalBooleanArgument(
@@ -21,7 +22,7 @@ internal class InternalBooleanArgument(
     override val example: String
         get() = Random.nextBoolean().toString()
 
-    override suspend fun parse(word: String, context: Any?): ArgumentResult<Boolean> = when {
+    override suspend fun parse(word: String, context: Any?): WordResult<Boolean> = when {
         word.equals(trueValue, ignoreCase) -> success(true)
         word.equals(falseValue, ignoreCase) -> success(false)
         else -> failure("Expected true or false.")

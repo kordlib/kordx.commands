@@ -2,21 +2,30 @@ package com.gitlab.kordlib.kordx.commands.argument.text
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
-import com.gitlab.kordlib.kordx.commands.argument.VariableLengthArgument
-
+import com.gitlab.kordlib.kordx.commands.argument.state.*
 
 internal class InternalListArgument(
         private val separator: String = "|"
-) : VariableLengthArgument<List<String>, Any?>() {
+) : StateArgument<List<String>, Any?>() {
     override val name: String = "Separated $separator text"
 
     override val example: String
         get() = "words $separator separated $separator by $separator"
 
-    override suspend fun parse(
-            words: List<String>,
-            context: Any?
-    ): ArgumentResult<List<String>> = success(words.joinToString(" ").split(separator), words.size)
+    @OptIn(ExperimentalStdlibApi::class)
+    override suspend fun ParseState.parse(context: Any?): ArgumentResult<List<String>> {
+        if (ended) return unexpectedEnd()
+
+        @Suppress("RemoveExplicitTypeArguments")
+        val list = buildList<String> {
+            while (!ended) {
+                add(flush { consumeUntil { remaining.startsWith(separator) } })
+                drop(separator)
+            }
+        }
+
+        return success(list)
+    }
 
 }
 

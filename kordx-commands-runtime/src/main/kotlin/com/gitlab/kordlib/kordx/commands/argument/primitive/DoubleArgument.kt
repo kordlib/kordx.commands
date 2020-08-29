@@ -3,6 +3,7 @@ package com.gitlab.kordlib.kordx.commands.argument.primitive
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
 private const val DOUBLE_EXAMPLE_MIN_VALUE = -100.0
@@ -13,7 +14,7 @@ internal class InternalDoubleArgument(override val name: String = "Number") : Si
     override val example: String
         get() = Random.nextDouble(DOUBLE_EXAMPLE_MIN_VALUE, DOUBLE_EXAMPLE_MAX_VALUE).toString()
 
-    override suspend fun parse(word: String, context: Any?): ArgumentResult<Double> =
+    override suspend fun parse(word: String, context: Any?): WordResult<Double> =
             when (val number = word.toDoubleOrNull()) {
                 null -> failure("Expected a number.")
                 else -> success(number)

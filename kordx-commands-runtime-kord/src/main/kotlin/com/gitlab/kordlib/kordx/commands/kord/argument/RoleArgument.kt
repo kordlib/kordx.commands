@@ -6,6 +6,7 @@ import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 
 private val mentionRegex = Regex("""^<#&\d+>$""")
 
@@ -16,7 +17,7 @@ internal class InternalRoleArgument(
     override val example: String
         get() = "@Role"
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Role> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Role> {
         val guildId = context.message.getGuildOrNull()?.id ?: return failure("Can't get role outside of guilds.")
         val number = word.toLongOrNull()
         val snowflake = when {

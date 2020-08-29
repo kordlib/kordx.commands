@@ -1,4 +1,5 @@
 @file:AutoWired
+@file:Suppress("UNUSED_PARAMETER", "unused", "RedundantSuspendModifier")
 
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.annotation.ModuleName

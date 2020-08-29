@@ -1,5 +1,7 @@
 package com.gitlab.kordlib.kordx.commands.kord.model
 
+import com.gitlab.kordlib.common.annotation.KordExperimental
+import com.gitlab.kordlib.common.annotation.KordUnsafe
 import com.gitlab.kordlib.core.behavior.channel.createEmbed
 import com.gitlab.kordlib.core.behavior.channel.createMessage
 import com.gitlab.kordlib.core.entity.Message
@@ -43,6 +45,7 @@ interface KordEvent {
     /**
      * The guild the [message] was created in, or null if it was made in a DM.
      */
+    @OptIn(KordUnsafe::class, KordExperimental::class)
     val guild get() = event.guildId?.let { kord.unsafe.guild(it) }
 
     /**
@@ -85,7 +88,7 @@ interface KordEvent {
     ): T = kord.events.filterIsInstance<MessageCreateEvent>()
             .filter { it.message.author?.id == message.author!!.id }
             .filter { it.message.channel.id == channel.id }
-            .map { argument.parse(it.message.content.split(" "), 0, it) }
+            .map { argument.parse(it.message.content, 0, it) }
             .onEach { if (it is ArgumentResult.Failure) respond(it.reason) }
             .filterIsInstance<ArgumentResult.Success<T>>()
             .map { it.item }
@@ -126,7 +129,7 @@ interface KordEvent {
             .filter { it.message.author?.id == message.author!!.id }
             .filter { it.message.channel.id == channel.id }
             .takeWhile { !escape(it) }
-            .map { argument.parse(it.message.content.split(" "), 0, it) }
+            .map { argument.parse(it.message.content, 0, it) }
             .onEach { if (it is ArgumentResult.Failure) respond(it.reason) }
             .filterIsInstance<ArgumentResult.Success<T>>()
             .map { it.item }

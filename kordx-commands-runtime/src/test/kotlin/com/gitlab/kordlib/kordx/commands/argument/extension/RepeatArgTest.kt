@@ -16,13 +16,13 @@ class RepeatArgTest {
     @ParameterizedTest
     @MethodSource("passingSources")
     fun `correctly accepts arguments`(text: String, expected: List<Int>) = runBlockingTest {
-        argument.parse(text.split(" "), 0, Unit).requireItem(expected)
+        argument.parse(text, 0, Unit).requireItem(expected)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(text.split(" "), 0, Unit).requireFailure()
+        argument.parse(text, 0, Unit).requireFailure()
     }
 
     companion object {

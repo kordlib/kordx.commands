@@ -18,7 +18,7 @@ class EitherArgumentTest {
     @ParameterizedTest
     @MethodSource("passingSources")
     fun `correctly accepts arguments`(text: String, side: String, expected: Any) = runBlockingTest {
-        val item = argument.parse(listOf(text), 0, Unit).requireSuccess().item
+        val item = argument.parse(text, 0, Unit).requireSuccess().item
         when (side) {
             "left" -> Assertions.assertEquals(item.left, expected)
             "right" -> Assertions.assertEquals(item.right, expected)
@@ -28,7 +28,7 @@ class EitherArgumentTest {
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireFailure()
+        argument.parse(text, 0, Unit).requireFailure()
     }
 
     companion object {

@@ -32,7 +32,7 @@ sealed class EventType {
     class Response(val text: String) : EventType()
     class NotFound(val command: String) : EventType()
     object EmptyInvocation : EventType()
-    class RejectArgument(val command: Command<*>, words: List<String>, failure: ArgumentResult.Failure<*>) : EventType()
+    class RejectArgument(val rejection: ErrorHandler.RejectedArgument<String, String, TestEventEvent>) : EventType()
     class RejectPrecondition(val command: Command<*>, val preconditionResult: Boolean) : EventType()
 }
 
@@ -55,13 +55,9 @@ class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, St
     }
 
     override suspend fun CommandProcessor.rejectArgument(
-            event: String,
-            command: Command<TestEventEvent>,
-            words: List<String>,
-            argument: Argument<*, String>,
-            failure: ArgumentResult.Failure<*>
+            rejection: ErrorHandler.RejectedArgument<String, String, TestEventEvent>
     ) {
-        output.push(EventType.RejectArgument(command, words, failure))
+        output.push(EventType.RejectArgument(rejection))
     }
 }
 

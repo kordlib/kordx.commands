@@ -16,7 +16,7 @@ class WordsArgumentTest {
     @ParameterizedTest
     @MethodSource("sources")
     fun `correctly parses arguments`(text: String) = runBlockingTest {
-        argument.parse(text.split(" "), 0, Unit).requireItem(text.split(" "))
+        argument.parse(text, 0, Unit).requireItem(text.split(" "))
     }
 
     companion object {

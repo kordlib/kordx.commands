@@ -17,7 +17,7 @@ fun <T> ArgumentResult<T>.requireOneTaken() = requireTaken(1)
 
 fun <T> ArgumentResult<T>.requireTaken(amount: Int) {
     val success = requireSuccess()
-    assertEquals(amount, success.wordsTaken)
+    assertEquals(amount, success.newIndex)
 }
 
 fun <T> ArgumentResult<T>.requireItem(expected: T) {

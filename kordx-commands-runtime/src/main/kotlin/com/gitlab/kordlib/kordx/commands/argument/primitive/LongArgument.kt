@@ -3,6 +3,7 @@ package com.gitlab.kordlib.kordx.commands.argument.primitive
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
 private const val LONG_EXAMPLE_MIN_VALUE = -100L
@@ -15,7 +16,7 @@ internal class InternalLongArgument(override val name: String = "Number") : Sing
     override suspend fun parse(
             word: String,
             context: Any?
-    ): ArgumentResult<Long> = when (val number = word.toLongOrNull()) {
+    ): WordResult<Long> = when (val number = word.toLongOrNull()) {
         null -> failure("Expected a number.")
         else -> success(number)
     }

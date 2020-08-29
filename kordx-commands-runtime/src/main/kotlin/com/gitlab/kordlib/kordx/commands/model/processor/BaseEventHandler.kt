@@ -21,8 +21,6 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
         protected val handler: ErrorHandler<S, A, E>
 ) : EventHandler<S> {
 
-    private val whiteSpaceRegex = Regex("\\s")
-
     override suspend fun CommandProcessor.onEvent(event: S) {
         val filters = getFilters(context)
         if (!filters.all { it(event) }) return
@@ -31,17 +29,19 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
             event.text
         }
 
-        val rule = prefix.getPrefixRule(context) ?: PrefixRule.none<S>()
+        val rule = prefix.getPrefixRule(context) ?: PrefixRule.none()
 
         val prefix = when (val result = rule.consume(text, event)) {
             PrefixRule.Result.Denied -> return
             is PrefixRule.Result.Accepted -> result.prefix
         }
 
-        val words = text.removePrefix(prefix).split(whiteSpaceRegex)
+        val withoutPrefix = text.removePrefix(prefix)
+        if (withoutPrefix.isBlank()) return with(handler) { emptyInvocation(event) }
+        val commandName = withoutPrefix.takeWhile { !it.isWhitespace() }
 
-        val commandName = words.firstOrNull() ?: return with(handler) { emptyInvocation(event) }
         val command = getCommand(context, commandName) ?: return with(handler) { notFound(event, commandName) }
+        val argString = withoutPrefix.removePrefix(commandName).trimStart()
 
         @Suppress("UNCHECKED_CAST")
         val arguments = command.arguments as List<Argument<*, A>>
@@ -60,12 +60,18 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
 
         if (!passed) return
 
-        val (items) = when (val result = parseArguments(words.drop(1), arguments, argumentContext)) {
+        val trimmedLength = text.length - argString.length
+        val (items) = when (val result = parseArguments(trimmedLength, argString, arguments, argumentContext)) {
             is ArgumentsResult.Success -> result
-            is ArgumentsResult.TooManyWords -> return with(handler) { tooManyWords(event, command, result) }
+            is ArgumentsResult.TooManyWords -> return with(handler) {
+                val rejection = ErrorHandler.TooManyWords(command, event, text)
+                tooManyWords(rejection)
+            }
             is ArgumentsResult.Failure -> return with(handler) {
-                val newResult = result.failure.copy(atWord = result.failure.atWord + result.wordsTaken)
-                rejectArgument(event, command, words.drop(1), result.argument, newResult)
+                val rejection = ErrorHandler.RejectedArgument(
+                        command, event, text, result.atChar, result.argument, result.failure.reason
+                )
+                rejectArgument(rejection)
             }
         }
 
@@ -78,27 +84,31 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
     }
 
     /**
-     * Parses the [words] with the [arguments] for the [event].
+     * Parses the [argumentText] with the [arguments] for the [event].
      */
     protected open suspend fun CommandProcessor.parseArguments(
-            words: List<String>,
+            trimmedLength: Int,
+            argumentText: String,
             arguments: List<Argument<*, A>>,
             event: A
     ): ArgumentsResult<A> {
-        var wordIndex = 0
+        var charIndex = 0
         val items = mutableListOf<Any?>()
         arguments.forEachIndexed { index, argument ->
-            when (val result = argument.parse(words, wordIndex, event)) {
+            when (val result = argument.parse(argumentText, charIndex, event)) {
                 is ArgumentResult.Success -> {
-                    wordIndex += result.wordsTaken
+                    charIndex = result.newIndex
                     items += result.item
                 }
-                is ArgumentResult.Failure ->
-                    return ArgumentsResult.Failure(event, result, argument, arguments, index, words, wordIndex)
+                is ArgumentResult.Failure -> return ArgumentsResult.Failure(
+                        event, result, argument, arguments, index, argumentText, result.atChar + trimmedLength
+                )
             }
         }
 
-        if (wordIndex != words.size) return ArgumentsResult.TooManyWords(event, arguments, words, wordIndex)
+        if (charIndex < argumentText.length) return ArgumentsResult.TooManyWords(
+                event, arguments, argumentText, argumentText.length + trimmedLength
+        )
         return ArgumentsResult.Success(items)
     }
 

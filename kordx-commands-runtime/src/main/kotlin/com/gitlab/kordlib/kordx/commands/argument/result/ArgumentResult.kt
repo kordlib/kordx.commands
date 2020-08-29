@@ -9,17 +9,18 @@ import com.gitlab.kordlib.kordx.commands.argument.Argument
  */
 sealed class ArgumentResult<out T> {
     /**
-     * A successful parsing, producing an [item] and the amount of [wordsTaken] to parse said item.
+     * A successful parsing, producing an [item] and the [new index][newIndex] after parsing the item.
      */
-    data class Success<T>(val item: T, val wordsTaken: Int) : ArgumentResult<T>() {
+    data class Success<T>(val item: T, val newIndex: Int) : ArgumentResult<T>() {
         companion object
     }
 
     /**
-     * A failed parsing, the [Argument] couldn't turn the given words into an item [T], producing a [reason] for failure
-     * and a specific [atWord] indication at which of the given words the [Argument] failed parsing.
+     * A failed parsing, the [Argument] couldn't turn the given string into an item [T],
+     * producing a [reason] for failure and a [atChar] indicating
+     * at which char of the given string the [Argument] failed parsing.
      */
-    data class Failure<T>(val reason: String, val atWord: Int) : ArgumentResult<T>() {
+    data class Failure<T>(val reason: String, val atChar: Int) : ArgumentResult<T>() {
         companion object
     }
 

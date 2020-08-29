@@ -14,13 +14,13 @@ class WhiteListTest {
     @ParameterizedTest
     @MethodSource("passingSources")
     fun `correctly accepts arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireItem(text)
+        argument.parse(text, 0, Unit).requireItem(text)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(listOf(text), 0, Unit).requireFailure()
+        argument.parse(text, 0, Unit).requireFailure()
     }
 
 

@@ -16,15 +16,15 @@ fun <CONTEXT> Argument<String, CONTEXT>.whitelist(
     override val example: String
         get() = whitelist.random()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
-        return this@whitelist.parse(words, fromIndex, context).filter {
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
+        return this@whitelist.parse(text, fromIndex, context).filter {
             when {
                 ignoreCase -> when {
                     whitelist.any { word -> word.equals(it, true) } -> FilterResult.Pass
-                    else -> FilterResult.Fail("expected one of $words (not case sensitive) but got $it")
+                    else -> FilterResult.Fail("expected one of $whitelist (not case sensitive) but got $it")
                 }
                 it in whitelist -> FilterResult.Pass
-                else -> FilterResult.Fail("expected one of $words (case sensitive) but got $it")
+                else -> FilterResult.Fail("expected one of $whitelist (case sensitive) but got $it")
             }
         }
     }

@@ -18,13 +18,13 @@ class LongArgumentTest {
     @ParameterizedTest
     @MethodSource("passingSources")
     fun `correctly parses arguments`(text: String, result: Long) = runBlockingTest {
-        argument.parse(text.split(" "), 0, Unit).requireItem(result)
+        argument.parse(text, 0, Unit).requireItem(result)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
     fun `correctly fails arguments`(text: String) = runBlockingTest {
-        argument.parse(text.split(" "), 0, Unit).requireFailure()
+        argument.parse(text, 0, Unit).requireFailure()
     }
 
     companion object {

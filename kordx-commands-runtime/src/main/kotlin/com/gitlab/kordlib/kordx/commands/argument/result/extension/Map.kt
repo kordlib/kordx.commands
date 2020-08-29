@@ -9,7 +9,7 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <T, R> ArgumentResult<T>.map(mapper: (T) -> R): ArgumentResult<R> = when (this) {
-    is ArgumentResult.Success -> ArgumentResult.Success(mapper(item), wordsTaken)
+    is ArgumentResult.Success -> ArgumentResult.Success(mapper(item), newIndex)
     is ArgumentResult.Failure -> this as ArgumentResult<R>
 }
 
@@ -21,7 +21,7 @@ inline fun <T, R> ArgumentResult<T>.map(mapper: (T) -> R): ArgumentResult<R> = w
 @Suppress("UNCHECKED_CAST")
 inline fun <T, R : Any> ArgumentResult<T>.tryMap(mapper: (T) -> MapResult<R>): ArgumentResult<R> = when (this) {
     is ArgumentResult.Success -> when (val result = mapper(item)) {
-        is MapResult.Pass -> ArgumentResult.Success(result.item, wordsTaken)
+        is MapResult.Pass -> ArgumentResult.Success(result.item, newIndex)
         is MapResult.Fail -> ArgumentResult.Failure(result.reason, 0)
     }
     is ArgumentResult.Failure -> this as ArgumentResult<R>

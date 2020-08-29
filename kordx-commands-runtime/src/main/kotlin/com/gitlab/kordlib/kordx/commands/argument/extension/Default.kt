@@ -13,8 +13,8 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.orElseSupply
 fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
         default: T
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(words, fromIndex, context).orElse(default)
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@withDefault.parse(text, fromIndex, context).orElse(default)
     }
 }
 
@@ -25,8 +25,9 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
 fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
         default: suspend CONTEXT.() -> T
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(words, fromIndex, context).orElseSupply { default(context) }
+
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@withDefault.parse(text, fromIndex, context).orElseSupply { default(context) }
     }
 }
 
@@ -39,8 +40,9 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
 fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(
         default: T
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(words, fromIndex, context).orDefault(default)
+
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@withDefault.parse(text, fromIndex, context).orDefault(default)
     }
 }
 
@@ -53,7 +55,8 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(
 fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(
         fallback: suspend CONTEXT.() -> T
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(words, fromIndex, context).orElseSupply { fallback(context) }
+
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@withDefault.parse(text, fromIndex, context).orElseSupply { fallback(context) }
     }
 }

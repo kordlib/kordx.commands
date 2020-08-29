@@ -54,6 +54,7 @@ fun Message.mockNoGuild() {
     coEvery { getGuildOrNull() } returns null
 }
 
+@Suppress("UNCHECKED_CAST")
 fun mockKord() = mockk<Kord> {
     every { selfId } answers object: Answer<Any> {
         override fun answer(call: Call): Any = mentionId.longValue

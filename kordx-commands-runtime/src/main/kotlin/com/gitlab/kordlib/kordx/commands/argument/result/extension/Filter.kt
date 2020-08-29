@@ -51,8 +51,8 @@ fun <T : Any> ArgumentResult<T?>.filterNotNull(
         failMessage: String
 ): ArgumentResult<T> = when (this) {
     is ArgumentResult.Success -> when (item) {
-        null -> ArgumentResult.Failure(failMessage, wordsTaken)
-        else -> ArgumentResult.Success(item, wordsTaken)
+        null -> ArgumentResult.Failure(failMessage, newIndex)
+        else -> ArgumentResult.Success(item, newIndex)
     }
     is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
@@ -67,8 +67,8 @@ fun <T : Any> ArgumentResult<T?>.filterNotNull(
 @Suppress("UNCHECKED_CAST")
 inline fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: (T?) -> String): ArgumentResult<T> = when (this) {
     is ArgumentResult.Success -> when (item) {
-        null -> ArgumentResult.Failure(failMessage(item), wordsTaken)
-        else -> ArgumentResult.Success(item, wordsTaken)
+        null -> ArgumentResult.Failure(failMessage(item), newIndex)
+        else -> ArgumentResult.Success(item, newIndex)
     }
     is ArgumentResult.Failure -> this as ArgumentResult<T>
 }

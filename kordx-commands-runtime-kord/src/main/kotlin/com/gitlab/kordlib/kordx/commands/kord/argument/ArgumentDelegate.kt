@@ -26,8 +26,8 @@ private class DelegateArgument<T>(
         private val delegate: ArgumentDelegate<T>
 ) : Argument<T, MessageCreateEvent> by argument {
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: MessageCreateEvent): ArgumentResult<T> {
-       return argument.parse(words, fromIndex, context).switchOnFail { delegate(KordEvent(context)) }
+    override suspend fun parse(text: String, fromIndex: Int, context: MessageCreateEvent): ArgumentResult<T> {
+       return argument.parse(text, fromIndex, context).switchOnFail { delegate(KordEvent(context)) }
     }
 
 }

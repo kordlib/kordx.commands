@@ -1,8 +1,8 @@
 package com.gitlab.kordlib.kordx.commands.argument.primitive
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
 private const val INT_EXAMPLE_MIN_VALUE = -100
@@ -15,7 +15,7 @@ internal class InternalIntArgument(override val name: String = "Number") : Singl
     override suspend fun parse(
             word: String,
             context: Any?
-    ): ArgumentResult<Int> = when (val number = word.toIntOrNull()) {
+    ): WordResult<Int> = when (val number = word.toIntOrNull()) {
         null -> failure("Expected a whole number.")
         else -> success(number)
     }

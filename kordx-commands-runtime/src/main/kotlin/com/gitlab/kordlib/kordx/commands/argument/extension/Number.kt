@@ -23,8 +23,8 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.inRange(
             else -> Random.nextLong(range.start.toLong(), range.endInclusive.toLong())
         }.toString()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@inRange.parse(words, fromIndex, context).filter {
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@inRange.parse(text, fromIndex, context).filter {
             if (it in range) FilterResult.Pass
             else FilterResult.Fail("expected number in range of [${range.start}..${range.endInclusive}]")
         }
@@ -131,7 +131,7 @@ private inline fun <T, CONTEXT> Argument<T, CONTEXT>.filterWithExample(
     override val example: String
         get() = example()
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@filterWithExample.parse(words, fromIndex, context).filter(filter)
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
+        return this@filterWithExample.parse(text, fromIndex, context).filter(filter)
     }
 }

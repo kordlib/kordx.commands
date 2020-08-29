@@ -6,6 +6,7 @@ import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
+import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 
@@ -15,7 +16,7 @@ internal class InternalMemberArgument(
     override val example: String
         get() = "@User"
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): ArgumentResult<Member> {
+    override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Member> {
         val guildId = context.getGuild()?.id ?: return failure("Can't get members outside of guilds.")
 
         val number = word.toLongOrNull()

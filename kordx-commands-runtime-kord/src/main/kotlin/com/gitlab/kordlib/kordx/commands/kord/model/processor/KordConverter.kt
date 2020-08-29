@@ -10,7 +10,6 @@ import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandEvent
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.*
-import com.gitlab.kordlib.core.Kord
 
 /**
  * [ContextConverter] for [KordContext], using the [Message.content] to parse commands.
@@ -48,15 +47,14 @@ class KordErrorHandler(
 
     private suspend inline fun respondError(
             event: MessageCreateEvent,
-            command: Command<KordCommandEvent>,
-            words: List<String>,
-            wordPointerIndex: Int,
+            text: String,
+            characterIndex: Int,
             message: String
     ) {
-        val spacers = command.name.length + 1 + words.take(wordPointerIndex).joinToString(" ").length
+        val spacers = (characterIndex).coerceAtLeast(0)
         event.message.channel.createMessage("""
                     ```
-                    ${command.name} ${words.joinToString(" ")}
+                    $text
                     ${"-".repeat(spacers)}^ $message
                     ```
                 """.trimIndent())
@@ -93,24 +91,18 @@ class KordErrorHandler(
     }
 
     override suspend fun CommandProcessor.rejectArgument(
-            event: MessageCreateEvent,
-            command: Command<KordCommandEvent>,
-            words: List<String>, argument: Argument<*, MessageCreateEvent>,
-            failure: ArgumentResult.Failure<*>
-    ) {
-        respondError(event, command, words, failure.atWord, failure.reason)
+            rejection: ErrorHandler.RejectedArgument<MessageCreateEvent, MessageCreateEvent, KordCommandEvent>
+    ) = with(rejection) {
+        respondError(event, eventText, atChar, message)
     }
 
     override suspend fun CommandProcessor.tooManyWords(
-            event: MessageCreateEvent,
-            command: Command<KordCommandEvent>,
-            result: ArgumentsResult.TooManyWords<MessageCreateEvent>
-    ) {
+            rejection: ErrorHandler.TooManyWords<MessageCreateEvent, KordCommandEvent>
+    ) = with(rejection) {
         respondError(
                 event,
-                command,
-                result.words,
-                result.wordsTaken,
+                eventText,
+                eventText.length + 1, //+1 since we're expecting stuff after the text
                 "Too many arguments, reached end of command parsing."
         )
     }

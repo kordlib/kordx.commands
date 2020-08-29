@@ -36,16 +36,16 @@ private class RepeatArg<T, CONTEXT>(
     override val example: String
         get() = "${argument.example} repeated"
 
-    override suspend fun parse(words: List<String>, fromIndex: Int, context: CONTEXT): ArgumentResult<List<T>> {
+    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<List<T>> {
         var index = fromIndex
         val results = mutableListOf<T>()
         var repeats = 0
-        loop@while (index < words.size && repeats < maxRepeats) {
-            when(val result = argument.parse(words, index, context)) {
+        loop@while (index < text.length && repeats < maxRepeats) {
+            when(val result = argument.parse(text, index, context)) {
                 is ArgumentResult.Failure -> break@loop
                 is ArgumentResult.Success -> {
                     results += result.item
-                    index += result.wordsTaken
+                    index = result.newIndex
                     repeats += 1
                 }
             }
