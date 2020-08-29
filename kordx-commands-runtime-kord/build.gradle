@@ -3,7 +3,7 @@ dependencies {
 
     api project(':kordx-commands-runtime')
 
-    api("com.gitlab.kordlib.kord:kord-core:0.5.+") {
+    api("com.gitlab.kordlib.kord:kord-core:0.6.+") {
         version {
             prefer("latest.release")
         }
