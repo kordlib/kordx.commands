@@ -9,9 +9,6 @@ internal class InternalWordsArgument(
         override val name: String = "Words"
 ) : VariableLengthArgument<List<String>, Any?>() {
 
-    override val example: String
-        get() = "any combination of words"
-
     override suspend fun parse(
             words: List<String>,
             context: Any?

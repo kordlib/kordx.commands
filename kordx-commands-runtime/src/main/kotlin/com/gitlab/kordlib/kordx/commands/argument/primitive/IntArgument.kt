@@ -5,13 +5,7 @@ import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
-private const val INT_EXAMPLE_MIN_VALUE = -100
-private const val INT_EXAMPLE_MAX_VALUE = 100
-
 internal class InternalIntArgument(override val name: String = "Number") : SingleWordArgument<Int, Any?>() {
-    override val example: String
-        get() = Random.nextInt(INT_EXAMPLE_MIN_VALUE, INT_EXAMPLE_MAX_VALUE).toString()
-
     override suspend fun parse(
             word: String,
             context: Any?

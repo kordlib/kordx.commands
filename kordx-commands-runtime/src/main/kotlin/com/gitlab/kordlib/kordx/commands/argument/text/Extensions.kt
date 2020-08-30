@@ -13,9 +13,6 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.filter
 fun <CONTEXT> Argument<String, CONTEXT>.whitelist(
         vararg whitelist: String, ignoreCase: Boolean = true
 ): Argument<String, CONTEXT> = object : Argument<String, CONTEXT> by this {
-    override val example: String
-        get() = whitelist.random()
-
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
         return this@whitelist.parse(text, fromIndex, context).filter {
             when {

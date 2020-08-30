@@ -14,9 +14,6 @@ internal class InternalRoleArgument(
         override val name: String = "Role"
 ) : SingleWordArgument<Role, MessageCreateEvent>() {
 
-    override val example: String
-        get() = "@Role"
-
     override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Role> {
         val guildId = context.message.getGuildOrNull()?.id ?: return failure("Can't get role outside of guilds.")
         val number = word.toLongOrNull()

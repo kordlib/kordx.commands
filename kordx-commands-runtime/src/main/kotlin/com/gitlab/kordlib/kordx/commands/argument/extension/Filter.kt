@@ -25,9 +25,6 @@ inline fun <reified T, CONTEXT> Argument<*, CONTEXT>.filterIsInstance(
         failMessage: String
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> {
 
-    override val example: String
-        get() = this@filterIsInstance.example
-
     override val name: String
         get() = this@filterIsInstance.name
 

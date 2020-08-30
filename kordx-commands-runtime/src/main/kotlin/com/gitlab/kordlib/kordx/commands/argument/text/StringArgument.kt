@@ -7,9 +7,6 @@ import com.gitlab.kordlib.kordx.commands.argument.state.*
 
 internal class InternalStringArgument(override val name: String = "Text") : StateArgument<String, Any?>() {
 
-    override val example: String
-        get() = "some words"
-
     override suspend fun ParseState.parse(context: Any?): ArgumentResult<String> {
         if (ended) return unexpectedEnd()
         consumeAll()

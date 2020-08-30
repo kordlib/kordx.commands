@@ -28,9 +28,6 @@ infix fun <A, B, CONTEXT> Argument<A, CONTEXT>.or(
  * Either the [Either.left] or [Either.right] will be emitted on success.
  */
 fun <T, CONTEXT> Argument<Either<T, T>, CONTEXT>.flatten(): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> {
-    override val example: String
-        get() = this@flatten.example
-
     override val name: String
         get() = this@flatten.name
 
@@ -100,8 +97,6 @@ private class EitherArgument<A, B, CONTEXT>(
         private val right: Argument<B, CONTEXT>,
         override val name: String = "${left.name} or ${right.name}"
 ) : Argument<Either<A, B>, CONTEXT> {
-    override val example: String
-        get() = "$left or $right"
 
     @Suppress("RemoveExplicitTypeArguments")
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<Either<A, B>> {

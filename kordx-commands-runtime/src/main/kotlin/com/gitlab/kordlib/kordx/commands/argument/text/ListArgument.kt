@@ -9,9 +9,6 @@ internal class InternalListArgument(
 ) : StateArgument<List<String>, Any?>() {
     override val name: String = "Separated $separator text"
 
-    override val example: String
-        get() = "words $separator separated $separator by $separator"
-
     @OptIn(ExperimentalStdlibApi::class)
     override suspend fun ParseState.parse(context: Any?): ArgumentResult<List<String>> {
         if (ended) return unexpectedEnd()

@@ -13,8 +13,6 @@ private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 internal class InternalMemberArgument(
         override val name: String = "User"
 ) : SingleWordArgument<Member, MessageCreateEvent>() {
-    override val example: String
-        get() = "@User"
 
     override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Member> {
         val guildId = context.getGuild()?.id ?: return failure("Can't get members outside of guilds.")

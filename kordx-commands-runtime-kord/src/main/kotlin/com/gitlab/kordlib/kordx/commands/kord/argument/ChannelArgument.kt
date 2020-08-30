@@ -18,9 +18,6 @@ internal class InternalChannelArgument(
         override val name: String = "Channel"
 ) : SingleWordArgument<Channel, MessageCreateEvent>() {
 
-    override val example: String
-        get() = "#Channel"
-
     override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Channel> {
         val number = word.toLongOrNull()
         val snowflake = when {

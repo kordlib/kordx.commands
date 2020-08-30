@@ -23,11 +23,6 @@ interface Argument<out T, in CONTEXT> {
     val name: String
 
     /**
-     * An example of a valid set of words
-     */
-    val example: String
-
-    /**
      * Parses the given [text], reading the remaining chars starting from [fromIndex].
      * Returns a [ArgumentResult] which represents either a failure or success in parsing a certain amount of words.
      */

@@ -33,9 +33,6 @@ private class RepeatArg<T, CONTEXT>(
         require(minRepeats < maxRepeats) { "minRepeats ($minRepeats) needs to be less than maxRepeats ($maxRepeats)" }
     }
 
-    override val example: String
-        get() = "${argument.example} repeated"
-
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<List<T>> {
         var index = fromIndex
         val results = mutableListOf<T>()

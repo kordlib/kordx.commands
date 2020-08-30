@@ -8,9 +8,6 @@ import com.gitlab.kordlib.kordx.commands.argument.state.*
 
 internal class InternalWordArgument(override val name: String = "Word") : SingleWordArgument<String, Any?>() {
 
-    override val example: String
-        get() = listOf("epeolatry", "functionalism", "koan").random()
-
     override suspend fun parse(word: String, context: Any?): WordResult<String> = success(word)
 }
 

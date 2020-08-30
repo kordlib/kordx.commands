@@ -6,12 +6,7 @@ import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
-private const val LONG_EXAMPLE_MIN_VALUE = -100L
-private const val LONG_EXAMPLE_MAX_VALUE = 100L
-
 internal class InternalLongArgument(override val name: String = "Number") : SingleWordArgument<Long, Any?>() {
-    override val example: String
-        get() = Random.nextLong(LONG_EXAMPLE_MIN_VALUE, LONG_EXAMPLE_MAX_VALUE).toString()
 
     override suspend fun parse(
             word: String,

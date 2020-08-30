@@ -16,13 +16,6 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.inRange(
         range: ClosedRange<T>
 ): Argument<T, CONTEXT> where T : Number, T : Comparable<T> = object : Argument<T, CONTEXT> by this {
 
-    @Suppress("IMPLICIT_CAST_TO_ANY")
-    override val example: String
-        get() = when (range.start) {
-            is Float, is Double -> Random.nextDouble(range.start.toDouble(), range.endInclusive.toDouble())
-            else -> Random.nextLong(range.start.toLong(), range.endInclusive.toLong())
-        }.toString()
-
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
         return this@inRange.parse(text, fromIndex, context).filter {
             if (it in range) FilterResult.Pass
@@ -57,9 +50,7 @@ fun <CONTEXT> Argument<Long, CONTEXT>.strictPositive(): Argument<Long, CONTEXT> 
  * might thus return invalid example values.
  */
 @JvmName("longNegative")
-fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filterWithExample(
-        { Random.nextLong(Long.MIN_VALUE, 0).toString() }
-) {
+fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filter {
     if (it <= 0) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Long.MIN_VALUE}..0]")
 }
@@ -71,9 +62,7 @@ fun <CONTEXT> Argument<Long, CONTEXT>.negative(): Argument<Long, CONTEXT> = filt
  * might thus return invalid example values.
  */
 @JvmName("longStrictNegative")
-fun <CONTEXT> Argument<Long, CONTEXT>.strictNegative(): Argument<Long, CONTEXT> = filterWithExample(
-        { Random.nextLong(Long.MIN_VALUE, -1).toString() }
-) {
+fun <CONTEXT> Argument<Long, CONTEXT>.strictNegative(): Argument<Long, CONTEXT> = filter {
     if (it <= -1) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Long.MIN_VALUE}..-1]")
 }
@@ -103,9 +92,7 @@ fun <CONTEXT> Argument<Int, CONTEXT>.strictPositive(): Argument<Int, CONTEXT> = 
  * might thus return invalid example values.
  */
 @JvmName("intNegative")
-fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filterWithExample(
-        { Random.nextInt(Int.MIN_VALUE, 0).toString() }
-) {
+fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filter {
     if (it <= 0) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Int.MIN_VALUE}..0]")
 }
@@ -117,21 +104,7 @@ fun <CONTEXT> Argument<Int, CONTEXT>.negative(): Argument<Int, CONTEXT> = filter
  * might thus return invalid example values.
  */
 @JvmName("LongStrictNegative")
-fun <CONTEXT> Argument<Int, CONTEXT>.strictNegative(): Argument<Int, CONTEXT> = filterWithExample(
-        { Random.nextInt(Int.MIN_VALUE, -1).toString() }
-) {
+fun <CONTEXT> Argument<Int, CONTEXT>.strictNegative(): Argument<Int, CONTEXT> = filter {
     if (it <= -1) FilterResult.Pass
     else FilterResult.Fail("expected number in range of [${Int.MIN_VALUE}..-1]")
-}
-
-private inline fun <T, CONTEXT> Argument<T, CONTEXT>.filterWithExample(
-        crossinline example: () -> String,
-        crossinline filter: (T) -> FilterResult
-) = object : Argument<T, CONTEXT> by this {
-    override val example: String
-        get() = example()
-
-    override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@filterWithExample.parse(text, fromIndex, context).filter(filter)
-    }
 }

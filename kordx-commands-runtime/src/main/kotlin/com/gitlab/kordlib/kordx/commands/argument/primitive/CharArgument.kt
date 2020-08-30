@@ -6,8 +6,6 @@ import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 
 internal class InternalCharArgument(override val name: String = "Character") : SingleWordArgument<Char, Any?>() {
-    override val example: String
-        get() = ('a'..'Z').random().toString()
 
     override suspend fun parse(word: String, context: Any?): WordResult<Char> = when (word.length) {
         1 -> success(word[0])

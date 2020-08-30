@@ -19,9 +19,6 @@ internal class InternalBooleanArgument(
         require(" " !in falseValue) { "falseValue should not contain spaces but was '$falseValue'" }
     }
 
-    override val example: String
-        get() = Random.nextBoolean().toString()
-
     override suspend fun parse(word: String, context: Any?): WordResult<Boolean> = when {
         word.equals(trueValue, ignoreCase) -> success(true)
         word.equals(falseValue, ignoreCase) -> success(false)

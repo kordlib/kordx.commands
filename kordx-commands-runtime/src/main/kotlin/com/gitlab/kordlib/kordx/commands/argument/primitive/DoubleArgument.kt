@@ -6,13 +6,7 @@ import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 import kotlin.random.Random
 
-private const val DOUBLE_EXAMPLE_MIN_VALUE = -100.0
-private const val DOUBLE_EXAMPLE_MAX_VALUE = 100.0
-
 internal class InternalDoubleArgument(override val name: String = "Number") : SingleWordArgument<Double, Any?>() {
-
-    override val example: String
-        get() = Random.nextDouble(DOUBLE_EXAMPLE_MIN_VALUE, DOUBLE_EXAMPLE_MAX_VALUE).toString()
 
     override suspend fun parse(word: String, context: Any?): WordResult<Double> =
             when (val number = word.toDoubleOrNull()) {
