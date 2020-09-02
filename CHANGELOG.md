@@ -1,3 +1,9 @@
+# 0.3.1
+
+## Fixes
+
+* Fixed an issue where codeblocks would not consume then end block tags.
+
 # 0.3.0
 
 ## Changes

@@ -42,6 +42,10 @@ internal object InternalCodeBlockArgument : StateArgument<CodeBlock, Any?>() {
 
         var content = flush { consumeUntil { remaining.startsWith(CODE_BLOCK_QUOTES) } }
 
+        if(!drop(CODE_BLOCK_QUOTES)) {
+            return expected(CODE_BLOCK_QUOTES)
+        }
+
         val language = when {
             maybeLanguage.contains(" ") -> {
                 content = maybeLanguage + (if (newline) "\n" else "") + content

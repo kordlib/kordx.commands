@@ -9,6 +9,32 @@ import org.junit.jupiter.api.Test
 internal class CodeBlockArgumentTest {
 
     @Test
+    fun `argument parses properly formatted code block entirely`(): Unit = runBlocking {
+        val argument = CodeBlockArgument
+
+        val language = "kotlin"
+        val content = """
+            println("people always ask:")
+            println("Where is the next release?")
+            println("But they never ask:")
+            println("How is the next release?")
+        """
+
+        val input = """
+            ```$language
+            ${content.trim()}
+            ```
+        """.trimIndent()
+
+        val result = argument.parse(input, 0, Unit)
+
+        assertTrue(result is ArgumentResult.Success) { "expected success but was $result" }
+        result as ArgumentResult.Success
+
+        assertEquals(input.length, result.newIndex)
+    }
+
+    @Test
     fun `argument parses properly formatted code block`(): Unit = runBlocking {
         val argument = CodeBlockArgument
 
