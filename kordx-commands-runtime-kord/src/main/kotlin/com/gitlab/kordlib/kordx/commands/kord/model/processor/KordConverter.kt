@@ -2,14 +2,14 @@ package com.gitlab.kordlib.kordx.commands.kord.model.processor
 
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
-import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.text.StringArgument
 import com.gitlab.kordlib.kordx.commands.kord.model.KordEvent
 import com.gitlab.kordlib.kordx.commands.kord.model.context.KordCommandEvent
-import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
-import com.gitlab.kordlib.kordx.commands.model.processor.*
+import com.gitlab.kordlib.kordx.commands.model.processor.CommandEventData
+import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
+import com.gitlab.kordlib.kordx.commands.model.processor.ContextConverter
+import com.gitlab.kordlib.kordx.commands.model.processor.ErrorHandler
 
 /**
  * [ContextConverter] for [KordContext], using the [Message.content] to parse commands.
@@ -45,19 +45,26 @@ class KordErrorHandler(
         private val suggester: CommandSuggester = CommandSuggester.Levenshtein
 ) : ErrorHandler<MessageCreateEvent, MessageCreateEvent, KordCommandEvent> {
 
+    private val backtick = "`"
+    private val backtickEscape = "\u200E`"
+
     private suspend inline fun respondError(
             event: MessageCreateEvent,
             text: String,
             characterIndex: Int,
             message: String
     ) {
-        val spacers = (characterIndex).coerceAtLeast(0)
+        val parsedText = text.take(characterIndex)
+        val lastNewlineIndex = parsedText.lastIndexOf("\n")
+        val spacers = if (lastNewlineIndex > 0) characterIndex - lastNewlineIndex - 1 //\n itself
+        else characterIndex
+
         event.message.channel.createMessage("""
-                    ```
-                    $text
-                    ${"-".repeat(spacers)}^ $message
-                    ```
-                """.trimIndent())
+            <|>```
+            <|>${text.replace(backtick, backtickEscape)}
+            <|>${"-".repeat(spacers)}^ ${message.replace(backtick, backtickEscape)}
+            <|>```
+            """.trimMargin("<|>").trim())
     }
 
     override suspend fun CommandProcessor.emptyInvocation(event: MessageCreateEvent) { /*ignored*/

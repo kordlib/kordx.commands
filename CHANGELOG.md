@@ -3,6 +3,8 @@
 ## Fixes
 
 * Fixed an issue where codeblocks would not consume then end block tags.
+* Fixed Kord's Discord error messages breaking on multi line input.
+* Fixed Kord's Discord error messages breaking on code block input.
 
 # 0.3.0
 
