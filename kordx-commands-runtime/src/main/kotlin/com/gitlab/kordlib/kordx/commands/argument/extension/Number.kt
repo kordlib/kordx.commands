@@ -17,7 +17,7 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.inRange(
 ): Argument<T, CONTEXT> where T : Number, T : Comparable<T> = object : Argument<T, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@inRange.parse(text, fromIndex, context).filter {
+        return this@inRange.parse(text, fromIndex, context).filter(fromIndex) {
             if (it in range) FilterResult.Pass
             else FilterResult.Fail("expected number in range of [${range.start}..${range.endInclusive}]")
         }

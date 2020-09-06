@@ -1,3 +1,10 @@
+# 0.3.2
+
+## Fixes
+
+* Fixed an issue where mapping failed results would reset the char index to zero, resulting in a `Too Many Arguments`
+error
+
 # 0.3.1
 
 ## Fixes

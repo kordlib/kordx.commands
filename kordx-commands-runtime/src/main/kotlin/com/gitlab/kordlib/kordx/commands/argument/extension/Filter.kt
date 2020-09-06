@@ -13,7 +13,7 @@ fun <T, CONTEXT> Argument<T, CONTEXT>.filter(
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@filter.parse(text, fromIndex, context).filter { filter(context, it) }
+        return this@filter.parse(text, fromIndex, context).filter(fromIndex) { filter(context, it) }
     }
 }
 
@@ -29,7 +29,7 @@ inline fun <reified T, CONTEXT> Argument<*, CONTEXT>.filterIsInstance(
         get() = this@filterIsInstance.name
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@filterIsInstance.parse(text, fromIndex, context).filterIsInstance(failMessage)
+        return this@filterIsInstance.parse(text, fromIndex, context).filterIsInstance(fromIndex, failMessage)
     }
 }
 

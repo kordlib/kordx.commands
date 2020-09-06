@@ -14,7 +14,7 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
         default: T
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(text, fromIndex, context).orElse(default)
+        return this@withDefault.parse(text, fromIndex, context).orElse(fromIndex, default)
     }
 }
 
@@ -27,7 +27,7 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.withDefault(
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(text, fromIndex, context).orElseSupply { default(context) }
+        return this@withDefault.parse(text, fromIndex, context).orElseSupply(fromIndex) { default(context) }
     }
 }
 
@@ -57,6 +57,6 @@ fun <T : Any, CONTEXT> Argument<T?, CONTEXT>.withDefault(
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this as Argument<T, CONTEXT> {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@withDefault.parse(text, fromIndex, context).orElseSupply { fallback(context) }
+        return this@withDefault.parse(text, fromIndex, context).orElseSupply(fromIndex) { fallback(context) }
     }
 }

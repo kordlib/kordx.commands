@@ -12,7 +12,7 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.orElse
 fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(): Argument<T?, CONTEXT> = object : Argument<T?, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T?> {
-        return this@optional.parse(text, fromIndex, context).optional()
+        return this@optional.parse(text, fromIndex, context).optional(fromIndex)
     }
 
 }
@@ -25,7 +25,7 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@optional.parse(text, fromIndex, context).orElse(default)
+        return this@optional.parse(text, fromIndex, context).orElse(fromIndex, default)
     }
 }
 
@@ -37,6 +37,6 @@ fun <T : Any, CONTEXT> Argument<T, CONTEXT>.optional(
 ): Argument<T, CONTEXT> = object : Argument<T, CONTEXT> by this {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<T> {
-        return this@optional.parse(text, fromIndex, context).orElse(default(context))
+        return this@optional.parse(text, fromIndex, context).orElse(fromIndex, default(context))
     }
 }

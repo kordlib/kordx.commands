@@ -14,7 +14,7 @@ fun <CONTEXT> Argument<String, CONTEXT>.whitelist(
         vararg whitelist: String, ignoreCase: Boolean = true
 ): Argument<String, CONTEXT> = object : Argument<String, CONTEXT> by this {
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
-        return this@whitelist.parse(text, fromIndex, context).filter {
+        return this@whitelist.parse(text, fromIndex, context).filter(fromIndex) {
             when {
                 ignoreCase -> when {
                     whitelist.any { word -> word.equals(it, true) } -> FilterResult.Pass

@@ -11,6 +11,11 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
  * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
  */
 @Suppress("UNCHECKED_CAST")
+@Deprecated(
+        "The behavior of this function is incorrect, use the variant with `failIndex` instead",
+        ReplaceWith("filterIsInstance(failIndex, failMessage)"),
+        level = DeprecationLevel.WARNING,
+)
 inline fun <reified T> ArgumentResult<*>.filterIsInstance(
         failMessage: String
 ): ArgumentResult<T> = when (val result = this) {
@@ -30,11 +35,59 @@ inline fun <reified T> ArgumentResult<*>.filterIsInstance(
  */
 @Suppress("UNCHECKED_CAST")
 inline fun <reified T> ArgumentResult<*>.filterIsInstance(
+        failIndex: Int,
+        failMessage: String
+): ArgumentResult<T> = when (val result = this) {
+    is ArgumentResult.Success -> when (result.item) {
+        is T -> result as ArgumentResult<T>
+        else -> ArgumentResult.Failure(failMessage, failIndex)
+    }
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
+}
+
+/**
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * or a [ArgumentResult.Failure] otherwise.
+ *
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
+ */
+@Suppress("UNCHECKED_CAST")
+@Deprecated(
+        "The behavior of this function is incorrect, use the variant with `failIndex` instead",
+        ReplaceWith("filterIsInstance(failIndex, failMessage)"),
+        level = DeprecationLevel.WARNING,
+)
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(
         failMessage: () -> String
 ): ArgumentResult<T> = when (val result = this) {
     is ArgumentResult.Success -> when (result.item) {
         is T -> result as ArgumentResult<T>
         else -> ArgumentResult.Failure(failMessage(), 0)
+    }
+    is ArgumentResult.Failure -> this as ArgumentResult<T>
+}
+
+/**
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the [ArgumentResult.Success.item] is [T],
+ * or a [ArgumentResult.Failure] otherwise.
+ *
+ * @param [failMessage] the message to supply when the [ArgumentResult.Success.item] is not [T].
+ */
+@Suppress("UNCHECKED_CAST")
+@Deprecated(
+        "The behavior of this function is incorrect, use the variant with `failIndex` instead",
+        ReplaceWith("filterIsInstance(failIndex, failMessage)"),
+        level = DeprecationLevel.WARNING,
+)
+inline fun <reified T> ArgumentResult<*>.filterIsInstance(
+        failIndex: Int,
+        failMessage: () -> String
+): ArgumentResult<T> = when (val result = this) {
+    is ArgumentResult.Success -> when (result.item) {
+        is T -> result as ArgumentResult<T>
+        else -> ArgumentResult.Failure(failMessage(), failIndex)
     }
     is ArgumentResult.Failure -> this as ArgumentResult<T>
 }
@@ -79,10 +132,29 @@ inline fun <T : Any> ArgumentResult<T?>.filterNotNull(failMessage: (T?) -> Strin
  * or a [ArgumentResult.Failure] otherwise.
  */
 @Suppress("UNCHECKED_CAST")
+@Deprecated(
+        "The behavior of this function is incorrect, use the variant with `failIndex` instead",
+        ReplaceWith("filter(failIndex, filter)"),
+        level = DeprecationLevel.WARNING,
+)
 inline fun <T> ArgumentResult<T>.filter(filter: (T) -> FilterResult): ArgumentResult<T> = when (this) {
     is ArgumentResult.Success -> when (val result = filter(item)) {
         FilterResult.Pass -> this
         is FilterResult.Fail -> ArgumentResult.Failure(result.reason, 0)
+    }
+    is ArgumentResult.Failure -> this
+}
+
+/**
+ * Returns a [ArgumentResult.Success] if
+ * this result is a [ArgumentResult.Success] *and* the result of [filter] is a [FilterResult.Pass],
+ * or a [ArgumentResult.Failure] otherwise.
+ */
+@Suppress("UNCHECKED_CAST")
+inline fun <T> ArgumentResult<T>.filter(failIndex: Int, filter: (T) -> FilterResult): ArgumentResult<T> = when (this) {
+    is ArgumentResult.Success -> when (val result = filter(item)) {
+        FilterResult.Pass -> this
+        is FilterResult.Fail -> ArgumentResult.Failure(result.reason, failIndex)
     }
     is ArgumentResult.Failure -> this
 }

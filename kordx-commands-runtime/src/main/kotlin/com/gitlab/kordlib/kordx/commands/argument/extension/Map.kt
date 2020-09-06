@@ -29,6 +29,6 @@ fun <T, R : Any, CONTEXT> Argument<T, CONTEXT>.tryMap(
 ): Argument<R, CONTEXT> = object : Argument<R, CONTEXT> by this as Argument<R, CONTEXT> {
 
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<R> {
-        return this@tryMap.parse(text, fromIndex, context).tryMap { mapper.invoke(context, it) }
+        return this@tryMap.parse(text, fromIndex, context).tryMap(fromIndex) { mapper.invoke(context, it) }
     }
 }
