@@ -13,15 +13,16 @@ import com.gitlab.kordlib.kordx.commands.argument.result.extension.filter
 fun <CONTEXT> Argument<String, CONTEXT>.whitelist(
         vararg whitelist: String, ignoreCase: Boolean = true
 ): Argument<String, CONTEXT> = object : Argument<String, CONTEXT> by this {
+    private val options = whitelist.contentToString()
     override suspend fun parse(text: String, fromIndex: Int, context: CONTEXT): ArgumentResult<String> {
         return this@whitelist.parse(text, fromIndex, context).filter(fromIndex) {
             when {
                 ignoreCase -> when {
                     whitelist.any { word -> word.equals(it, true) } -> FilterResult.Pass
-                    else -> FilterResult.Fail("expected one of $whitelist (not case sensitive) but got $it")
+                    else -> FilterResult.Fail("expected one of $options (not case sensitive) but got $it")
                 }
                 it in whitelist -> FilterResult.Pass
-                else -> FilterResult.Fail("expected one of $whitelist (case sensitive) but got $it")
+                else -> FilterResult.Fail("expected one of $options (case sensitive) but got $it")
             }
         }
     }
