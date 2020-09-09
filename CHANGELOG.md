@@ -1,3 +1,9 @@
+# 0.3.3
+
+## Fixes
+
+* Whitelisted String arguments now properly display their accepted values in error messages.
+
 # 0.3.2
 
 ## Fixes
