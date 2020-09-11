@@ -62,25 +62,27 @@ data class ModuleBuilder<S, A, C : CommandEvent>(
     }
 
     /**
-     * Adds a new command under the given [name] configured by the [builder] under the default [context].
+     * Adds a new command under the given [name], [aliases] configured by the [builder] under the default [context].
      */
     inline fun command(
             name: String,
+            vararg aliases: String,
             builder: CommandBuilder<S, A, C>.() -> Unit
-    ) {
-        val command = CommandBuilder(name, this.name, context).apply(builder)
-        add(command)
-    }
+    ): Unit = command(name, context, *aliases, builder = builder)
 
     /**
-     * Adds a new command under the given [name] configured by the [builder] under a new [context].
+     * Adds a new command under the given [name], [aliases] configured by the [builder] under a new [context].
      */
     inline fun <NEWS, NEWA, NEWC : CommandEvent> command(
             name: String,
             context: ProcessorContext<NEWS, NEWA, NEWC>,
+            vararg aliases: String,
             builder: CommandBuilder<NEWS, NEWA, NEWC>.() -> Unit
     ) {
         val command = CommandBuilder(name, this.name, context).apply(builder)
+                .apply {
+                    alias(*aliases)
+                }
         add(command)
     }
 

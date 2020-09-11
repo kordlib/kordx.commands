@@ -41,7 +41,7 @@ interface CommandSet {
 /**
  * Defines a [CommandSet] configured by the [builder].
  */
-fun <S, A, C: CommandEvent> commands(
+fun <S, A, C : CommandEvent> commands(
         context: ProcessorContext<S, A, C>,
         builder: ModuleBuilder<S, A, C>.() -> Unit
 ): CommandSet = object : CommandSet {
@@ -51,11 +51,12 @@ fun <S, A, C: CommandEvent> commands(
 }
 
 /**
-* Defines a [CommandSet] with a single command with the given [name] and configured by the [builder].
-*/
-fun <S, A, C: CommandEvent> command(
+ * Defines a [CommandSet] with a single command with the given [name], [aliases] and configured by the [builder].
+ */
+fun <S, A, C : CommandEvent> command(
         context: ProcessorContext<S, A, C>,
         name: String,
+        vararg aliases: String,
         builder: CommandBuilder<S, A, C>.() -> Unit
-): CommandSet = commands(context) { command(name, builder) }
+): CommandSet = commands(context) { command(name, *aliases, builder = builder) }
 

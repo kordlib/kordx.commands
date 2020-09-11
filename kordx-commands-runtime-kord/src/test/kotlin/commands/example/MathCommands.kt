@@ -14,9 +14,9 @@ import com.gitlab.kordlib.kordx.commands.model.command.invoke
 @ModuleName("math")
 fun simpleMath() = commands {
 
-    command("add") {
+    command("add", "+") {
 
-        alias("+", "combine")
+        alias("combine")
 
         invoke(DoubleArgument, DoubleArgument) { a, b ->
             respond("${a + b}")
