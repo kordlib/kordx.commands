@@ -5,9 +5,10 @@ import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandBuilder
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
 import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
+import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
 import com.gitlab.kordlib.kordx.commands.model.processor.BuildEnvironment
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
-import org.koin.core.Koin
+import com.gitlab.kordlib.kordx.commands.model.precondition.precondition as PreconditionCtr
 
 /**
  * Creates a [ModuleModifier] that applies a [configuration] for a [context] to a [ModuleBuilder].
@@ -33,7 +34,11 @@ data class ModuleBuilder<S, A, C : CommandEvent>(
         val name: String,
         val context: ProcessorContext<S, A, C>,
         val metadata: MutableMetadata = MutableMetadata(),
-        val commands: MutableMap<String, CommandBuilder<*, *, *>> = mutableMapOf()
+        val commands: MutableMap<String, CommandBuilder<*, *, *>> = mutableMapOf(),
+        private val preconditions: MutableMap<
+                ProcessorContext<*,*,*>,
+                MutableList<Precondition<CommandEvent>>
+                > = mutableMapOf()
 ) {
 
     /**
@@ -84,6 +89,17 @@ data class ModuleBuilder<S, A, C : CommandEvent>(
         add(command)
     }
 
+    /**
+     * Defines a [Precondition] for all commands in this module with a given [priority][Precondition.priority].
+     */
+    fun precondition(
+            priority: Long = 0,
+            precondition: suspend C.() -> Boolean
+    ) {
+        val list = preconditions.getOrPut(context) { mutableListOf() }
+        list.add(PreconditionCtr(context, priority, precondition) as Precondition<CommandEvent>)
+    }
+
 
     /**
      * Builds the modules, adding it to the [environment].
@@ -92,6 +108,11 @@ data class ModuleBuilder<S, A, C : CommandEvent>(
      */
     fun build(environment: BuildEnvironment) {
         val commands = commands.values
+                .onEach {
+                    val command = it as CommandBuilder<Any, Any, CommandEvent>
+                    val conditions = preconditions[command.context].orEmpty()
+                    command.preconditions.addAll(conditions)
+                }
                 .flatMap { it.build(environment) }
                 .map { it.name to it }
                 .toMap()

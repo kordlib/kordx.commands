@@ -2,6 +2,7 @@
 
 package commands.example
 
+import com.gitlab.kordlib.common.entity.Permission
 import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
 import com.gitlab.kordlib.kordx.commands.argument.extension.named
 import com.gitlab.kordlib.kordx.commands.argument.text.WordArgument
@@ -51,6 +52,13 @@ fun ignoreDisabledCommands() = precondition {
  * commands to enable/disable commands
  */
 fun toggleCommands() = module("command-control") {
+
+    precondition {
+        val member = this.author
+                .asMemberOrNull(guild?.id ?: return@precondition false) ?: return@precondition false
+
+        return@precondition member.getPermissions().contains(Permission.Administrator)
+    }
 
     command("disable") {
 

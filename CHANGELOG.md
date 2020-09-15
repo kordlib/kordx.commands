@@ -1,3 +1,9 @@
+# 0.4.0
+
+## Additions
+
+* Added preconditions to modules.
+
 # 0.3.3
 
 ## Fixes
