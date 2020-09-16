@@ -1,3 +1,9 @@
+# 0.3.4
+
+## Fixes
+
+* Fixed an issue where SingleWordArgument based classes could complete on blank or empty strings.
+
 # 0.3.3
 
 ## Fixes

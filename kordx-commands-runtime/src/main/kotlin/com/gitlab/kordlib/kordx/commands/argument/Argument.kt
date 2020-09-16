@@ -42,16 +42,21 @@ interface Argument<out T, in CONTEXT> {
 abstract class SingleWordArgument<T, CONTEXT> : StateArgument<T, CONTEXT>() {
 
     override suspend fun ParseState.parse(context: CONTEXT): ArgumentResult<T> {
+        if(ended) return unexpectedEnd()
+
         val cursorBefore = cursor
         val word = flush { consumeWord() }
+
+        if(word.isBlank()){
+            return ArgumentResult.Failure("Expected word.", cursor)
+        }
 
         val result = parse(word, context)
         require(result.wordsTaken <= 1) {
             "Single word arguments cannot take more than one word: $result"
         }
 
-        val argumentResult = result.toArgumentResult(cursorBefore, word)
-        return  argumentResult
+        return result.toArgumentResult(cursorBefore, word)
     }
 
     /**
