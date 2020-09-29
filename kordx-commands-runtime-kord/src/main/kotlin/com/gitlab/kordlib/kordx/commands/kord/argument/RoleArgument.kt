@@ -8,14 +8,14 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 
-private val mentionRegex = Regex("""^<#&\d+>$""")
+private val mentionRegex = Regex("""^<@&\d+>$""")
 
 internal class InternalRoleArgument(
         override val name: String = "Role"
 ) : SingleWordArgument<Role, MessageCreateEvent>() {
 
     override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Role> {
-        val guildId = context.message.getGuildOrNull()?.id ?: return failure("Can't get role outside of guilds.")
+        val guildId = context.guildId ?: return failure("Can't get role outside of guilds.")
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
