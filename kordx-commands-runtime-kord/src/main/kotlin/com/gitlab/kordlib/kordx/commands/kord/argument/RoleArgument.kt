@@ -15,7 +15,7 @@ internal class InternalRoleArgument(
 ) : SingleWordArgument<Role, MessageCreateEvent>() {
 
     override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Role> {
-        val guildId = context.message.getGuildOrNull()?.id ?: return failure("Can't get role outside of guilds.")
+        val guildId = context.guildId ?: return failure("Can't get role outside of guilds.")
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
