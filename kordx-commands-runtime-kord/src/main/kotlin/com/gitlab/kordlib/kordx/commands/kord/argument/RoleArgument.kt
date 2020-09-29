@@ -8,7 +8,7 @@ import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
 
-private val mentionRegex = Regex("""^<#&\d+>$""")
+private val mentionRegex = Regex("""^<@&\d+>$""")
 
 internal class InternalRoleArgument(
         override val name: String = "Role"
