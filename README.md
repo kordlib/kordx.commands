@@ -108,7 +108,7 @@ If you have a suggestion for more targets, you can create an issue (or go to our
 
 > This snippet assumes you're using kordx.commands.kord and the annotation processor. 
 >
-> For more information on how to set up a bot and all the features this library offers, check out the [wiki](https://gitlab.com/kordlib/kordx.commands/-/wikis/guides/Kord-Discord-bot).
+> For more information on how to set up a bot and all the features this library offers, check out the [wiki](https://github.com/kordlib/kordx.commands/wiki/Kord-Discord-bot).
 
 ```kotlin
 @file:Autowired
