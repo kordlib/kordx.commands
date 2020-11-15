@@ -113,8 +113,10 @@ If you have a suggestion for more targets, you can create an issue (or go to our
 ```kotlin
 @file:Autowired
 
-suspend fun main() = bot("token") {
-    configure()
+suspend fun main() {
+    bot("token", login = true) {
+        configure()
+    }
 }
 
 val prefix = prefix {
