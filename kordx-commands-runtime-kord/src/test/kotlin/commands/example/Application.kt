@@ -14,10 +14,42 @@ import kapt.kotlin.generated.configure
 import kotlinx.coroutines.Dispatchers
 
 /**
- * entry method, `configure` is generated on build.
+ * Entry method, `configure` is generated on build.
  */
-suspend fun main() = bot(buildKord()) {
-    configure()
+suspend fun main() {
+    Examples.way1()
+    // Examples.way2()
+}
+
+@Suppress("UNUSED_VARIABLE")
+object Examples {
+    /**
+     * Way 1: Usage with token and default settings of [com.gitlab.kordlib.core.builder.kord.KordBuilder].
+     */
+    suspend fun way1() {
+         // If login is passed as true, there is no need of manually invoking Kord.login()
+         // and it will suspend this line until the gateway until logged out.
+        val (kord, commandProcessor) = bot("token", login = false) {
+            configure()
+        }
+        // ...
+        kord.login()
+    }
+
+    /**
+     * Way 2: Create with a [Kord] instance.
+     */
+    suspend fun way2() {
+        val kord = buildKord()
+
+        // If login is passed as true, there is no need of manually invoking Kord.login()
+        // and it will suspend this line until the gateway until logged out.
+        val commandsProcessor = bot(kord, login = false) {
+            configure()
+        }
+        // ...
+        kord.login()
+    }
 }
 
 suspend fun buildKord() = Kord(System.getenv("token")) {

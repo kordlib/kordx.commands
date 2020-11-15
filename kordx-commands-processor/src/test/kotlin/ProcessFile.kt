@@ -52,7 +52,7 @@ val kordPrefix = prefix {
     kord { literal("+") }
 }
 
-suspend fun testReference() = bot("sample") {
+suspend fun testReference() = bot("sample", login = true) {
     configure()
 }
 

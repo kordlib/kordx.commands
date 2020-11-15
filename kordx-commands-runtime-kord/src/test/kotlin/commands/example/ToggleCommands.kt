@@ -13,11 +13,12 @@ import com.gitlab.kordlib.kordx.commands.model.command.invoke
 import  com.gitlab.kordlib.kordx.commands.kord.module.module
 import com.gitlab.kordlib.kordx.emoji.Emojis
 import org.koin.core.get
+import org.koin.dsl.module
 
 /**
  * register our CommandSwitch dependency
  */
-val commandSwitchDependencies = org.koin.dsl.module {
+val commandSwitchDependencies = module {
     single { CommandSwitch() }
 }
 
@@ -39,7 +40,7 @@ fun Command<*>.enable() = get<CommandSwitch>().set(this, true)
 val Command<*>.isEnabled get() = get<CommandSwitch>()[this]
 
 /**
- * Cancel commands that we've disabled with the [switch].
+ * Cancel commands that we've disabled with the [Command.disable].
  */
 fun ignoreDisabledCommands() = precondition {
     command.isEnabled.also {
