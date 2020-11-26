@@ -1,17 +1,24 @@
+@file:Suppress("NOTHING_TO_INLINE")
+@file:OptIn(KordUnsafe::class, KordExperimental::class)
+
 package com.gitlab.kordlib.kordx.commands.kord.model.prefix
 
+import com.gitlab.kordlib.common.annotation.KordExperimental
+import com.gitlab.kordlib.common.annotation.KordUnsafe
 import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.core.behavior.GuildBehavior
 import com.gitlab.kordlib.core.behavior.channel.MessageChannelBehavior
 import com.gitlab.kordlib.core.entity.Guild
 import com.gitlab.kordlib.core.entity.Member
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.entity.User
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixBuilder
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixRule
-import io.mockk.*
+import io.mockk.coEvery
+import io.mockk.every
+import io.mockk.mockk
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
@@ -19,6 +26,7 @@ import org.koin.dsl.koinApplication
 import org.koin.dsl.module
 
 val mentionId = Snowflake(1337L)
+val defaultGuildId = Snowflake(1338L)
 
 inline fun mockEvent(apply: MessageCreateEvent.() -> Unit = {}) = mockk<MessageCreateEvent> {
     apply()
@@ -27,12 +35,16 @@ inline fun mockEvent(apply: MessageCreateEvent.() -> Unit = {}) = mockk<MessageC
 inline fun MessageCreateEvent.mockMessage(apply: Message.() -> Unit = {}) {
     val mockMessage = mockk<Message> { apply() }
     every { message } returns mockMessage
-    every { guildId } returns null
 }
 
-inline fun Message.mockGuild(apply: GuildBehavior.() -> Unit = {}) {
-    val mockGuild = mockk<Guild> { apply() }
-    coEvery { getGuildOrNull() } returns mockGuild
+inline fun MessageCreateEvent.mockGuild(gId: Snowflake = defaultGuildId, apply: Guild.() -> Unit = {}) {
+    val mockGuild = mockk<Guild> {
+        every { id } returns gId
+        apply()
+    }
+
+    every { guildId } returns gId
+    every { kord.unsafe.guild(gId) } returns mockGuild
 }
 
 inline fun Message.mockChannel(apply: MessageChannelBehavior.() -> Unit = {}) {
@@ -45,20 +57,17 @@ inline fun Message.mockAuthor(apply: User.() -> Unit = {}) {
     every { author } returns mockUser
 }
 
-inline fun Message.mockMember(apply: Member.() -> Unit = {}) {
+inline fun Message.mockMember(guildId: Snowflake = defaultGuildId, apply: Member.() -> Unit = {}) {
     val mockMember = mockk<Member> { apply() }
-    coEvery { getAuthorAsMember() } returns mockMember
+    coEvery { author?.asMember(guildId) } returns mockMember
 }
 
-fun Message.mockNoGuild() {
-    coEvery { getGuildOrNull() } returns null
+fun MessageCreateEvent.mockNoGuild() {
+    every { guildId } returns null
 }
 
-@Suppress("UNCHECKED_CAST")
 fun mockKord() = mockk<Kord> {
-    every { selfId } answers object: Answer<Any> {
-        override fun answer(call: Call): Any = mentionId.value
-    } as Answer<Snowflake>
+    every { selfId } returns mentionId
 }
 
 inline fun <T> prefix(apply: PrefixBuilder.() -> T) = PrefixBuilder(koinApplication {
@@ -76,7 +85,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockGuild() }
         }
 
-        val result = guildRule.consume("!test", event)
+        val result = guildRule.consume("!test", KordEventAdapter((event)))
         val accepted = result as PrefixRule.Result.Accepted
 
         Assertions.assertEquals("!", accepted.prefix)
@@ -90,7 +99,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockNoGuild() }
         }
 
-        val result = guildRule.consume("!test", event)
+        val result = guildRule.consume("!test", KordEventAdapter((event)))
         Assertions.assertEquals(PrefixRule.Result.Denied, result)
     }
 
@@ -99,13 +108,10 @@ internal class KordPrefixRuleTest {
         val guildRule = prefix { guild { "+" } }
 
         val event = mockEvent {
-            mockMessage {
-                mockGuild()
-                every { guildId } returns null
-            }
+            mockMessage { mockGuild() }
         }
 
-        val result = guildRule.consume("!test", event)
+        val result = guildRule.consume("!test", KordEventAdapter((event)))
         Assertions.assertEquals(PrefixRule.Result.Denied, result)
     }
 
@@ -117,7 +123,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockChannel() }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter(event))
         val accepted = result as PrefixRule.Result.Accepted
 
         Assertions.assertEquals("!", accepted.prefix)
@@ -131,7 +137,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockChannel() }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter(event))
         Assertions.assertEquals(PrefixRule.Result.Denied, result)
     }
 
@@ -143,7 +149,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockAuthor() }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter(event))
         val accepted = result as PrefixRule.Result.Accepted
 
         Assertions.assertEquals("!", accepted.prefix)
@@ -157,7 +163,7 @@ internal class KordPrefixRuleTest {
             mockMessage { mockAuthor() }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter(event))
         Assertions.assertEquals(PrefixRule.Result.Denied, result)
     }
 
@@ -166,10 +172,13 @@ internal class KordPrefixRuleTest {
         val rule = prefix { member { "!" } }
 
         val event = mockEvent {
-            mockMessage { mockMember() }
+            mockMessage {
+                mockGuild()
+                mockMember()
+            }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter((event)))
         val accepted = result as PrefixRule.Result.Accepted
 
         Assertions.assertEquals("!", accepted.prefix)
@@ -180,10 +189,13 @@ internal class KordPrefixRuleTest {
         val rule = prefix { member { "+" } }
 
         val event = mockEvent {
-            mockMessage { mockMember() }
+            mockMessage {
+                mockGuild()
+                mockMember()
+            }
         }
 
-        val result = rule.consume("!test", event)
+        val result = rule.consume("!test", KordEventAdapter((event)))
         Assertions.assertEquals(PrefixRule.Result.Denied, result)
     }
 

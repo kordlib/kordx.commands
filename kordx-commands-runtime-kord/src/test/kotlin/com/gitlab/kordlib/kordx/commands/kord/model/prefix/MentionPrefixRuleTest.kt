@@ -1,9 +1,9 @@
 package com.gitlab.kordlib.kordx.commands.kord.model.prefix
 
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
 import com.gitlab.kordlib.kordx.commands.model.prefix.PrefixRule
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.jupiter.api.Assertions
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import kotlin.test.Test
 
 internal class MentionPrefixRuleTest {
@@ -14,7 +14,7 @@ internal class MentionPrefixRuleTest {
 
         val event = mockEvent()
 
-        val result = rule.consume("<@${mentionId.value}> test", event)
+        val result = rule.consume("<@${mentionId.value}> test", KordEventAdapter(event))
         val accepted = result as PrefixRule.Result.Accepted
 
         assertEquals("<@${mentionId.value}> ", accepted.prefix)
@@ -26,7 +26,7 @@ internal class MentionPrefixRuleTest {
 
         val event = mockEvent()
 
-        val result = rule.consume("<@!${mentionId.value}> test", event)
+        val result = rule.consume("<@!${mentionId.value}> test", KordEventAdapter(event))
         val accepted = result as PrefixRule.Result.Accepted
 
         assertEquals("<@!${mentionId.value}> ", accepted.prefix)
@@ -38,7 +38,7 @@ internal class MentionPrefixRuleTest {
 
         val event = mockEvent()
 
-        val result = rule.consume("<@!${123456}> test", event)
+        val result = rule.consume("<@!${123456}> test", KordEventAdapter(event))
 
         assertEquals(PrefixRule.Result.Denied, result)
     }

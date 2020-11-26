@@ -9,6 +9,7 @@ import com.gitlab.kordlib.core.behavior.UserBehavior
 import com.gitlab.kordlib.core.behavior.channel.MessageChannelBehavior
 import com.gitlab.kordlib.core.behavior.channel.createEmbed
 import com.gitlab.kordlib.core.behavior.channel.createMessage
+import com.gitlab.kordlib.core.behavior.reply
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
@@ -138,4 +139,13 @@ suspend inline fun KordEvent.respond(builder: MessageCreateBuilder.() -> Unit): 
  */
 suspend inline fun KordEvent.respondEmbed(builder: EmbedBuilder.() -> Unit): Message {
     return channel.createEmbed(builder)
+}
+
+/**
+ * Creates reply to the event [KordEvent.message] configured by the [builder].
+ *
+ * @see MessageBehavior.reply
+ */
+suspend inline fun KordEvent.reply(builder: MessageCreateBuilder.() -> Unit): Message {
+    return message.reply(builder)
 }
