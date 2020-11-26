@@ -2,13 +2,14 @@ package com.gitlab.kordlib.kordx.commands.model.processor
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import com.gitlab.kordlib.kordx.commands.model.cache.CommandCache
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
-import com.gitlab.kordlib.kordx.commands.model.module.Module
-import org.koin.core.Koin
-import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
+import com.gitlab.kordlib.kordx.commands.model.eventFilter.EventFilter
+import com.gitlab.kordlib.kordx.commands.model.module.Module
 import com.gitlab.kordlib.kordx.commands.model.prefix.Prefix
+import org.koin.core.Koin
 
 /**
  * An event handler for a specific [context]. The handler consumes source events [S] and invokes the correct commands
@@ -68,6 +69,17 @@ interface ContextConverter<S, A, E : CommandEvent> {
      * "{prefix}{command} {arguments...}"
      */
     val S.text: String
+
+    /**
+     * Should the command be invoked?
+     * For example command edited but content did not changed, so might not be invoked.
+     */
+    val S.shouldBeInvoked: Boolean
+
+    /**
+     * Command cache, used for data exchange between first/prior run and current run if the command is edited.
+     */
+    suspend fun S.getCommandCache(): CommandCache
 
     /**
      * Converts the source event to a type expected by [arguments][Argument].

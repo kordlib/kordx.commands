@@ -5,20 +5,19 @@ import com.gitlab.kordlib.core.entity.channel.Channel
 import com.gitlab.kordlib.core.entity.channel.MessageChannel
 import com.gitlab.kordlib.core.entity.channel.TextChannel
 import com.gitlab.kordlib.core.entity.channel.VoiceChannel
-import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.extension.filterIsInstance
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
 
 private val mentionRegex = Regex("""^<#\d+>$""")
 
 internal class InternalChannelArgument(
         override val name: String = "Channel"
-) : SingleWordArgument<Channel, MessageCreateEvent>() {
+) : SingleWordArgument<Channel, KordEventAdapter>() {
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Channel> {
+    override suspend fun parse(word: String, context: KordEventAdapter): WordResult<Channel> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
@@ -36,7 +35,7 @@ internal class InternalChannelArgument(
 /**
  * Argument that matches against a channel mention or a channel id as a number.
  */
-val ChannelArgument: Argument<Channel, MessageCreateEvent> = InternalChannelArgument()
+val ChannelArgument: Argument<Channel, KordEventAdapter> = InternalChannelArgument()
 
 /**
  * Argument that matches against a channel mention or a channel id as a number.
@@ -44,7 +43,7 @@ val ChannelArgument: Argument<Channel, MessageCreateEvent> = InternalChannelArgu
  * @param name The name of the argument.
  */
 @Suppress("FunctionName")
-fun ChannelArgument(name: String): Argument<Channel, MessageCreateEvent> = InternalChannelArgument(name)
+fun ChannelArgument(name: String): Argument<Channel, KordEventAdapter> = InternalChannelArgument(name)
 
 
 /**
@@ -58,7 +57,7 @@ val TextChannelArgument = TextChannelArgument("Guild text channel")
  * @param name The name of the argument.
  */
 @Suppress("FunctionName")
-fun TextChannelArgument(name: String): Argument<TextChannel, MessageCreateEvent> = InternalChannelArgument(name)
+fun TextChannelArgument(name: String): Argument<TextChannel, KordEventAdapter> = InternalChannelArgument(name)
         .filterIsInstance("Expected guild text channel.")
 
 
@@ -73,7 +72,7 @@ val MessageChannelArgument = MessageChannelArgument("Text channel")
  * @param name The name of the argument.
  */
 @Suppress("FunctionName")
-fun MessageChannelArgument(name: String): Argument<MessageChannel, MessageCreateEvent> = InternalChannelArgument(name)
+fun MessageChannelArgument(name: String): Argument<MessageChannel, KordEventAdapter> = InternalChannelArgument(name)
         .filterIsInstance("Expected text channel.")
 
 /**
@@ -88,5 +87,5 @@ val VoiceChannelArgument = VoiceChannelArgument("Guild voice channel")
  * @param name The name of the argument.
  */
 @Suppress("FunctionName")
-fun VoiceChannelArgument(name: String): Argument<VoiceChannel, MessageCreateEvent> = InternalChannelArgument(name)
+fun VoiceChannelArgument(name: String): Argument<VoiceChannel, KordEventAdapter> = InternalChannelArgument(name)
         .filterIsInstance("Expected a voice channel")

@@ -9,6 +9,6 @@ import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
  * Any event that doesn't match the [predicate] will be ignored by the [CommandProcessor] and won't be parsed.
  */
 fun eventFilter(
-        predicate: suspend MessageCreateEvent.() -> Boolean
-): EventFilter<MessageCreateEvent> =
+        predicate: suspend KordEventAdapter.() -> Boolean
+): EventFilter<KordEventAdapter> =
         com.gitlab.kordlib.kordx.commands.model.eventFilter.eventFilter(KordContext, predicate)

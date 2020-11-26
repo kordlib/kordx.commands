@@ -2,6 +2,7 @@ package com.gitlab.kordlib.kordx.commands.model.command
 
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.internal.CommandsBuilder
+import com.gitlab.kordlib.kordx.commands.model.cache.CommandCache
 import com.gitlab.kordlib.kordx.commands.model.exception.ConflictingAliasException
 import com.gitlab.kordlib.kordx.commands.model.metadata.MutableMetadata
 import com.gitlab.kordlib.kordx.commands.model.precondition.Precondition
@@ -39,12 +40,17 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandEvent>(
     /**
      * The behavior of this command on [Command.invoke].
      */
-    lateinit var execution: suspend (COMMANDCONTEXT, List<*>) -> Unit
+    lateinit var execution: suspend (event: COMMANDCONTEXT, cache: CommandCache?, arguments: List<*>) -> Unit
 
     /**
      * The arguments this command expects. The length should match the one expected in [execution].
      */
     var arguments: List<Argument<*, A>> = emptyList()
+
+    /**
+     * Is the cache enabled? If yes, [CommandCache] is provided at invocation of command.
+     */
+    var isCacheEnabled: Boolean = false
 
     /**
      * Adds the [aliases] to this command's aliases.
@@ -68,6 +74,7 @@ class CommandBuilder<S, A, COMMANDCONTEXT : CommandEvent>(
                 environment.koin,
                 if (aliases.isEmpty()) AliasInfo.None()
                 else AliasInfo.Parent(aliases, environment.commands),
+                isCacheEnabled,
                 execution
         )
 

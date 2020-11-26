@@ -2,10 +2,9 @@
 
 package com.gitlab.kordlib.kordx.commands.argument.pipe
 
-import com.gitlab.kordlib.kordx.commands.argument.Argument
+import com.gitlab.kordlib.kordx.commands.model.cache.CommandCache
 import com.gitlab.kordlib.kordx.commands.model.command.Command
 import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import com.gitlab.kordlib.kordx.commands.model.processor.*
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
@@ -13,15 +12,14 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 class TestEventEvent(
         val output: TestOutput,
         override val command: Command<*>,
         override val commands: Map<String, Command<*>>,
         override val processor: CommandProcessor
-): CommandEvent {
-    suspend fun respond(text: String): Any? {
+) : CommandEvent {
+    suspend fun respond(text: String): Any {
         return output.push(EventType.Response(text))
     }
 }
@@ -61,16 +59,34 @@ class TestErrorHandler(private val output: TestOutput) : ErrorHandler<String, St
     }
 }
 
-class TestConverter(private val output: TestOutput): ContextConverter<String, String, TestEventEvent> {
+object TestCommandCache : CommandCache {
+    var value: Any? = null
+
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> getOrNull(): T? = value as? T
+    override fun clear() {
+        value = null
+    }
+
+    override fun setOrUpdate(value: Any) {
+        this.value = value
+    }
+}
+
+class TestConverter(private val output: TestOutput) : ContextConverter<String, String, TestEventEvent> {
 
     override val String.text: String get() = this
 
     override fun String.toArgumentContext(): String = this
 
+    override val String.shouldBeInvoked: Boolean get() = true
+
+    // Singleton just for testing purposes.
+    override suspend fun String.getCommandCache(): CommandCache = TestCommandCache
+
     override fun String.toCommandEvent(data: CommandEventData<TestEventEvent>): TestEventEvent {
         return TestEventEvent(output, data.command, data.commands, data.processor)
     }
-
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")

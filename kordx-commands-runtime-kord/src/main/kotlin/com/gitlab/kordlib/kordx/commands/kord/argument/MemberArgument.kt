@@ -2,20 +2,19 @@ package com.gitlab.kordlib.kordx.commands.kord.argument
 
 import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.Member
-import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
 
 private val mentionRegex = Regex("""^<(@|@!)\d+>$""")
 
 internal class InternalMemberArgument(
         override val name: String = "User"
-) : SingleWordArgument<Member, MessageCreateEvent>() {
+) : SingleWordArgument<Member, KordEventAdapter>() {
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<Member> {
-        val guildId = context.getGuild()?.id ?: return failure("Can't get members outside of guilds.")
+    override suspend fun parse(word: String, context: KordEventAdapter): WordResult<Member> {
+        val guildId = context.guild?.id ?: return failure("Can't get members outside of guilds.")
 
         val number = word.toLongOrNull()
         val snowflake = when {
@@ -35,7 +34,7 @@ internal class InternalMemberArgument(
 /**
  * Argument that matches against a user/member mention in a guild channel or a user id as a number.
  */
-val MemberArgument: Argument<Member, MessageCreateEvent> = InternalMemberArgument()
+val MemberArgument: Argument<Member, KordEventAdapter> = InternalMemberArgument()
 
 /**
  * Argument that matches against a user/member mention in a guild channel or a user id as a number.
@@ -43,4 +42,4 @@ val MemberArgument: Argument<Member, MessageCreateEvent> = InternalMemberArgumen
  * @param name The name of this argument.
  */
 @Suppress("FunctionName")
-fun MemberArgument(name: String): Argument<Member, MessageCreateEvent> = InternalMemberArgument(name)
+fun MemberArgument(name: String): Argument<Member, KordEventAdapter> = InternalMemberArgument(name)

@@ -1,14 +1,11 @@
 package com.gitlab.kordlib.kordx.commands.kord.model.processor
 
 import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.core.event.message.MessageCreateEvent
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContext
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import com.gitlab.kordlib.kordx.commands.model.processor.EventSource
+import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.filterIsInstance
 
 /**
  * [EventSource] for [Kord.events], these can be consumed under a [KordContext].
@@ -17,11 +14,10 @@ import kotlinx.coroutines.flow.filterIsInstance
  */
 class KordEventSource(
         val kord: Kord
-) : EventSource<MessageCreateEvent> {
-    override val context: ProcessorContext<MessageCreateEvent, *, *>
+) : EventSource<KordEventAdapter> {
+    override val context: ProcessorContext<KordEventAdapter, *, *>
         get() = KordContext
 
-    override val events: Flow<MessageCreateEvent>
-        get() = kord.events.buffer(Channel.UNLIMITED).filterIsInstance()
-
+    override val events: Flow<KordEventAdapter>
+        get() = kord.events.buffer(Channel.UNLIMITED).filterAndMapToAdapter()
 }

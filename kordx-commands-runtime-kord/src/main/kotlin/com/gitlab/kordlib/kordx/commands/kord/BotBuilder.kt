@@ -1,15 +1,19 @@
 package com.gitlab.kordlib.kordx.commands.kord
 
 import com.gitlab.kordlib.core.Kord
+import com.gitlab.kordlib.core.cache.Generator
+import com.gitlab.kordlib.core.cache.KordCacheBuilder
+import com.gitlab.kordlib.core.entity.User
+import com.gitlab.kordlib.kordx.commands.kord.cache.KordCommandCache
 import com.gitlab.kordlib.kordx.commands.kord.model.processor.*
 import com.gitlab.kordlib.kordx.commands.kord.plug.KordPlugSocket
 import com.gitlab.kordlib.kordx.commands.model.context.CommonContext
 import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
+import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
 import mu.KotlinLogging
 import org.koin.dsl.module
-import com.gitlab.kordlib.kordx.commands.model.processor.EventHandler
 
 private val logger = KotlinLogging.logger {}
 
@@ -38,10 +42,14 @@ class BotBuilder(
      * }
      * ```
      */
-    val ignoreSelf = eventFilter { message.author?.id != kord.selfId }
+    val ignoreSelf = eventFilter { author?.id != kord.selfId }
 
     /**
-     * Filter that will ignore all events created by bots, added by default.
+     * Filter that will ignore events created by bots, added by default.
+     *
+     * This will only ignore bot events which are new or cached,
+     * bot messages which are edited and not cached can bypass this.
+     *
      * Can be disabled by invoking the `unaryMinus` operator inside the configuration.
      * ```kotlin
      * {
@@ -49,7 +57,7 @@ class BotBuilder(
      * }
      * ```
      */
-    val ignoreBots = eventFilter { message.author?.isBot != true }
+    val ignoreBots = eventFilter { (author as? User)?.isBot != true }
 
     init {
         processor {
@@ -95,7 +103,13 @@ class BotBuilder(
         }
     }.build()
 
+}
 
+/**
+ * Configures caching for the [KordCommandCache].
+ */
+fun KordCacheBuilder.commandCache(generator: Generator<KordCommandCache, Long>) {
+    forDescription(KordCommandCache.description, generator)
 }
 
 /**

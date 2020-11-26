@@ -2,19 +2,18 @@ package com.gitlab.kordlib.kordx.commands.kord.argument
 
 import com.gitlab.kordlib.common.entity.Snowflake
 import com.gitlab.kordlib.core.entity.User
-import com.gitlab.kordlib.core.event.message.MessageCreateEvent
 import com.gitlab.kordlib.kordx.commands.argument.Argument
 import com.gitlab.kordlib.kordx.commands.argument.SingleWordArgument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
+import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordEventAdapter
 
 private val mentionRegex = Regex("""^<@!?\d+>$""")
 
 internal class InternalUserArgument(
         override val name: String = "User"
-) : SingleWordArgument<User, MessageCreateEvent>() {
+) : SingleWordArgument<User, KordEventAdapter>() {
 
-    override suspend fun parse(word: String, context: MessageCreateEvent): WordResult<User> {
+    override suspend fun parse(word: String, context: KordEventAdapter): WordResult<User> {
         val number = word.toLongOrNull()
         val snowflake = when {
             number != null -> Snowflake(number)
@@ -33,7 +32,7 @@ internal class InternalUserArgument(
 /**
  * Argument that matches against a user/member mention or a user id as a number.
  */
-val UserArgument: Argument<User, MessageCreateEvent> = InternalUserArgument()
+val UserArgument: Argument<User, KordEventAdapter> = InternalUserArgument()
 
 /**
  * Argument that matches against a user/member mention or a user id as a number.
@@ -41,4 +40,4 @@ val UserArgument: Argument<User, MessageCreateEvent> = InternalUserArgument()
  * @param name The name of this argument.
  */
 @Suppress("FunctionName")
-fun UserArgument(name: String): Argument<User, MessageCreateEvent> = InternalUserArgument(name)
+fun UserArgument(name: String): Argument<User, KordEventAdapter> = InternalUserArgument(name)

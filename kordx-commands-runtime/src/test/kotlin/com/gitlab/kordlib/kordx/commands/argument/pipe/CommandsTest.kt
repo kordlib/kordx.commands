@@ -36,7 +36,6 @@ class CommandsTest {
                 override fun dispatch(context: CoroutineContext, block: Runnable) {
                     block.run()
                 }
-
             }
         }
     }
@@ -52,7 +51,7 @@ class CommandsTest {
 
         processor += module("test", TestContext) {
             command("test") {
-                invoke {
+                invoke { _ ->
                     respond(response)
                 }
             }
@@ -74,7 +73,7 @@ class CommandsTest {
             command("test") {
                 alias("an-alias")
 
-                invoke {
+                invoke { _ ->
                     if (command.aliasInfo !is AliasInfo.Child) error = "expected alias info to be a child"
                     respond(response)
                 }
@@ -82,7 +81,7 @@ class CommandsTest {
         }
 
         input.channel.send("an-alias")
-        if(error != null) throw IllegalStateException(error)
+        if (error != null) throw IllegalStateException(error)
     }
 
     @Test
@@ -95,7 +94,7 @@ class CommandsTest {
             command("test") {
                 alias("an-alias")
 
-                invoke {
+                invoke { _ ->
                     if (command.aliasInfo !is AliasInfo.Child) error = "expected alias info to be a child"
                     respond(response)
                 }
@@ -103,7 +102,7 @@ class CommandsTest {
         }
 
         input.channel.send("an-alias")
-        if(error != null) throw IllegalStateException(error)
+        if (error != null) throw IllegalStateException(error)
     }
 
     @Test
@@ -114,7 +113,7 @@ class CommandsTest {
             command("test") {
                 alias("an-alias")
 
-                invoke {
+                invoke { _ ->
                     respond(response)
                 }
             }
@@ -195,4 +194,34 @@ class CommandsTest {
         Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
     }
 
+    @Test
+    fun `command cache should cache the command and send it back in the nest run`() = runBlocking(Dispatchers.IO) {
+        val firstResponse = "a test response"
+
+        processor += module("test", TestContext) {
+            command("test") {
+                invoke { cache ->
+                    val cachedValue = cache.getOrNull<Int>()
+
+                    if (cachedValue == null) {
+                        cache.setOrUpdate(1)
+                        respond(firstResponse)
+                    } else {
+                        cache.setOrUpdate(cachedValue + 1)
+                        respond(cachedValue.toString())
+                    }
+                }
+            }
+        }
+
+        input.channel.send("test")
+        input.channel.send("test")
+        input.channel.send("test")
+
+        val events = output.events.filterIsInstance<EventType.Response>()
+        Assertions.assertEquals(3, events.size)
+        Assertions.assertEquals(firstResponse, events[0].text)
+        Assertions.assertEquals("1", events[1].text)
+        Assertions.assertEquals("2", events[2].text)
+    }
 }

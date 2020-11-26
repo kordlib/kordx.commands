@@ -22,6 +22,10 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
 ) : EventHandler<S> {
 
     override suspend fun CommandProcessor.onEvent(event: S) {
+        with(converter) {
+            if (!event.shouldBeInvoked) return
+        }
+
         val filters = getFilters(context)
         if (!filters.all { it(event) }) return
 
@@ -75,8 +79,12 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
             }
         }
 
+        val cache = if (command.isCacheEnabled) {
+            with(converter) { event.getCommandCache() }
+        } else null
+
         try {
-            command.invoke(eventContext, items)
+            command.invoke(eventContext, cache, items)
         } catch (exception: Exception) {
             baseHandlerLogger.catching(exception)
             with(handler) { exceptionThrown(event, command, exception) }
