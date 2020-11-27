@@ -12,9 +12,9 @@ internal class MentionPrefixRuleTest {
     fun `mention prefix accepts a bot's username mention`() = runBlockingTest {
         val rule = prefix { mention() }
 
-        val event = mockEvent()
+        val eventAdapter = mockEventAdapter()
 
-        val result = rule.consume("<@${mentionId.value}> test", KordEventAdapter(event))
+        val result = rule.consume("<@${mentionId.value}> test", eventAdapter)
         val accepted = result as PrefixRule.Result.Accepted
 
         assertEquals("<@${mentionId.value}> ", accepted.prefix)
@@ -24,9 +24,9 @@ internal class MentionPrefixRuleTest {
     fun `mention prefix accepts a bot's nickname mention`() = runBlockingTest {
         val rule = prefix { mention() }
 
-        val event = mockEvent()
+        val eventAdapter = mockEventAdapter()
 
-        val result = rule.consume("<@!${mentionId.value}> test", KordEventAdapter(event))
+        val result = rule.consume("<@!${mentionId.value}> test", eventAdapter)
         val accepted = result as PrefixRule.Result.Accepted
 
         assertEquals("<@!${mentionId.value}> ", accepted.prefix)
@@ -36,9 +36,9 @@ internal class MentionPrefixRuleTest {
     fun `mention prefix does not accept another mention`() = runBlockingTest {
         val rule = prefix { mention() }
 
-        val event = mockEvent()
+        val eventAdapter = mockEventAdapter()
 
-        val result = rule.consume("<@!${123456}> test", KordEventAdapter(event))
+        val result = rule.consume("<@!${123456}> test", eventAdapter)
 
         assertEquals(PrefixRule.Result.Denied, result)
     }

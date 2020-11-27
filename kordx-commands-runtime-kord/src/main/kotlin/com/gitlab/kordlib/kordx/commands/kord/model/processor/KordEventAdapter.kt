@@ -9,6 +9,7 @@ import com.gitlab.kordlib.core.behavior.GuildBehavior
 import com.gitlab.kordlib.core.behavior.MessageBehavior
 import com.gitlab.kordlib.core.behavior.UserBehavior
 import com.gitlab.kordlib.core.behavior.channel.MessageChannelBehavior
+import com.gitlab.kordlib.core.entity.Member
 import com.gitlab.kordlib.core.entity.Message
 import com.gitlab.kordlib.core.event.Event
 import com.gitlab.kordlib.core.event.message.MessageCreateEvent
@@ -22,9 +23,10 @@ import kotlinx.coroutines.flow.*
 /**
  * Event Adapter for the kord events.
  *
- * @param event Event to be wrapped (possibly inlined on non-generic occurrence).
+ * @param event Event to be wrapped.
  */
-inline class KordEventAdapter(val event: Event) : KordObject {
+class KordEventAdapter internal constructor(val event: Event) : KordObject {
+
     override val kord: Kord
         get() = event.kord
 
@@ -46,7 +48,7 @@ inline class KordEventAdapter(val event: Event) : KordObject {
         get() = when (event) {
             is MessageCreateEvent -> event.message.content
             is MessageUpdateEvent -> event.new.content.value
-                    ?: raiseWrongEventError(event)  // pre-filtered from [KordEventSource]
+                    ?: raiseWrongEventError(event)  // pre-filtered from [filterAndMapToAdapter]
             else -> raiseWrongEventError(event)
         }
 
@@ -82,6 +84,19 @@ inline class KordEventAdapter(val event: Event) : KordObject {
                     ?: event.new.guildId.value?.let { kord.unsafe.guild(it) }
             else -> raiseWrongEventError(event)
         }
+
+    /**
+     * Resolves the [author] as a [Member] if the [event] was spawned in a Guild.
+     */
+    suspend fun resolveAuthorAsMember(): Member? {
+        val guildId = when (event) {
+            is MessageCreateEvent -> event.guildId
+            is MessageUpdateEvent -> event.old?.data?.guildId?.value ?: event.new.guildId.value
+            else -> raiseWrongEventError(event)
+        } ?: return null
+
+        return author?.asMemberOrNull(guildId)
+    }
 
     /**
      * Creates a message in the [KordEvent.channel].

@@ -77,8 +77,7 @@ fun PrefixBuilder.user(
 fun PrefixBuilder.member(
         supplier: (user: MemberBehavior) -> String?
 ): PrefixRule<KordEventAdapter> = PrefixRule { message, context ->
-    val guildId = context.guild?.id ?: return@PrefixRule PrefixRule.Result.Denied
-    val member = context.author?.asMember(guildId) ?: return@PrefixRule PrefixRule.Result.Denied
+    val member = context.resolveAuthorAsMember() ?: return@PrefixRule PrefixRule.Result.Denied
     val prefix = supplier(member) ?: return@PrefixRule PrefixRule.Result.Denied
     if (message.startsWith(prefix)) PrefixRule.Result.Accepted(prefix)
     else PrefixRule.Result.Denied
