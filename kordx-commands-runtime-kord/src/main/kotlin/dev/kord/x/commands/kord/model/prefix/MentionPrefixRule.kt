@@ -18,7 +18,7 @@ fun PrefixBuilder.mention(): PrefixRule<MessageCreateEvent> = MentionPrefixRule(
 
 internal class MentionPrefixRule(kord: Kord) : PrefixRule<MessageCreateEvent> {
 
-    private val regex = Regex("""<@!?${kord.selfId}>\s""")
+    private val regex = Regex("""<@!?${kord.selfId.value}>\s""")
 
     override suspend fun consume(message: String, context: MessageCreateEvent): PrefixRule.Result {
         val result = regex.find(message) ?: return PrefixRule.Result.Denied

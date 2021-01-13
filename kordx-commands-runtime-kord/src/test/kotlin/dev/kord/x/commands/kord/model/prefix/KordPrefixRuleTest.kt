@@ -56,9 +56,7 @@ fun Message.mockNoGuild() {
 
 @Suppress("UNCHECKED_CAST")
 fun mockKord() = mockk<Kord> {
-    every { selfId } answers object : Answer<Any> {
-        override fun answer(call: Call): Any = mentionId.value
-    } as Answer<Snowflake>
+    every { selfId } answers { mentionId }
 }
 
 inline fun <T> prefix(apply: PrefixBuilder.() -> T) = PrefixBuilder(koinApplication {
