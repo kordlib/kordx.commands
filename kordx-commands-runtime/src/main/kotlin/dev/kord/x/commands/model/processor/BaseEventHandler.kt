@@ -20,6 +20,7 @@ open class BaseEventHandler<S, A, E : CommandEvent>(
     protected val handler: ErrorHandler<S, A, E>
 ) : EventHandler<S> {
 
+    @Suppress("LongMethod")
     override suspend fun CommandProcessor.onEvent(event: S) {
         val filters = getFilters(context)
         if (!filters.all { it(event) }) return
