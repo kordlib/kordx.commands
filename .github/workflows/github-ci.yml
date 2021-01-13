@@ -30,7 +30,7 @@ jobs:
     steps:
 
       - run: export GRADLE_USER_HOME=`pwd`/.gradle
-      - run: echo ::set-env name=RELEASE_TAG::${GITHUB_REF#refs/tags/}
+      - run: echo "{RELEASE_TAG}=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
 
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
