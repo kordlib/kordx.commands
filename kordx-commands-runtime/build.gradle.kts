@@ -9,4 +9,3 @@ repositories {
 dependencies {
     api(Dependencies.koin)
 }
-

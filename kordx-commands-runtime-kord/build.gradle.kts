@@ -5,6 +5,7 @@ plugins {
 
 repositories {
     jcenter()
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
@@ -12,19 +13,21 @@ dependencies {
 
     api(runtime)
 
-    api("com.gitlab.kordlib.kord:kord-core:0.6.+") {
-        version {
-            prefer("latest.release")
-        }
+    api(Dependencies.kord) {
+//        version {
+//            prefer("latest.release")
+//        }
     }
 
-    api("com.gitlab.kordlib:kordx.emoji:0.2.+") {
-        version {
-            prefer("latest.release")
-        }
-    }
+// Waiting for https://github.com/kordlib/kordx.emoji/pull/4 to release as kx.emoji
+// would add an outated version of kord to the classpath
+//    api(Dependencies.kordxEmoji) {
+//        version {
+//            prefer("latest.release")
+//        }
+//    }
 
-    api("info.debatty:java-string-similarity:1.2.1")
+    api(Dependencies.javaStringSimilarity)
 
     kaptTest(processor)
 }

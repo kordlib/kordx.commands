@@ -2,14 +2,14 @@
 
 package commands.example
 
-import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.bot
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.kord
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.mention
-import com.gitlab.kordlib.kordx.commands.model.prefix.literal
-import com.gitlab.kordlib.kordx.commands.model.prefix.or
-import com.gitlab.kordlib.kordx.commands.model.prefix.prefix
+import dev.kord.core.Kord
+import dev.kord.x.commands.annotation.AutoWired
+import dev.kord.x.commands.kord.bot
+import dev.kord.x.commands.kord.model.prefix.kord
+import dev.kord.x.commands.kord.model.prefix.mention
+import dev.kord.x.commands.model.prefix.literal
+import dev.kord.x.commands.model.prefix.or
+import dev.kord.x.commands.model.prefix.prefix
 import kapt.kotlin.generated.configure
 import kotlinx.coroutines.Dispatchers
 

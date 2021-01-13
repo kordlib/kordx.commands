@@ -3,7 +3,7 @@ plugins {
     `kotlin-dsl`
 }
 
-group = "com.gitlab.kordlib.kordx"
+group = "dev.kord.x"
 version = "undefined"
 
 repositories {

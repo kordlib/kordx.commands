@@ -31,8 +31,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.gitlab.kordlib.kordx:kordx-commands-runtime-kord:{version}")
-    kapt("com.gitlab.kordlib.kordx:kordx-commands-processor:{version}")
+    implementation("dev.kord.x:kordx-commands-runtime-kord:{version}")
+    kapt("dev.kord.x:kordx-commands-processor:{version}")
 }
 ```
 
@@ -49,8 +49,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.gitlab.kordlib.kordx:kordx-commands-runtime-kord:{version}")
-    kapt("com.gitlab.kordlib.kordx:kordx-commands-processor:{version}")
+    implementation("dev.kord.x:kordx-commands-runtime-kord:{version}")
+    kapt("dev.kord.x:kordx-commands-processor:{version}")
 }
 ```
 
@@ -72,7 +72,7 @@ Add an execution of the kapt goal from kotlin-maven-plugin before compile
                 </sourceDirs>
                 <annotationProcessorPaths>
                     <annotationProcessorPath>
-                        <groupId>com.gitlab.kordlib.kordx</groupId>
+                        <groupId>dev.kord.x</groupId>
                         <artifactId>kordx-commands-processor</artifactId>
                         <version>{version}</version>
                     </annotationProcessorPath>
@@ -92,7 +92,7 @@ Add an execution of the kapt goal from kotlin-maven-plugin before compile
 
 ```xml
 <dependency>
-    <groupId>com.gitlab.kordlib.kordx</groupId>
+    <groupId>dev.kord.x</groupId>
     <artifactId>kordx-commands-runtime-kord</artifactId>
     <version>{version}</version>
 </dependency>
