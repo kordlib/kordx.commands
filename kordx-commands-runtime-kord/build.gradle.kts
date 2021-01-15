@@ -19,13 +19,11 @@ dependencies {
 //        }
     }
 
-// Waiting for https://github.com/kordlib/kordx.emoji/pull/4 to release as kx.emoji
-// would add an outated version of kord to the classpath
-//    api(Dependencies.kordxEmoji) {
+    api(Dependencies.kordxEmoji) {
 //        version {
 //            prefer("latest.release")
 //        }
-//    }
+    }
 
     api(Dependencies.javaStringSimilarity)
 

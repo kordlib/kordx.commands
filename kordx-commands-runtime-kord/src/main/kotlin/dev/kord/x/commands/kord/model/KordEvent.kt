@@ -9,6 +9,7 @@ import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.MessageCreateBuilder
 import dev.kord.x.commands.argument.result.ArgumentResult
+import dev.kord.x.emoji.DiscordEmoji
 import kotlinx.coroutines.flow.*
 
 /**
@@ -56,6 +57,13 @@ interface KordEvent {
     suspend fun respond(message: String): Message {
         return this.message.channel.createMessage(message)
     }
+
+    /**
+     * Creates a message in the [KordEvent.channel].
+     *
+     * @param emoji the [DiscordEmoji] which is the content of the message
+     */
+    suspend fun respond(emoji: DiscordEmoji): Message = respond(emoji.unicode)
 
     /**
      *  Suspends until the user invoking this command enters a message in

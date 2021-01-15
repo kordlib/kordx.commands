@@ -2,7 +2,7 @@
 
 package commands.example
 
-//import com.gitlab.kordlib.kordx.emoji.Emojis
+import dev.kord.x.emoji.Emojis
 import dev.kord.x.commands.argument.extension.named
 import dev.kord.x.commands.argument.text.WordArgument
 import dev.kord.x.commands.kord.model.precondition.precondition
@@ -50,7 +50,6 @@ fun ignoreDisabledCommands() = precondition {
 fun toggleCommands() = module("command-control") {
 
     command("disable") {
-
         invoke(WordArgument.named("command")) {
 
             val command = commands[it] ?: return@invoke run {
@@ -62,8 +61,7 @@ fun toggleCommands() = module("command-control") {
             }
 
             command.disable()
-            respond("\uD83D\uDC4C")
-//            respond(Emojis.okHand.unicode)
+            respond(Emojis.okHand.unicode)
         }
 
     }
@@ -80,8 +78,7 @@ fun toggleCommands() = module("command-control") {
             }
 
             command.enable()
-            respond("\uD83D\uDC4C")
-//            respond(Emojis.okHand.unicode)
+            respond(Emojis.okHand)
         }
 
     }
