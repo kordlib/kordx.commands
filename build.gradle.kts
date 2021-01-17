@@ -1,12 +1,15 @@
-import com.jfrog.bintray.gradle.BintrayExtension
 import java.util.Date
 
 plugins {
     kotlin("jvm") version Versions.kotlin
     id("io.gitlab.arturbosch.detekt") version "1.9.0" apply false
-    id("com.jfrog.bintray") version "1.8.1" apply false
     id("com.github.johnrengelman.shadow") version "6.1.0" apply false
     kotlin("plugin.serialization") version "1.4.21" apply false
+
+    signing
+    `maven-publish`
+    id("io.codearte.nexus-staging") version "0.22.0"
+
 }
 
 repositories {
@@ -20,11 +23,15 @@ subprojects {
     apply<JavaPlugin>()
     apply(plugin = "kotlin")
     apply(plugin = "kotlinx-serialization")
-    apply(plugin = "com.jfrog.bintray")
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "kotlin-kapt")
     apply(plugin = "io.gitlab.arturbosch.detekt")
+
+
+    if (!isJitPack && Library.isRelease) {
+        apply(plugin = "signing")
+    }
 
     val kotlinComponent = components["kotlin"]
 
@@ -75,60 +82,101 @@ subprojects {
             }
         }
 
+
         withType<Test> {
             useJUnitPlatform {
                 includeEngines("junit-jupiter")
             }
         }
-
-        val sourcesJar by registering(Jar::class) {
-            archiveClassifier.set("sources")
-            from(sourceSets.main.get().allSource)
-        }
-
-        configure<PublishingExtension> {
-            publications {
-                register<MavenPublication>("Commands") {
-                    from(kotlinComponent)
-                    groupId = Library.group
-                    artifactId = project.name
-                    version = Library.version
-
-                    artifact(sourcesJar)
-                }
-            }
-        }
+    }
+    val sourcesJar by tasks.registering(Jar::class) {
+        archiveClassifier.set("sources")
+        from(sourceSets.main.get().allSource)
+    }
+    val javadocJar by tasks.registering(Jar::class) {
+        group = JavaBasePlugin.DOCUMENTATION_GROUP
+        archiveClassifier.set("javadoc")
     }
 
-    configure<BintrayExtension> {
-            user = System.getenv("BINTRAY_USER")
-            key = System.getenv("BINTRAY_KEY")
-            setPublications("Commands")
-            publish = true
-            pkg {
-                repo = "Kord"
-                name = "kordx.commands"
-                userOrg = "kordlib"
-                setLicenses("MIT")
-                vcsUrl = "https://gitlab.com/kordlib/kordx.commands.git"
-                websiteUrl = "https://gitlab.com/kordlib/kordx.commands"
-                issueTrackerUrl = "https://gitlab.com/kordlib/kordx.commands/issues"
 
-                version {
-                    name = Library.version
-                    desc = "Command library for Kotlin"
-                    released = Date().toString()
-                    vcsTag = Library.version
+    publishing {
+        publications {
+            create<MavenPublication>(Library.name) {
+                from(components["kotlin"])
+                groupId = Library.group
+                artifactId = "commands-${project.name}"
+                version = Library.version
+
+                artifact(sourcesJar.get())
+
+                pom {
+                    name.set(Library.name)
+                    description.set(Library.description)
+                    url.set(Library.description)
+
+                    organization {
+                        name.set("Kord")
+                        url.set(Library.url)
+                    }
+
+                    developers {
+                        developer {
+                            name.set("The Kord Team")
+                        }
+                    }
+
+                    issueManagement {
+                        system.set("GitHub")
+                        url.set("${Library.url}/issues")
+                    }
+
+                    licenses {
+                        license {
+                            name.set("MIT")
+                            url.set("https://opensource.org/licenses/MIT")
+                        }
+                    }
+                    scm {
+                        connection.set("scm:git:ssh://github.com/kordlib/kordx.commands.git")
+                        developerConnection.set("scm:git:ssh://git@github.com:kordlib/kordx.commands.git")
+                        url.set(Library.url)
+                    }
                 }
+
+                if (!isJitPack) {
+                    repositories {
+                        maven {
+                            url = if (Library.isSnapshot) uri(Repo.snapshotsUrl)
+                            else uri(Repo.releasesUrl)
+
+                            credentials {
+                                username = System.getenv("NEXUS_USER")
+                                password = System.getenv("NEXUS_PASSWORD")
+                            }
+                        }
+                    }
+                }
+
             }
+        }
+
     }
 }
 
-fun BintrayExtension.pkg(block: BintrayExtension.PackageConfig.() -> Unit) =
-    pkg(delegateClosureOf(block))
+if (!isJitPack && Library.isRelease) {
+    signing {
+        val signingKey = findProperty("signingKey")?.toString()
+        val signingPassword = findProperty("signingPassword")?.toString()
+        if (signingKey != null && signingPassword != null) {
+            useInMemoryPgpKeys(
+                String(org.apache.commons.codec.binary.Base64().decode(signingKey.toByteArray())),
+                signingPassword
+            )
+        }
+        sign(publishing.publications[Library.name])
+    }
+}
 
-fun BintrayExtension.PackageConfig.version(block: BintrayExtension.VersionConfig.() -> Unit) =
-    version(delegateClosureOf(block))
 
-fun BintrayExtension.VersionConfig.gpg(block: BintrayExtension.GpgConfig.() -> Unit) =
-    gpg(delegateClosureOf(block))
+
+nexusStaging { }
