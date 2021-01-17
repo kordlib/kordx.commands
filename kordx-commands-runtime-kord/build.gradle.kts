@@ -5,26 +5,27 @@ plugins {
 
 repositories {
     jcenter()
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
 }
 
 dependencies {
     implementation(Dependencies.`kotlin-logging`)
 
     api(runtime)
-
-    api("com.gitlab.kordlib.kord:kord-core:0.6.+") {
-        version {
-            prefer("latest.release")
-        }
+    
+    api(Dependencies.kord) {
+//        version {
+//            prefer("latest.release")
+//        }
     }
 
-    api("com.gitlab.kordlib:kordx.emoji:0.2.+") {
-        version {
-            prefer("latest.release")
-        }
+    api(Dependencies.kordxEmoji) {
+//        version {
+//            prefer("latest.release")
+//        }
     }
 
-    api("info.debatty:java-string-similarity:1.2.1")
+    api(Dependencies.javaStringSimilarity)
 
     kaptTest(processor)
 }

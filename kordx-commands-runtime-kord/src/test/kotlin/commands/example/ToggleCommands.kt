@@ -1,17 +1,14 @@
-@file:AutoWired
+@file:dev.kord.x.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.argument.extension.named
-import com.gitlab.kordlib.kordx.commands.argument.text.WordArgument
-import com.gitlab.kordlib.kordx.commands.argument.text.whitelist
-import com.gitlab.kordlib.kordx.commands.kord.model.precondition.precondition
-import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.module.command
-import com.gitlab.kordlib.kordx.commands.model.command.invoke
-import  com.gitlab.kordlib.kordx.commands.kord.module.module
-import com.gitlab.kordlib.kordx.emoji.Emojis
+import dev.kord.x.emoji.Emojis
+import dev.kord.x.commands.argument.extension.named
+import dev.kord.x.commands.argument.text.WordArgument
+import dev.kord.x.commands.kord.model.precondition.precondition
+import dev.kord.x.commands.kord.module.module
+import dev.kord.x.commands.model.command.Command
+import dev.kord.x.commands.model.command.invoke
 import org.koin.core.get
 
 /**
@@ -53,7 +50,6 @@ fun ignoreDisabledCommands() = precondition {
 fun toggleCommands() = module("command-control") {
 
     command("disable") {
-
         invoke(WordArgument.named("command")) {
 
             val command = commands[it] ?: return@invoke run {
@@ -82,7 +78,7 @@ fun toggleCommands() = module("command-control") {
             }
 
             command.enable()
-            respond(Emojis.okHand.unicode)
+            respond(Emojis.okHand)
         }
 
     }

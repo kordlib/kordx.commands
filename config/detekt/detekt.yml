@@ -80,6 +80,7 @@ complexity:
     active: true
     threshold: 600
   LongMethod:
+    excludes: [ '**/CommandInvoke.kt' ]
     active: true
     threshold: 60
   LongParameterList:

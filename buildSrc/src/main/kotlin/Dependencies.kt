@@ -17,6 +17,9 @@ object Versions {
     const val junitJupiterEngine = junit5
     const val sl4j = "1.7.30"
     const val javaStringSimilarity = "1.2.1"
+
+    const val kord = "0.7.0-SNAPSHOT"
+    const val kordxEmoji = "0.5.0-SNAPSHOT"
 }
 
 object Dependencies {
@@ -49,4 +52,8 @@ object Dependencies {
 
     const val javaStringSimilarity =
         "info.debatty:java-string-similarity:${Versions.javaStringSimilarity}"
+
+    const val kord = "dev.kord:kord-core:${Versions.kord}"
+    const val kordxEmoji = "dev.kord.x:emoji:${Versions.kordxEmoji}"
+
 }
