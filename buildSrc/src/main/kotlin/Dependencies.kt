@@ -30,6 +30,7 @@ object Dependencies {
 
     const val `kotlin-logging` = "io.github.microutils:kotlin-logging:${Versions.kotlinLogging}"
 
+
     const val koin = "org.koin:koin-core:${Versions.koin}"
 
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlinTest}"
@@ -51,6 +52,8 @@ object Dependencies {
 
     const val javaStringSimilarity =
         "info.debatty:java-string-similarity:${Versions.javaStringSimilarity}"
+
     const val kord = "dev.kord:kord-core:${Versions.kord}"
     const val kordxEmoji = "dev.kord.x:emoji:${Versions.kordxEmoji}"
+
 }

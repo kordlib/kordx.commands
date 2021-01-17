@@ -35,6 +35,7 @@ subprojects {
         maven(url = "https://dl.bintray.com/kordlib/Kord")
     }
 
+
     configure<io.gitlab.arturbosch.detekt.extensions.DetektExtension> {
         config = rootProject.files("config/detekt/detekt.yml")
     }

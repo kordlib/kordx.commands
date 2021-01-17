@@ -12,7 +12,7 @@ dependencies {
     implementation(Dependencies.`kotlin-logging`)
 
     api(runtime)
-
+    
     api(Dependencies.kord) {
 //        version {
 //            prefer("latest.release")
