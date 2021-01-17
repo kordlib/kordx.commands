@@ -11,8 +11,8 @@ on:
       - '**/src/**'
     branches:
       - 'master'
+      - '0.4.x'
       - '0.5.x'
-      - '0.6.x'
     tags-ignore:
       - '*.*'
   pull_request:
