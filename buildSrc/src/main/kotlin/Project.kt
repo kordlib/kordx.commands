@@ -1,9 +1,9 @@
 import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.project
 
-val DependencyHandlerScope.processor get() = project(":kordx-commands-processor")
-val DependencyHandlerScope.runtime get() = project(":kordx-commands-runtime")
-val DependencyHandlerScope.`runtime-kord` get() = project(":kordx-commands-runtime-kord")
+val DependencyHandlerScope.processor get() = project(":processor")
+val DependencyHandlerScope.runtime get() = project(":runtime")
+val DependencyHandlerScope.`runtime-kord` get() = project(":runtime-kord")
 
 
 /**
