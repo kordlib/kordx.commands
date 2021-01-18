@@ -14,13 +14,15 @@ internal class InternalShortArgument(override val name: String = "Number", priva
 }
 
 /**
- * Argument that matches against a single world, emitting success when the word is a valid [Short] value.
+ * Argument that matches against a single world,
+ * emitting success when the word is a valid [Short] value.
  */
 val ShortArgument: dev.kord.x.commands.argument.Argument<Short, Any?> =
     InternalShortArgument(radix = 10)
 
 /**
- * Argument with [name] and [radix] that matches against a single world, emitting success when the word is a valid [Short] value.
+ * Argument with [name] and [radix] that matches against a single world,
+ * emitting success when the word is a valid [Short] value.
  */
 @Suppress("FunctionName")
 fun ShortArgument(

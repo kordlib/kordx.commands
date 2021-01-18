@@ -17,12 +17,14 @@ internal class InternalByteArgument(
 }
 
 /**
- * Argument that matches against a single world, emitting success when the word is a valid [Byte] value.
+ * Argument that matches against a single world,
+ * emitting success when the word is a valid [Byte] value.
  */
 val ByteArgument: dev.kord.x.commands.argument.Argument<Byte, Any?> = InternalByteArgument()
 
 /**
- * Argument with [name] and [radix] that matches against a single world, emitting success when the word is a valid [Byte] value.
+ * Argument with [name] and [radix] that matches against a single world,
+ * emitting success when the word is a valid [Byte] value.
  */
 @Suppress("FunctionName")
 fun ByteArgument(name: String, radix: Int = 10): dev.kord.x.commands.argument.Argument<Byte, Any?> =
