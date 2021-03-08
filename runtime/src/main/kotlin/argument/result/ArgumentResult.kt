@@ -5,7 +5,7 @@ import dev.kord.x.commands.argument.result.ArgumentResult.Failure
 import dev.kord.x.commands.argument.result.ArgumentResult.Success
 
 /**
- * The product of an [Argument]'s parsing. A [ArgumentResult] can either be a [Success] or a [Failure]
+ * The product of an [Argument]'s parsing. A [ArgumentResult] can either be a [Success] or a [Failure].
  */
 sealed class ArgumentResult<out T> {
     /**
