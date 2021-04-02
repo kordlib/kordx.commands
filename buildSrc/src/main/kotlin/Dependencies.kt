@@ -1,7 +1,7 @@
 object Versions {
     const val kotlin = "1.4.21"
     const val kotlinxCoroutines = "1.3.9"
-    const val koin = "2.1.6"
+    const val koin = "3.0.1-beta-2"
     const val junit = "5.6.0"
     const val mockk = "1.10.0"
     const val kotlinLogging = "1.8.3"
@@ -31,7 +31,7 @@ object Dependencies {
     const val `kotlin-logging` = "io.github.microutils:kotlin-logging:${Versions.kotlinLogging}"
 
 
-    const val koin = "org.koin:koin-core:${Versions.koin}"
+    const val koin = "io.insert-koin:koin-core:${Versions.koin}"
 
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlinTest}"
     const val `kotlinx-coroutines-test` =

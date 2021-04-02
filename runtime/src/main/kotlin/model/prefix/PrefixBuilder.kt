@@ -4,7 +4,7 @@ import dev.kord.x.commands.model.command.CommandEvent
 import dev.kord.x.commands.model.processor.CommandProcessor
 import dev.kord.x.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 /**
  * Builder for the [Prefix] instance of a [CommandProcessor].

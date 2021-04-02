@@ -1,5 +1,3 @@
-import java.util.Date
-
 plugins {
     kotlin("jvm") version Versions.kotlin
     id("io.gitlab.arturbosch.detekt") version "1.9.0" apply false
@@ -13,7 +11,7 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 group = Library.group
@@ -37,7 +35,6 @@ subprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
         maven(url = "https://kotlin.bintray.com/kotlinx")
         maven(url = "https://dl.bintray.com/kordlib/Kord")
     }

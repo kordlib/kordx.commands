@@ -2,12 +2,12 @@ package dev.kord.x.commands.model.command
 
 import dev.kord.x.commands.argument.Argument
 import dev.kord.x.commands.model.metadata.Metadata
-import dev.kord.x.commands.model.precondition.Precondition
-import dev.kord.x.commands.model.processor.ProcessorContext
-import dev.kord.x.commands.model.processor.CommandProcessor
 import dev.kord.x.commands.model.module.Module
+import dev.kord.x.commands.model.precondition.Precondition
+import dev.kord.x.commands.model.processor.CommandProcessor
+import dev.kord.x.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 /**
  * @param name The word that invokes the command.
