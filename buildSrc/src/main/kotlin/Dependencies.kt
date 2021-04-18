@@ -18,7 +18,7 @@ object Versions {
     const val sl4j = "1.7.30"
     const val javaStringSimilarity = "1.2.1"
 
-    const val kord = "0.7.0-SNAPSHOT"
+    const val kord = "0.7.x-SNAPSHOT"
     const val kordxEmoji = "0.5.0-SNAPSHOT"
 }
 
