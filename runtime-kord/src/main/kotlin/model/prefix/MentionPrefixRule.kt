@@ -4,7 +4,7 @@ import dev.kord.core.Kord
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.x.commands.model.prefix.PrefixBuilder
 import dev.kord.x.commands.model.prefix.PrefixRule
-import org.koin.core.get
+import org.koin.core.component.get
 
 /**
  * Creates [PrefixRule] that accepts the bot's mention as a valid prefix.

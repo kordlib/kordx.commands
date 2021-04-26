@@ -16,7 +16,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.Koin
 import org.koin.core.KoinApplication
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 import org.koin.dsl.koinApplication
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf

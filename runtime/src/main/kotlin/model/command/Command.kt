@@ -7,7 +7,7 @@ import dev.kord.x.commands.model.processor.ProcessorContext
 import dev.kord.x.commands.model.processor.CommandProcessor
 import dev.kord.x.commands.model.module.Module
 import org.koin.core.Koin
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 /**
  * @param name The word that invokes the command.

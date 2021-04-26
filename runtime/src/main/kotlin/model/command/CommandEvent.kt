@@ -2,7 +2,7 @@ package dev.kord.x.commands.model.command
 
 import dev.kord.x.commands.model.processor.CommandProcessor
 import dev.kord.x.commands.model.module.Module
-import org.koin.core.KoinComponent
+import org.koin.core.component.KoinComponent
 
 /**
  * The base context supplied for every command.

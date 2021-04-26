@@ -106,7 +106,7 @@ class CommandProcessor : AbstractProcessor() {
 
         with(FileSpec.builder(KAPT_KOTLIN_GENERATED_OPTION_NAME, "Generated_Configuration")) {
             addImport("dev.kord.x.commands.model.module", "toModifier")
-            addImport("org.koin.core", "get")
+            addImport("org.koin.core.component", "get")
             fun Iterable<ExecutableElement>.import() = forEach {
                 val packageName = processingEnv.elementUtils.getPackageOf(it).qualifiedName
                 addImport(packageName.toString(), it.simpleKotlinName)

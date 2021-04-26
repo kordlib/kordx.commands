@@ -9,7 +9,7 @@ import dev.kord.x.commands.kord.model.precondition.precondition
 import dev.kord.x.commands.kord.module.module
 import dev.kord.x.commands.model.command.Command
 import dev.kord.x.commands.model.command.invoke
-import org.koin.core.get
+import org.koin.core.component.get
 
 /**
  * register our CommandSwitch dependency
