@@ -22,7 +22,7 @@ internal class InternalRoleArgument(
             else -> return failure("Expected mention.")
         }
 
-        return when (val role = context.kord.getGuild(guildId)?.getRole(snowflake)) {
+        return when (val role = context.kord.getGuild(guildId)?.getRoleOrNull(snowflake)) {
             null -> failure("Role not found.")
             else -> success(role)
         }
