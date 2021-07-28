@@ -29,7 +29,7 @@ internal class InternalRoleArgumentTest {
             //You might have many questions about the validity and sanity of what is written here
             //fear not, it works. Unless you're here because it doesn't work. In which case: fear, a lot.
             coEvery { getGuild(randGuild, resources.defaultStrategy) } returns mockk {
-                coEvery { getRole(randRole) } returns mockk role@{
+                coEvery { getRoleOrNull(randRole) } returns mockk role@{
                     every { this@role.guildId } returns randGuild
                     every { this@role.id } returns randRole
                 }

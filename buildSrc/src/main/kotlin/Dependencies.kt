@@ -1,5 +1,5 @@
 object Versions {
-    const val kotlin = "1.4.21"
+    const val kotlin = "1.5.10"
     const val kotlinxCoroutines = "1.3.9"
     const val koin = "3.0.1"
     const val junit = "5.6.0"
@@ -19,7 +19,7 @@ object Versions {
     const val javaStringSimilarity = "1.2.1"
 
     const val kord = "0.7.x-SNAPSHOT"
-    const val kordxEmoji = "0.5.0-SNAPSHOT"
+    const val kordxEmoji = "0.5.0"
 }
 
 object Dependencies {
