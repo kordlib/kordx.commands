@@ -25,7 +25,7 @@ internal class InternalMemberArgument(
             else -> return failure("Expected mention.")
         }
 
-        return when (val member = context.kord.getGuild(guildId)?.getMember(snowflake)) {
+        return when (val member = context.kord.getGuild(guildId)?.getMemberOrNull(snowflake)) {
             null -> failure("User not found.")
             else -> success(member)
         }
