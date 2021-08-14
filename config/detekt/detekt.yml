@@ -33,27 +33,32 @@ console-reports:
 
 comments:
   active: true
-  excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
   AbsentOrWrongFileLicense:
+    excludes: &excudes ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt']
     active: false
     licenseTemplateFile: 'license.template'
   CommentOverPrivateFunction:
+    excludes: *excudes
     active: false
   CommentOverPrivateProperty:
+    excludes: *excudes
     active: false
   EndOfSentenceFormat:
+    excludes: *excudes
     active: false
     endOfSentenceFormat: '([.?!][ \t\n\r\f<])|([.?!:]$)'
   UndocumentedPublicClass:
+    excludes: *excudes
     active: true
     searchInNestedClass: true
     searchInInnerClass: true
     searchInInnerObject: true
     searchInInnerInterface: true
   UndocumentedPublicFunction:
-    excludes: [ '**/CommandInvoke.kt' ]
+    excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.Test.kt', '**/*.Spec.kt', '**/*.Spek.kt', '**/CommandInvoke.kt']
     active: true
   UndocumentedPublicProperty:
+    excludes: *excudes
     active: true
 
 complexity:

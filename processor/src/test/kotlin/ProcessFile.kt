@@ -38,7 +38,7 @@ fun extraCommands() = commands {}
 @dev.kord.x.commands.annotation.ModuleName("test-module")
 fun extraCommand(dependency: String) = command("pang") {}
 
-fun nothingToDoWithAutoWired() {}
+fun nothingToDoWithAutoWired() = Unit
 
 val myHandler = BaseEventHandler(KordContext, KordContextConverter, KordErrorHandler())
 

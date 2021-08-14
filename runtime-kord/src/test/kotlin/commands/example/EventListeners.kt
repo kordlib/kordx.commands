@@ -13,7 +13,10 @@ import kotlinx.coroutines.flow.first
  * greet a user once they join the guild
  */
 val greetNewUser = on<MemberJoinEvent> {
-    val textChannel = getGuild().channels.filterIsInstance<TextChannel>().first() //should probably have this configurable instead
+    val textChannel = getGuild()
+        .channels
+        .filterIsInstance<TextChannel>()
+        .first() //should probably have this configurable instead
 
     textChannel.createMessage("hello ${member.nicknameMention}!")
 }

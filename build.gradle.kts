@@ -1,19 +1,19 @@
-import java.util.Date
+import java.util.Base64
 
 plugins {
     kotlin("jvm") version Versions.kotlin
-    id("io.gitlab.arturbosch.detekt") version "1.9.0" apply false
-    id("com.github.johnrengelman.shadow") version "6.1.0" apply false
-    kotlin("plugin.serialization") version "1.4.21" apply false
+    id("io.gitlab.arturbosch.detekt") version "1.18.0" apply false
+    id("com.github.johnrengelman.shadow") version "7.0.0" apply false
+    kotlin("plugin.serialization") version Versions.kotlin apply false
 
     signing
     `maven-publish`
-    id("io.codearte.nexus-staging") version "0.22.0"
+    id("io.codearte.nexus-staging") version "0.30.0"
 
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 group = Library.group
@@ -37,9 +37,7 @@ subprojects {
 
     repositories {
         mavenCentral()
-        jcenter()
-        maven(url = "https://kotlin.bintray.com/kotlinx")
-        maven(url = "https://dl.bintray.com/kordlib/Kord")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
     }
 
 
@@ -76,8 +74,7 @@ subprojects {
                 jvmTarget = Jvm.target
                 freeCompilerArgs = freeCompilerArgs + arrayOf(
                     CompilerArguments.coroutines,
-                    CompilerArguments.experimental,
-                    CompilerArguments.inlineClasses
+                    CompilerArguments.experimental
                 )
             }
         }
@@ -169,7 +166,7 @@ if (!isJitPack && Library.isRelease) {
         val signingPassword = findProperty("signingPassword")?.toString()
         if (signingKey != null && signingPassword != null) {
             useInMemoryPgpKeys(
-                String(org.apache.commons.codec.binary.Base64().decode(signingKey.toByteArray())),
+                String(Base64.getDecoder().decode(signingKey.toByteArray())),
                 signingPassword
             )
         }
