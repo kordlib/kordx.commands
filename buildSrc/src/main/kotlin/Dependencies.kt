@@ -1,24 +1,24 @@
 object Versions {
-    const val kotlin = "1.5.10"
-    const val kotlinxCoroutines = "1.3.9"
-    const val koin = "3.0.1"
-    const val junit = "5.6.0"
-    const val mockk = "1.10.0"
-    const val kotlinLogging = "1.8.3"
+    const val kotlin = "1.5.21"
+    const val kotlinxCoroutines = "1.5.1"
+    const val koin = "3.1.2"
+    const val junit = "5.7.2"
+    const val mockk = "1.12.0"
+    const val kotlinLogging = "2.0.10"
     const val log4j = "1.7.26"
-    const val kotlinPoet = "1.4.1"
+    const val kotlinPoet = "1.9.0"
 
     const val kotlinTest = kotlin
-    const val junit5 = "5.6.0"
+    const val junit5 = "5.7.2"
     const val kotlinxCoroutinesTest = kotlinxCoroutines
     const val kotlinReflect = kotlin
     const val junitJupiterApi = junit5
     const val junitJupiterParams = junit5
     const val junitJupiterEngine = junit5
     const val sl4j = "1.7.30"
-    const val javaStringSimilarity = "1.2.1"
+    const val javaStringSimilarity = "2.0.0"
 
-    const val kord = "0.7.x-SNAPSHOT"
+    const val kord = "0.8.x-SNAPSHOT"
     const val kordxEmoji = "0.5.0"
 }
 

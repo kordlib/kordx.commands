@@ -10,6 +10,9 @@ import dev.kord.x.commands.model.processor.ProcessorBuilder
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.flow.coroutineContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions
@@ -41,11 +44,6 @@ class CommandsTest {
         }
     }
 
-    @AfterTest
-    fun tearDown() {
-        input.channel.close()
-    }
-
     @Test
     fun `command gets invoked without arguments`() = runBlocking {
         val response = "a test response"
@@ -58,7 +56,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("test")
+        input.channel.emit("test")
         Assertions.assertEquals(1, output.events.size)
         val event = output.events[0] as EventType.Response
         Assertions.assertEquals(response, event.text)
@@ -81,7 +79,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("an-alias")
+        input.channel.emit("an-alias")
         if(error != null) throw IllegalStateException(error)
     }
 
@@ -102,7 +100,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("an-alias")
+        input.channel.emit("an-alias")
         if(error != null) throw IllegalStateException(error)
     }
 
@@ -120,7 +118,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("an-alias")
+        input.channel.emit("an-alias")
         Assertions.assertEquals(1, output.events.size)
         val event = output.events[0] as EventType.Response
         Assertions.assertEquals(response, event.text)
@@ -138,7 +136,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("test 4 5")
+        input.channel.emit("test 4 5")
         Assertions.assertEquals(1, output.events.size)
         val event = output.events[0] as EventType.Response
         Assertions.assertEquals(response, event.text)
@@ -156,7 +154,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("test 4")
+        input.channel.emit("test 4")
         Assertions.assertEquals(1, output.events.size)
         Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
     }
@@ -173,7 +171,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("test 4 cat")
+        input.channel.emit("test 4 cat")
         Assertions.assertEquals(1, output.events.size)
         Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
     }
@@ -190,7 +188,7 @@ class CommandsTest {
             }
         }
 
-        input.channel.send("test 4 cat")
+        input.channel.emit("test 4 cat")
         Assertions.assertEquals(1, output.events.size)
         Assertions.assertTrue(output.events[0] is EventType.RejectArgument)
     }

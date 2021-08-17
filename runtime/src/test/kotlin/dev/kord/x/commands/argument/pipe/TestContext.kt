@@ -4,11 +4,16 @@ package dev.kord.x.commands.argument.pipe
 
 import dev.kord.x.commands.model.command.Command
 import dev.kord.x.commands.model.command.CommandEvent
-import dev.kord.x.commands.model.processor.*
-import kotlinx.coroutines.channels.BroadcastChannel
+import dev.kord.x.commands.model.processor.CommandEventData
+import dev.kord.x.commands.model.processor.CommandProcessor
+import dev.kord.x.commands.model.processor.ContextConverter
+import dev.kord.x.commands.model.processor.ErrorHandler
+import dev.kord.x.commands.model.processor.EventSource
+import dev.kord.x.commands.model.processor.ProcessorContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
@@ -79,8 +84,7 @@ class TestEventSource : EventSource<String> {
     override val context: ProcessorContext<String, *, *>
         get() = TestContext
 
-    val channel = BroadcastChannel<String>(Channel.CONFLATED)
+    val channel = MutableSharedFlow<String>()
 
-    override val events: Flow<String> = channel.asFlow()
-
+    override val events: Flow<String> = channel.asSharedFlow()
 }

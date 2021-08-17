@@ -7,7 +7,7 @@ import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.entity.Message
 import dev.kord.core.event.message.MessageCreateEvent
 import dev.kord.rest.builder.message.EmbedBuilder
-import dev.kord.rest.builder.message.MessageCreateBuilder
+import dev.kord.rest.builder.message.create.MessageCreateBuilder
 import dev.kord.x.commands.argument.result.ArgumentResult
 import dev.kord.x.emoji.DiscordEmoji
 import kotlinx.coroutines.flow.*
