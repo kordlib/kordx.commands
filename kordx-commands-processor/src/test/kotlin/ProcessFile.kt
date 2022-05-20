@@ -1,8 +1,8 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 @file:Suppress("UNUSED_PARAMETER", "unused", "RedundantSuspendModifier")
 
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
+import dev.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.annotation.ModuleName
 import com.gitlab.kordlib.kordx.commands.kord.bot
 import com.gitlab.kordlib.kordx.commands.kord.model.prefix.kord
 import com.gitlab.kordlib.kordx.commands.kord.model.processor.KordContext
@@ -34,17 +34,17 @@ suspend fun suspendingModule() = module("test-module2") {}
 
 fun dependencies() = module {}
 
-@ModuleName("test-module")
+@dev.kordx.commands.annotation.ModuleName("test-module")
 fun extraCommands() = commands {}
 
-@ModuleName("test-module")
+@dev.kordx.commands.annotation.ModuleName("test-module")
 fun extraCommand(dependency: String) = command("pang") {}
 
 fun nothingToDoWithAutoWired() {}
 
 val myHandler = BaseEventHandler(KordContext, KordContextConverter, KordErrorHandler())
 
-@get:ModuleName("test-module")
+@get:dev.kordx.commands.annotation.ModuleName("test-module")
 val propertyCommand
     get() = command("swing") {}
 

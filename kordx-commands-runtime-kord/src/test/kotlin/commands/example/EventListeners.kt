@@ -1,11 +1,11 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.core.entity.channel.TextChannel
-import com.gitlab.kordlib.core.event.guild.MemberJoinEvent
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.plug.on
+import dev.kord.core.entity.channel.TextChannel
+import dev.kord.core.event.guild.MemberJoinEvent
+import dev.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.kord.plug.on
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 

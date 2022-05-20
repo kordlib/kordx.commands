@@ -1,10 +1,10 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.common.entity.Snowflake
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.model.processor.eventFilter
+import dev.kord.common.entity.Snowflake
+import dev.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.kord.model.processor.eventFilter
 import org.koin.dsl.module
 
 /**

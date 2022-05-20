@@ -1,6 +1,6 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.annotation.AutoWired
 import org.koin.dsl.module
 
 val secondModule = module { }
