@@ -1,27 +1,29 @@
 package dev.kordx.commands.argument.extension
 
-import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
+import dev.kordx.commands.argument.primitive.IntArgument
 import dev.kordx.commands.argument.requireFailure
 import dev.kordx.commands.argument.requireItem
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 
 @Suppress("unused")
+@ExperimentalCoroutinesApi
 class RepeatArgTest {
 
     val argument = IntArgument.repeated(1..10)
 
     @ParameterizedTest
     @MethodSource("passingSources")
-    fun `correctly accepts arguments`(text: String, expected: List<Int>) = runBlockingTest {
+    fun `correctly accepts arguments`(text: String, expected: List<Int>) = runTest {
         argument.parse(text, 0, Unit).requireItem(expected)
     }
 
     @ParameterizedTest
     @MethodSource("failingSources")
-    fun `correctly fails arguments`(text: String) = runBlockingTest {
+    fun `correctly fails arguments`(text: String) = runTest {
         argument.parse(text, 0, Unit).requireFailure()
     }
 

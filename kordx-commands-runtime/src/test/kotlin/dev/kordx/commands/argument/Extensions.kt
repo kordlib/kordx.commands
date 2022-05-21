@@ -1,6 +1,6 @@
 package dev.kordx.commands.argument
 
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import dev.kordx.commands.argument.result.ArgumentResult
 import kotlin.test.assertEquals
 
 fun <T> ArgumentResult<T>.requireSuccess(): ArgumentResult.Success<T> {

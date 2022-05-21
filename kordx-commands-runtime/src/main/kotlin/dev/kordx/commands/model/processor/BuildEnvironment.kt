@@ -3,6 +3,7 @@ package dev.kordx.commands.model.processor
 import dev.kordx.commands.model.command.Command
 import dev.kordx.commands.model.exception.DuplicateCommandNameException
 import dev.kordx.commands.model.exception.DuplicateModuleNameException
+import dev.kordx.commands.model.module.Module
 import org.koin.core.Koin
 
 /**

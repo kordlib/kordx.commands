@@ -1,8 +1,7 @@
 package dev.kordx.commands.argument.text
 
-import dev.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
-import com.gitlab.kordlib.kordx.commands.argument.state.*
+import dev.kordx.commands.argument.result.ArgumentResult
+import dev.kordx.commands.argument.state.*
 
 internal class InternalQuotedArgument(
         override val name: String,

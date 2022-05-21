@@ -1,10 +1,6 @@
 package dev.kordx.commands.argument.text
 
-import dev.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
-import dev.kordx.commands.argument.SingleWordArgument
-import com.gitlab.kordlib.kordx.commands.argument.result.WordResult
-import com.gitlab.kordlib.kordx.commands.argument.state.*
+import dev.kordx.commands.argument.result.WordResult
 
 internal class InternalWordArgument(override val name: String = "Word") : dev.kordx.commands.argument.SingleWordArgument<String, Any?>() {
 

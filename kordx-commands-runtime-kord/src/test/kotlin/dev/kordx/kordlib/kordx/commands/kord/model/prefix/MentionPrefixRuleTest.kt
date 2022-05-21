@@ -1,15 +1,15 @@
 package dev.kordx.kordlib.kordx.commands.kord.model.prefix
 
+import dev.kordx.commands.kord.model.prefix.mention
 import dev.kordx.commands.model.prefix.PrefixRule
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.gradle.internal.impldep.org.junit.Test
 import org.junit.jupiter.api.Assertions.*
-import kotlin.test.Test
 
 internal class MentionPrefixRuleTest {
 
     @Test
-    fun `mention prefix accepts a bot's username mention`() = runBlockingTest {
+    fun `mention prefix accepts a bot's username mention`() = runTest {
         val rule = prefix { mention() }
 
         val event = mockEvent()
@@ -21,7 +21,7 @@ internal class MentionPrefixRuleTest {
     }
 
     @Test
-    fun `mention prefix accepts a bot's nickname mention`() = runBlockingTest {
+    fun `mention prefix accepts a bot's nickname mention`() = runTest {
         val rule = prefix { mention() }
 
         val event = mockEvent()
@@ -33,7 +33,7 @@ internal class MentionPrefixRuleTest {
     }
 
     @Test
-    fun `mention prefix does not accept another mention`() = runBlockingTest {
+    fun `mention prefix does not accept another mention`() = runTest {
         val rule = prefix { mention() }
 
         val event = mockEvent()

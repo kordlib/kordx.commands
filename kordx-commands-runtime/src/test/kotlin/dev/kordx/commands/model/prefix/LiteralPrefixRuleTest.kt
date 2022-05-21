@@ -1,13 +1,15 @@
 package dev.kordx.commands.model.prefix
 
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import kotlin.test.Test
 
+@ExperimentalCoroutinesApi
 internal class LiteralPrefixRuleTest {
 
     @Test
-    fun `literal matches against its own prefix`() = runBlockingTest {
+    fun `literal matches against its own prefix`() = runTest {
         val literal = LiteralPrefixRule("hello")
 
         val result = literal.consume("hello world", null)
@@ -18,7 +20,7 @@ internal class LiteralPrefixRuleTest {
     }
 
     @Test
-    fun `literal does not match against another prefix`() = runBlockingTest {
+    fun `literal does not match against another prefix`() = runTest {
         val literal = LiteralPrefixRule("hello")
 
         val result = literal.consume("world hello", null)

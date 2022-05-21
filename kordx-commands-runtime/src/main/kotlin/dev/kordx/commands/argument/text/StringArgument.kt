@@ -1,9 +1,7 @@
 package dev.kordx.commands.argument.text
 
-import dev.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
-import dev.kordx.commands.argument.VariableLengthArgument
-import com.gitlab.kordlib.kordx.commands.argument.state.*
+import dev.kordx.commands.argument.result.ArgumentResult
+import dev.kordx.commands.argument.state.*
 
 internal class InternalStringArgument(override val name: String = "Text") : StateArgument<String, Any?>() {
 

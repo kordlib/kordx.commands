@@ -2,7 +2,7 @@ package dev.kordx.commands.argument.text
 
 import dev.kordx.commands.argument.requireItem
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
@@ -13,7 +13,7 @@ class ListArgumentTest {
 
     @ParameterizedTest
     @MethodSource("sources")
-    fun `correctly parses arguments`(separator: String, text: String, result: List<String>) = runBlockingTest {
+    fun `correctly parses arguments`(separator: String, text: String, result: List<String>) = runTest {
         ListArgument(separator = separator).parse(text, 0, Unit).requireItem(result)
     }
 

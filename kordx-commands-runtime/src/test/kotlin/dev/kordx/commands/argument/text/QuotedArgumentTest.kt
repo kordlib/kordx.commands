@@ -1,6 +1,6 @@
 package dev.kordx.commands.argument.text
 
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
+import dev.kordx.commands.argument.result.ArgumentResult
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test

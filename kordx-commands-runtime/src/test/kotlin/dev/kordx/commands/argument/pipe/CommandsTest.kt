@@ -1,17 +1,14 @@
 package dev.kordx.commands.argument.pipe
 
-import com.gitlab.kordlib.kordx.commands.argument.primitive.IntArgument
-import com.gitlab.kordlib.kordx.commands.model.command.AliasInfo
-import com.gitlab.kordlib.kordx.commands.model.command.invoke
-import com.gitlab.kordlib.kordx.commands.model.module.module
-import com.gitlab.kordlib.kordx.commands.model.processor.BaseEventHandler
-import com.gitlab.kordlib.kordx.commands.model.processor.CommandProcessor
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorBuilder
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Runnable
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
+import dev.kordx.commands.argument.primitive.IntArgument
+import dev.kordx.commands.model.command.AliasInfo
+import dev.kordx.commands.model.command.invoke
+import dev.kordx.commands.model.module.module
+import dev.kordx.commands.model.processor.BaseEventHandler
+import dev.kordx.commands.model.processor.CommandProcessor
+import dev.kordx.commands.model.processor.ProcessorBuilder
+import kotlinx.coroutines.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.AfterTest
@@ -19,6 +16,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @Suppress("EXPERIMENTAL_API_USAGE")
+@ExperimentalCoroutinesApi
+@ObsoleteCoroutinesApi
 class CommandsTest {
 
     lateinit var processor: CommandProcessor
@@ -26,7 +25,7 @@ class CommandsTest {
     lateinit var input: TestEventSource
 
     @BeforeTest
-    fun setUp() = runBlockingTest {
+    fun setUp() = runTest {
         output = TestOutput()
         input = TestEventSource()
         processor = ProcessorBuilder {

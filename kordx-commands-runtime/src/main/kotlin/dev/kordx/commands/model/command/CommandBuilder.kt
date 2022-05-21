@@ -4,6 +4,7 @@ import dev.kordx.commands.internal.CommandsBuilder
 import dev.kordx.commands.model.exception.ConflictingAliasException
 import dev.kordx.commands.model.metadata.MutableMetadata
 import dev.kordx.commands.model.precondition.Precondition
+import dev.kordx.commands.model.precondition.precondition
 import dev.kordx.commands.model.processor.BuildEnvironment
 import dev.kordx.commands.model.processor.ProcessorContext
 

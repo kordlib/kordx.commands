@@ -10,6 +10,7 @@ import dev.kordx.commands.model.prefix.literal
 import dev.kordx.commands.model.prefix.or
 import dev.kordx.commands.model.prefix.prefix
 import kotlinx.coroutines.Dispatchers
+import kapt.kotlin.generated.configure
 
 /**
  * entry method, `configure` is generated on build.

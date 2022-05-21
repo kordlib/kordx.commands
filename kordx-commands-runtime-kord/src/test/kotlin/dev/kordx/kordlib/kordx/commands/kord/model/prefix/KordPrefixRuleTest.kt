@@ -1,18 +1,22 @@
 package dev.kordx.kordlib.kordx.commands.kord.model.prefix
 
-import dev.common.entity.Snowflake
-import dev.core.Kord
-import dev.core.behavior.GuildBehavior
-import dev.core.behavior.channel.MessageChannelBehavior
-import dev.core.entity.Guild
-import dev.core.entity.Member
-import dev.core.entity.Message
-import dev.core.entity.User
-import dev.core.event.message.MessageCreateEvent
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.behavior.GuildBehavior
+import dev.kord.core.behavior.channel.MessageChannelBehavior
+import dev.kord.core.entity.Guild
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.Message
+import dev.kord.core.entity.User
+import dev.kord.core.event.message.MessageCreateEvent
+import dev.kordx.commands.kord.model.prefix.channel
+import dev.kordx.commands.kord.model.prefix.guild
+import dev.kordx.commands.kord.model.prefix.member
+import dev.kordx.commands.kord.model.prefix.user
 import dev.kordx.commands.model.prefix.PrefixBuilder
 import dev.kordx.commands.model.prefix.PrefixRule
 import io.mockk.*
-import kotlinx.coroutines.test.runBlockingTest
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import org.koin.dsl.koinApplication
@@ -57,7 +61,7 @@ fun Message.mockNoGuild() {
 @Suppress("UNCHECKED_CAST")
 fun mockKord() = mockk<Kord> {
     every { selfId } answers object: Answer<Any> {
-        override fun answer(call: Call): Any = mentionId.longValue
+        override fun answer(call: Call): Any = mentionId
     } as Answer<Snowflake>
 }
 
@@ -69,7 +73,7 @@ inline fun <T> prefix(apply: PrefixBuilder.() -> T) = PrefixBuilder(koinApplicat
 internal class KordPrefixRuleTest {
 
     @Test
-    fun `guild prefix accepts a correct prefix in a guild`() = runBlockingTest {
+    fun `guild prefix accepts a correct prefix in a guild`() = runTest {
         val guildRule = prefix { guild { "!" } }
 
         val event = mockEvent {
@@ -83,7 +87,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `guild prefix denies a correct prefix without a guild`() = runBlockingTest {
+    fun `guild prefix denies a correct prefix without a guild`() = runTest {
         val guildRule = prefix { guild { "!" } }
 
         val event = mockEvent {
@@ -95,7 +99,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `guild prefix denies a wrong prefix in a guild`() = runBlockingTest {
+    fun `guild prefix denies a wrong prefix in a guild`() = runTest {
         val guildRule = prefix { guild { "+" } }
 
         val event = mockEvent {
@@ -110,7 +114,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `channel prefix accepts a correct prefix`() = runBlockingTest {
+    fun `channel prefix accepts a correct prefix`() = runTest {
         val rule = prefix { channel { "!" } }
 
         val event = mockEvent {
@@ -124,7 +128,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `channel prefix denies a wrong prefix`() = runBlockingTest {
+    fun `channel prefix denies a wrong prefix`() = runTest {
         val rule = prefix { channel { "+" } }
 
         val event = mockEvent {
@@ -136,7 +140,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `user prefix accepts a correct prefix`() = runBlockingTest {
+    fun `user prefix accepts a correct prefix`() = runTest {
         val rule = prefix { user { "!" } }
 
         val event = mockEvent {
@@ -150,7 +154,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `user prefix denies a wrong prefix`() = runBlockingTest {
+    fun `user prefix denies a wrong prefix`() = runTest {
         val rule = prefix { user { "+" } }
 
         val event = mockEvent {
@@ -162,7 +166,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `member prefix accepts a correct prefix`() = runBlockingTest {
+    fun `member prefix accepts a correct prefix`() = runTest {
         val rule = prefix { member { "!" } }
 
         val event = mockEvent {
@@ -176,7 +180,7 @@ internal class KordPrefixRuleTest {
     }
 
     @Test
-    fun `member prefix denies a wrong prefix`() = runBlockingTest {
+    fun `member prefix denies a wrong prefix`() = runTest {
         val rule = prefix { member { "+" } }
 
         val event = mockEvent {

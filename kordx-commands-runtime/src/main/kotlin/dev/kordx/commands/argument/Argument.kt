@@ -3,7 +3,6 @@ package dev.kordx.commands.argument
 import dev.kordx.commands.argument.result.ArgumentResult
 import dev.kordx.commands.argument.result.WordResult
 import dev.kordx.commands.argument.state.*
-import state.*
 
 /**
  * A parser that takes in a set of words and a [CONTEXT], producing a [ArgumentResult] with a possible generated [T].

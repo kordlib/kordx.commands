@@ -2,18 +2,16 @@
 
 package dev.kordx.commands.argument.pipe
 
-import dev.kordx.commands.argument.Argument
-import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.command.CommandEvent
-import com.gitlab.kordlib.kordx.commands.model.processor.ProcessorContext
-import com.gitlab.kordlib.kordx.commands.model.processor.*
+import dev.kordx.commands.model.command.Command
+import dev.kordx.commands.model.command.CommandEvent
+import dev.kordx.commands.model.processor.*
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.BroadcastChannel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import com.gitlab.kordlib.kordx.commands.argument.result.ArgumentResult
 
 class TestEventEvent(
     val output: TestOutput,
@@ -74,6 +72,7 @@ class TestConverter(private val output: TestOutput): ContextConverter<String, St
 }
 
 @Suppress("EXPERIMENTAL_API_USAGE")
+@ObsoleteCoroutinesApi
 class TestEventSource : EventSource<String> {
     override val context: ProcessorContext<String, *, *>
         get() = TestContext

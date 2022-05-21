@@ -1,5 +1,6 @@
 package dev.kordx.commands.model.command
 
+import dev.kordx.commands.argument.Argument
 import dev.kordx.commands.model.metadata.Metadata
 import dev.kordx.commands.model.module.Module
 import dev.kordx.commands.model.precondition.Precondition
@@ -38,8 +39,8 @@ data class CommandData<T: CommandEvent>(
     val moduleName: String,
     val context: ProcessorContext<*, *, T>,
     val metadata: Metadata,
-    val arguments: List<dev.kordx.commands.argument.Argument<*, *>>,
-    val modules: Map<String, Module>,
+    val arguments: List<Argument<*, *>>,
+    val modules: MutableMap<String, Module>,
     val preconditions: List<Precondition<T>>,
     val koin: Koin,
     val aliasInfo: AliasInfo<T>,

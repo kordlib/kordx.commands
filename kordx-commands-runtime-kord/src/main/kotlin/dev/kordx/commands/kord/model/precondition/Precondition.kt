@@ -1,8 +1,9 @@
 package dev.kordx.commands.kord.model.precondition
 
+import dev.kordx.commands.kord.model.context.KordCommandEvent
 import dev.kordx.commands.kord.model.processor.KordContext
 import dev.kordx.commands.model.precondition.Precondition
-import dev.kordx.commands.kord.model.context.KordCommandEvent
+import dev.kordx.commands.model.precondition.precondition
 
 /**
  * Defines a [Precondition] for Kord commands.
@@ -18,4 +19,4 @@ import dev.kordx.commands.kord.model.context.KordCommandEvent
 fun precondition(
         priority: Long = 0,
         filter: suspend KordCommandEvent.() -> Boolean
-) = dev.kordx.commands.kord.model.precondition.precondition(KordContext, priority, filter)
+) = precondition(KordContext, priority, filter)
