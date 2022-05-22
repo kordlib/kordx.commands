@@ -1,10 +1,10 @@
 package dev.kordx.commands.model.prefix
 
-import dev.kordx.commands.model.processor.CommandProcessor
 import dev.kordx.commands.model.command.CommandEvent
 import dev.kordx.commands.model.processor.ProcessorContext
 import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
+
 
 /**
  * Builder for the [Prefix] instance of a [CommandProcessor].
@@ -12,8 +12,8 @@ import org.koin.core.component.KoinComponent
  * @param suppliers PrefixSuppliers mapped to their context.
  */
 class PrefixBuilder(
-        private val koin: Koin,
-        private val suppliers: MutableMap<ProcessorContext<*, *, *>, PrefixRule<*>> = mutableMapOf()
+    private val koin: Koin,
+    private val suppliers: MutableMap<ProcessorContext<*, *, *>, PrefixRule<*>> = mutableMapOf()
 ) : KoinComponent {
 
     override fun getKoin(): Koin = koin

@@ -57,9 +57,3 @@ tasks.compileKotlin {
         freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
     }
 }
-
-kapt {
-    arguments {
-        arg("kordx.commands.verbose", "true")
-    }
-}

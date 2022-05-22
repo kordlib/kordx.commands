@@ -1,4 +1,4 @@
-package dev.kordx.kordlib.kordx.commands.kord.argument
+package dev.kordx.commands.kord.argument
 
 import dev.kordx.commands.argument.result.ArgumentResult
 import dev.kordx.commands.kord.argument.CodeBlockArgument

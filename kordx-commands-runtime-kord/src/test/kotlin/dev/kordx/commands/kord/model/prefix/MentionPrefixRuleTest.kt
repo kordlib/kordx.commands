@@ -1,4 +1,4 @@
-package dev.kordx.kordlib.kordx.commands.kord.model.prefix
+package dev.kordx.commands.kord.model.prefix
 
 import dev.kordx.commands.kord.model.prefix.mention
 import dev.kordx.commands.model.prefix.PrefixRule

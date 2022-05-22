@@ -1,4 +1,4 @@
-package dev.kordx.kordlib.kordx.commands.kord.model.prefix
+package dev.kordx.commands.kord.model.prefix
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
