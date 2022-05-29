@@ -23,7 +23,7 @@ interface CommandSuggester {
         private val levenshtein = Levenshtein()
 
         override suspend fun suggest(command: String, commands: Map<String, Command<*>>): Command<*>? {
-            return commands.values.toList().minBy { levenshtein.distance(command, it.name) }
+            return commands.values.toList().minByOrNull { levenshtein.distance(command, it.name) }
         }
     }
 

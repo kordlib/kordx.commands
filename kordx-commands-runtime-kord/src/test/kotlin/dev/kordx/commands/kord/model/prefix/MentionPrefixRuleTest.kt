@@ -1,10 +1,9 @@
 package dev.kordx.commands.kord.model.prefix
 
-import dev.kordx.commands.kord.model.prefix.mention
 import dev.kordx.commands.model.prefix.PrefixRule
 import kotlinx.coroutines.test.runTest
-import org.gradle.internal.impldep.org.junit.Test
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 
 internal class MentionPrefixRuleTest {
 

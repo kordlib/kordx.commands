@@ -1,8 +1,6 @@
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.BintrayPlugin
-//import org.ajoberstar.gradle.git.publish.GitPublishExtension
-//import org.ajoberstar.gradle.git.publish.tasks.GitPublishReset
-//import org.apache.commons.codec.binary.Base64
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {
@@ -19,7 +17,7 @@ buildscript {
 
 plugins {
     kotlin("jvm")
-    kotlin("kapt")
+//    kotlin("kapt")
     id("com.github.johnrengelman.shadow") version Versions.shadow
     id("io.gitlab.arturbosch.detekt") version Versions.detekt
 
@@ -50,7 +48,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "kotlin-kapt")
-    //apply(plugin = "io.github.arturbosch.detekt")
+    apply(plugin = "io.gitlab.arturbosch.detekt")
     if(!isJitPack && Library.isRelease) {
         apply(plugin = "signing")
     }
@@ -74,13 +72,12 @@ subprojects {
         testImplementation(Dependencies.`coroutines-test`)
         testImplementation(Dependencies.`junit-jupiter-api`)
         testImplementation(Dependencies.`junit-jupiter-params`)
-        testRuntimeOnly(Dependencies.`junit-jupiter-engine`)
+        testImplementation(Dependencies.`junit-jupiter-engine`)
         testRuntimeOnly(Dependencies.`kotlin-reflect`)
         testRuntimeOnly(Dependencies.slf4j)
     }
 
-    tasks {
-        compileKotlin {
+    tasks.withType<KotlinCompile> {
             kotlinOptions {
                 jvmTarget = Jvm.target
                 freeCompilerArgs = listOf(
@@ -91,16 +88,7 @@ subprojects {
             }
         }
 
-        compileTestKotlin {
-            kotlinOptions {
-                jvmTarget = Jvm.target
-                freeCompilerArgs = listOf(
-                    CompilerArguments.inlineClasses,
-                    CompilerArguments.coroutines,
-                    CompilerArguments.experimental
-                )
-            }
-        }
+    tasks {
 
         test {
             useJUnitPlatform {

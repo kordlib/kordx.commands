@@ -10,9 +10,9 @@ dependencies {
     }
 
     api("dev.kord.x:emoji:0.5.0") {
-        version {
-            prefer("latest.release")
-        }
+//        version {
+//            prefer("latest.release")
+//        }
     }
 
     api("info.debatty:java-string-similarity:2.0.0")
