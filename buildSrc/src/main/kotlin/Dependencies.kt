@@ -24,7 +24,7 @@ object Dependencies {
 
     // Test dependencies
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
-    const val `mockk-dsl` = "io.mockk.mockk-dsl-jvm:${Versions.mockk}"
+    const val `mockk-dsl` = "io.mockk:mockk-dsl-jvm:${Versions.mockk}"
     const val `kotlin-test` = "org.jetbrains.kotlin:kotlin-test:${Versions.kotlin}"
     const val `kotlin-test-junit` = "org.jetbrains.kotlin:kotlin-test-junit:${Versions.kotlin}"
     const val `coroutines-test` = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.kotlinxCoroutines}"

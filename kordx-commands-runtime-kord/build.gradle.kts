@@ -22,6 +22,6 @@ dependencies {
 
 tasks.compileKotlin {
     kotlinOptions {
-        freeCompilerArgs += "-Xuse-experimental=kotlin.ExperimentalStdlibApi"
+        freeCompilerArgs = listOf(CompilerArguments.experimentalStd)
     }
 }

@@ -18,8 +18,8 @@ buildscript {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version Versions.kotlin
-    id("org.jetbrains.kotlin.kapt") version Versions.kotlin
+    kotlin("jvm")
+    kotlin("kapt")
     id("com.github.johnrengelman.shadow") version Versions.shadow
     id("io.gitlab.arturbosch.detekt") version Versions.detekt
 
@@ -50,7 +50,7 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "kotlin-kapt")
-    apply(plugin = "io.github.arturbosch.detekt")
+    //apply(plugin = "io.github.arturbosch.detekt")
     if(!isJitPack && Library.isRelease) {
         apply(plugin = "signing")
     }
@@ -139,9 +139,9 @@ subprojects {
                 name = "kordx.commands"
                 userOrg = "kordlib"
                 setLicenses("MIT")
-            vcsUrl = 'https://gitlab.com/kordlib/kordx.commands.git'
-            websiteUrl = 'https://gitlab.com/kordlib/kordx.commands'
-            issueTrackerUrl = 'https://gitlab.com/kordlib/kordx.commands/issues'
+            vcsUrl = "https://gitlab.com/kordlib/kordx.commands.git"
+            websiteUrl = "https://gitlab.com/kordlib/kordx.commands"
+            issueTrackerUrl = "https://gitlab.com/kordlib/kordx.commands/issues"
 
                 version = VersionConfig().apply {
                     name = Library.version
