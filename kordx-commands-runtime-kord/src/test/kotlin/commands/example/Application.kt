@@ -1,17 +1,16 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.core.Kord
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.kord.bot
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.kord
-import com.gitlab.kordlib.kordx.commands.kord.model.prefix.mention
-import com.gitlab.kordlib.kordx.commands.model.prefix.literal
-import com.gitlab.kordlib.kordx.commands.model.prefix.or
-import com.gitlab.kordlib.kordx.commands.model.prefix.prefix
-import kapt.kotlin.generated.configure
+import dev.kord.core.Kord
+import dev.kordx.commands.kord.bot
+import dev.kordx.commands.kord.model.prefix.kord
+import dev.kordx.commands.kord.model.prefix.mention
+import dev.kordx.commands.model.prefix.literal
+import dev.kordx.commands.model.prefix.or
+import dev.kordx.commands.model.prefix.prefix
 import kotlinx.coroutines.Dispatchers
+import kapt.kotlin.generated.configure
 
 /**
  * entry method, `configure` is generated on build.

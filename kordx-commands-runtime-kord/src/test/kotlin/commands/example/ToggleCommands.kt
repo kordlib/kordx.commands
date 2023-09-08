@@ -1,17 +1,17 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.argument.extension.named
-import com.gitlab.kordlib.kordx.commands.argument.text.WordArgument
-import com.gitlab.kordlib.kordx.commands.argument.text.whitelist
-import com.gitlab.kordlib.kordx.commands.kord.model.precondition.precondition
-import com.gitlab.kordlib.kordx.commands.model.command.Command
-import com.gitlab.kordlib.kordx.commands.model.module.command
-import com.gitlab.kordlib.kordx.commands.model.command.invoke
-import  com.gitlab.kordlib.kordx.commands.kord.module.module
-import com.gitlab.kordlib.kordx.emoji.Emojis
+import dev.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.argument.extension.named
+import dev.kordx.commands.argument.text.WordArgument
+import dev.kordx.commands.argument.text.whitelist
+import dev.kordx.commands.kord.model.precondition.precondition
+import dev.kordx.commands.model.command.Command
+import dev.kordx.commands.model.module.command
+import dev.kordx.commands.model.command.invoke
+import dev.kordx.commands.kord.module.module
+import dev.kordx.emoji.Emojis
 import org.koin.core.get
 
 /**

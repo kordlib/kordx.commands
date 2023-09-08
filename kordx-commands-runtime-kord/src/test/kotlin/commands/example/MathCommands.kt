@@ -1,17 +1,17 @@
-@file:AutoWired
+@file:dev.kordx.commands.annotation.AutoWired
 
 package commands.example
 
-import com.gitlab.kordlib.kordx.commands.annotation.AutoWired
-import com.gitlab.kordlib.kordx.commands.annotation.ModuleName
-import com.gitlab.kordlib.kordx.commands.argument.primitive.DoubleArgument
-import com.gitlab.kordlib.kordx.commands.kord.module.commands
-import com.gitlab.kordlib.kordx.commands.model.command.invoke
+import dev.kordx.commands.annotation.AutoWired
+import dev.kordx.commands.annotation.ModuleName
+import dev.kordx.commands.argument.primitive.DoubleArgument
+import dev.kordx.commands.kord.module.commands
+import dev.kordx.commands.model.command.invoke
 
 /**
  * example command that we can enable/disable.
  */
-@ModuleName("math")
+@dev.kordx.commands.annotation.ModuleName("math")
 fun simpleMath() = commands {
 
     command("add") {
